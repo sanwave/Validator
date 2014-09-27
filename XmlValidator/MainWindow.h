@@ -24,18 +24,18 @@ public:
 	PCWSTR  ClassName() const { return L"Main Window"; }
 
 	/// <summary>
-	/// WindowsÏûÏ¢´¦Àí
+	/// Windowsæ¶ˆæ¯å¤„ç†
 	/// </summary>
 	LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	
 	/// <summary>
-	/// ´¦ÀíÍÏ·ÅÎÄ¼ş
+	/// å¤„ç†æ‹–æ”¾æ–‡ä»¶
 	/// </summary>
 	int DropFile(HDROP hDropInfo)
 	{
 		if (hDropInfo)
 		{
-			//MAX_PATHÎªWin¶¨ÒåµÄÎÄ¼şÈ«ÃûµÄ×î´ó³¤¶È£¬Îª260
+			//MAX_PATHä¸ºWinå®šä¹‰çš„æ–‡ä»¶å…¨åçš„æœ€å¤§é•¿åº¦ï¼Œä¸º260
 			LPWSTR fileName = new TCHAR[BUFSIZ];
 			UINT fileNum = ::DragQueryFile(hDropInfo, 0xffffffff, NULL, 0);
 			for (UINT i = 0; i < fileNum; i++)
@@ -50,7 +50,7 @@ public:
 	}
 
 	/// <summary>
-	/// Ê¹ÓÃ´ò¿ª¶Ô»°¿ò´ò¿ªÎÄ¼ş
+	/// ä½¿ç”¨æ‰“å¼€å¯¹è¯æ¡†æ‰“å¼€æ–‡ä»¶
 	/// </summary>
 	int OpenFileDlg()
 	{
@@ -64,7 +64,7 @@ public:
 	}
 
 	/// <summary>
-	/// ÔÚ´°¿ÚÉÏ»æÖÆÖ¸¶¨ÎÄ±¾
+	/// åœ¨çª—å£ä¸Šç»˜åˆ¶æŒ‡å®šæ–‡æœ¬
 	/// </summary>
 	void DrawText(LPCWSTR text)
 	{
@@ -89,7 +89,7 @@ public:
 	}
 
 	/// <summary>
-	/// ¼òµ¥Ğ£ÑéXMLÎÄ¼şÒ»ÖÂĞÔ´íÎó
+	/// ç®€å•æ ¡éªŒXMLæ–‡ä»¶ä¸€è‡´æ€§é”™è¯¯
 	/// </summary>
 	int ValidateXmlFile(LPCWSTR fileName)
 	{
@@ -101,13 +101,13 @@ public:
 		this->DrawText(szContent);
 
 		TCHAR err[BUFSIZ];
-		wsprintf(err, L"µÚ%dĞĞ%dÁĞ%sÓëµÚ%dĞĞ%dÁĞ%s²»Æ¥Åä",
+		wsprintf(err, L"ç¬¬%dè¡Œ%dåˆ—%sä¸ç¬¬%dè¡Œ%dåˆ—%sä¸åŒ¹é…",
 			tError.Open.Line, tError.Open.Row, tError.OpenName.c_str(),
 			tError.Close.Line, tError.Close.Row, tError.CloseName.c_str());
 
 		if (tError.Count == -1)
 		{
-			MessageBox(m_hWnd, L"XmlÓï·¨´íÎó", L"", 0);
+			MessageBox(m_hWnd, L"Xmlè¯­æ³•é”™è¯¯", L"", 0);
 		}
 		else if (tError.Count > 0)
 		{
@@ -115,20 +115,20 @@ public:
 		}
 		else
 		{
-			MessageBox(m_hWnd, L"Î´¼û´íÎó", L"", 0);
+			MessageBox(m_hWnd, L"æœªè§é”™è¯¯", L"", 0);
 		}
 		return 0;
 	}
 
 
 private:
-	//m_psÓëm_hdcÎªPaintÖĞÁÙÊ±±äÁ¿£¬·ÅÔÚÀàÖĞ½ö½öÎªÁËĞÔÄÜ¿¼ÂÇ
+	//m_psä¸m_hdcä¸ºPaintä¸­ä¸´æ—¶å˜é‡ï¼Œæ”¾åœ¨ç±»ä¸­ä»…ä»…ä¸ºäº†æ€§èƒ½è€ƒè™‘
 	PAINTSTRUCT m_ps;
 	HDC m_hdc;
 };
 
 /// <summary>
-/// WindowsÏûÏ¢´¦Àí
+/// Windowsæ¶ˆæ¯å¤„ç†
 /// </summary>
 LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -157,7 +157,7 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_COMMAND:
 		wmId = LOWORD(wParam);
 		wmEvent = HIWORD(wParam);
-		// ·ÖÎö²Ëµ¥Ñ¡Ôñ: 
+		// åˆ†æèœå•é€‰æ‹©: 
 		switch (wmId)
 		{
 		case IDM_ABOUT:

@@ -68,55 +68,55 @@ namespace Matrix
 		XML(){}
 
 		/// <summary>
-		/// ¼òµ¥Ğ£ÑéXMLÒ»ÖÂĞÔ£¬²¿·ÖÓï·¨´íÎó·µ»Ø-1
+		/// ç®€å•æ ¡éªŒXMLä¸€è‡´æ€§ï¼Œéƒ¨åˆ†è¯­æ³•é”™è¯¯è¿”å›-1
 		/// </summary>
-		/// <param name="content">Ö¸¶¨XmlÎÄ±¾</param>
-		/// <param name="error">´íÎóÏêÏ¸ÏûÏ¢</param>
-		/// <returns>±íÊ¾Ò»ÖÂĞÔ´íÎóÊıÄ¿£¬-1±íÊ¾ÓĞÓï·¨´íÎó</returns>
+		/// <param name="content">æŒ‡å®šXmlæ–‡æœ¬</param>
+		/// <param name="error">é”™è¯¯è¯¦ç»†æ¶ˆæ¯</param>
+		/// <returns>è¡¨ç¤ºä¸€è‡´æ€§é”™è¯¯æ•°ç›®ï¼Œ-1è¡¨ç¤ºæœ‰è¯­æ³•é”™è¯¯</returns>
 		int XML::ValidateXml(const std::wstring& content, XmlValidateError& error)
 		{
 			std::stack<XmlNode> nodes = std::stack<XmlNode>();
 			std::wstring text = content;
 			//error = XmlValidateError();
 
-			//indexÎª×·×Ù´íÎó½Úµã¿ªÊ¼±êÊ¶ÔÚÈ«ÎÄÖĞµÄÎ»ÖÃ£¬index2Îª´íÎó½Úµã½áÊø±êÊ¶ÔÚÈ«ÎÄÖĞµÄÎ»ÖÃ
+			//indexä¸ºè¿½è¸ªé”™è¯¯èŠ‚ç‚¹å¼€å§‹æ ‡è¯†åœ¨å…¨æ–‡ä¸­çš„ä½ç½®ï¼Œindex2ä¸ºé”™è¯¯èŠ‚ç‚¹ç»“æŸæ ‡è¯†åœ¨å…¨æ–‡ä¸­çš„ä½ç½®
 			int index4Open = 0, index4Close = 0;			
 
-			//xmlÎÄ¼şÍ·¿ªÊ¼µÄ±êÖ¾
+			//xmlæ–‡ä»¶å¤´å¼€å§‹çš„æ ‡å¿—
 			int iHeadPrefix = text.find(L"<?");
 
-			//ÏÂÒ»¸ö½Úµã¿ªÊ¼±êÊ¶'<'ÔÚÎÄÖĞ³öÏÖµÄÎ»ÖÃ
+			//ä¸‹ä¸€ä¸ªèŠ‚ç‚¹å¼€å§‹æ ‡è¯†'<'åœ¨æ–‡ä¸­å‡ºç°çš„ä½ç½®
 			int iPrefix = text.find(L"<");
 
-			//ÏÂÒ»¸ö½Úµã½áÊø±êÊ¶"</"ÔÚÎÄÖĞ³öÏÖµÄÎ»ÖÃ
+			//ä¸‹ä¸€ä¸ªèŠ‚ç‚¹ç»“æŸæ ‡è¯†"</"åœ¨æ–‡ä¸­å‡ºç°çš„ä½ç½®
 			int iClosePrefix = text.find(L"</");
 
-			//½ÚµãÃû×ÖÎ²²¿µÄ±êÊ¶
+			//èŠ‚ç‚¹åå­—å°¾éƒ¨çš„æ ‡è¯†
 			int iSuffix = text.find('>');
 
 			while (iPrefix >= 0)
 			{
 				if (iSuffix - iPrefix - 2 < 0)
 				{
-					//Óï·¨´íÎó
+					//è¯­æ³•é”™è¯¯
 					return error.Count = -1;
 				}
 				else if (iPrefix == iHeadPrefix)
 				{
-					//xmlÎÄ¼şÍ·Ğ£Ñé
+					//xmlæ–‡ä»¶å¤´æ ¡éªŒ
 					iHeadPrefix = -1;
 				}
 				else if (text.at(iSuffix - 1) == '/')
 				{
-					;//<****/>½ÚµãÖ±½Ó½áÊø£¬²»Óè´¦Àí
+					;//<****/>èŠ‚ç‚¹ç›´æ¥ç»“æŸï¼Œä¸äºˆå¤„ç†
 				}
-				//ÈôÎª½Úµã¿ªÊ¼±êÊ¶£¬½«½ÚµãÃûÑ¹Õ»
+				//è‹¥ä¸ºèŠ‚ç‚¹å¼€å§‹æ ‡è¯†ï¼Œå°†èŠ‚ç‚¹åå‹æ ˆ
 				else if (iPrefix != iClosePrefix)
 				{
 					std::wstring strNodeName = GetNodeName(text.substr(iPrefix + 1, iSuffix - iPrefix - 1));
 					nodes.push(XmlNode(index4Open + iPrefix + 1, strNodeName));
 				}
-				//ÈôÎª½Úµã½áÊø±êÊ¶£¬½«ÆäÓë³öÕ»µÄ½ÚµãÃû¶Ô±È
+				//è‹¥ä¸ºèŠ‚ç‚¹ç»“æŸæ ‡è¯†ï¼Œå°†å…¶ä¸å‡ºæ ˆçš„èŠ‚ç‚¹åå¯¹æ¯”
 				else
 				{
 					if (nodes.empty())
@@ -129,9 +129,9 @@ namespace Matrix
 					std::wstring strNodeCloseName = text.substr(iPrefix + 2, iSuffix - iPrefix - 2);
 					if (node.Name != strNodeCloseName)
 					{
-						//×·×Ù³ö´í½Úµã½áÊø±êÊ¶µÄÎ»ÖÃ
+						//è¿½è¸ªå‡ºé”™èŠ‚ç‚¹ç»“æŸæ ‡è¯†çš„ä½ç½®
 						index4Close += iPrefix + 2;
-						//Ö»¼ÇÂ¼µÚÒ»´¦´íÎóµÄÎ»ÖÃ
+						//åªè®°å½•ç¬¬ä¸€å¤„é”™è¯¯çš„ä½ç½®
 						error.Count += 1;
 						if (1 == error.Count)
 						{
@@ -156,7 +156,7 @@ namespace Matrix
 
 	private:
 		/// <summary>
-		/// »ñÈ¡Ö¸¶¨½ÚµãÃû
+		/// è·å–æŒ‡å®šèŠ‚ç‚¹å
 		/// </summary>
 		std::wstring XML::GetNodeName(const std::wstring& node)
 		{
@@ -172,7 +172,7 @@ namespace Matrix
 		}
 
 		/// <summary>
-		/// »ñÈ¡Ö¸¶¨×Ö·û´®Ë÷ÒıµÄĞĞÁĞÖµ
+		/// è·å–æŒ‡å®šå­—ç¬¦ä¸²ç´¢å¼•çš„è¡Œåˆ—å€¼
 		/// </summary>
 		void XML::GetPosition(const std::wstring& content, int index, Position& position)
 		{

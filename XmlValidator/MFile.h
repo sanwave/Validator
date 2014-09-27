@@ -22,10 +22,10 @@ namespace Matrix
 	public:
 
 		/// <summary>
-		/// »ñÈ¡Ö¸¶¨ÎÄ¼şÄÚÈİ£¬´Ëº¯Êı²»¿¼ÂÇÎÄ¼ş±àÂë
+		/// è·å–æŒ‡å®šæ–‡ä»¶å†…å®¹ï¼Œæ­¤å‡½æ•°ä¸è€ƒè™‘æ–‡ä»¶ç¼–ç 
 		/// </summary>
-		/// <param name="fileName">Ö¸¶¨ÎÄ¼şÃû</param>
-		/// <returns>ÎÄ¼şÄÚÈİµÄANSI×Ö·û´®</returns>
+		/// <param name="fileName">æŒ‡å®šæ–‡ä»¶å</param>
+		/// <returns>æ–‡ä»¶å†…å®¹çš„ANSIå­—ç¬¦ä¸²</returns>
 		std::string Read(LPCSTR fileName)
 		{
 			std::ifstream fin(fileName);
@@ -39,10 +39,10 @@ namespace Matrix
 		}
 
 		/// <summary>
-		/// ¶ÁÈ¡Ö¸¶¨ÎÄ±¾ÎÄ¼şÄÚÈİ£¬¸ù¾İBom¼°UTF8±àÂëÌØµãÊ¶±ğÎÄ¼ş±àÂë
+		/// è¯»å–æŒ‡å®šæ–‡æœ¬æ–‡ä»¶å†…å®¹ï¼Œæ ¹æ®BomåŠUTF8ç¼–ç ç‰¹ç‚¹è¯†åˆ«æ–‡ä»¶ç¼–ç 
 		/// </summary>
-		/// <param name="fileName">Ö¸¶¨ÎÄ¼şÃû</param>
-		/// <returns>ÎÄ¼şÎÄ±¾ÄÚÈİ</returns>
+		/// <param name="fileName">æŒ‡å®šæ–‡ä»¶å</param>
+		/// <returns>æ–‡ä»¶æ–‡æœ¬å†…å®¹</returns>
 		LPCWSTR ReadFile(LPCSTR fileName)
 		{
 			std::string content = Read(fileName);
@@ -58,37 +58,37 @@ namespace Matrix
 		}
 
 		/// <summary>
-		/// ½«Ö¸¶¨ANSI±àÂëÄÚÈİ×ª»»ÎªUnicode±àÂë
+		/// å°†æŒ‡å®šANSIç¼–ç å†…å®¹è½¬æ¢ä¸ºUnicodeç¼–ç 
 		/// </summary>
-		/// <param name="ansiText">Ö¸¶¨ANSI±àÂëÎÄ±¾</param>
-		/// <returns>×ª»»ºóµÄUnicodeÎÄ±¾</returns>
+		/// <param name="ansiText">æŒ‡å®šANSIç¼–ç æ–‡æœ¬</param>
+		/// <returns>è½¬æ¢åçš„Unicodeæ–‡æœ¬</returns>
 		LPWSTR AnsiToUnicode(LPCSTR ansiText)
 		{
-			//Ô¤×ª»»£¬µÃµ½ËùĞè¿Õ¼äµÄ´óĞ¡ 
+			//é¢„è½¬æ¢ï¼Œå¾—åˆ°æ‰€éœ€ç©ºé—´çš„å¤§å° 
 			int uLen = ::MultiByteToWideChar(CP_ACP, NULL, ansiText, strlen(ansiText), NULL, 0);
-			//·ÖÅä¿Õ¼äÒª¸ø'\0'Áô¸ö¿Õ¼ä£¬MultiByteToWideChar²»»á¸ø'\0'¿Õ¼ä 
+			//åˆ†é…ç©ºé—´è¦ç»™'\0'ç•™ä¸ªç©ºé—´ï¼ŒMultiByteToWideCharä¸ä¼šç»™'\0'ç©ºé—´ 
 			LPWSTR uText = new TCHAR[uLen + 1];
-			//×ª»» 
+			//è½¬æ¢ 
 			::MultiByteToWideChar(CP_ACP, NULL, ansiText, strlen(ansiText), uText, uLen);
-			//×îºó¼ÓÉÏ'\0' 
+			//æœ€ååŠ ä¸Š'\0' 
 			uText[uLen] = '\0';
 			return uText;
 		}
 
 		/// <summary>
-		/// ½«Ö¸¶¨UTF8±àÂëÄÚÈİ×ª»»ÎªUnicode±àÂë
+		/// å°†æŒ‡å®šUTF8ç¼–ç å†…å®¹è½¬æ¢ä¸ºUnicodeç¼–ç 
 		/// </summary>
-		/// <param name="u8Text">Ö¸¶¨UTF8±àÂëÎÄ±¾</param>
-		/// <returns>×ª»»ºóµÄUnicodeÎÄ±¾</returns>
+		/// <param name="u8Text">æŒ‡å®šUTF8ç¼–ç æ–‡æœ¬</param>
+		/// <returns>è½¬æ¢åçš„Unicodeæ–‡æœ¬</returns>
 		LPWSTR Utf8ToUnicode(LPCSTR u8Text)
 		{
-			//Ô¤×ª»»£¬µÃµ½ËùĞè¿Õ¼äµÄ´óĞ¡ 
+			//é¢„è½¬æ¢ï¼Œå¾—åˆ°æ‰€éœ€ç©ºé—´çš„å¤§å° 
 			int uLen = ::MultiByteToWideChar(CP_UTF8, NULL, u8Text, strlen(u8Text), NULL, 0);
-			//·ÖÅä¿Õ¼äÒª¸ø'\0'Áô¸ö¿Õ¼ä£¬MultiByteToWideChar²»»á¸ø'\0'¿Õ¼ä 
+			//åˆ†é…ç©ºé—´è¦ç»™'\0'ç•™ä¸ªç©ºé—´ï¼ŒMultiByteToWideCharä¸ä¼šç»™'\0'ç©ºé—´ 
 			LPWSTR uText = new TCHAR[uLen + 1];
-			//×ª»» 
+			//è½¬æ¢ 
 			::MultiByteToWideChar(CP_UTF8, NULL, u8Text, strlen(u8Text), uText, uLen);
-			//×îºó¼ÓÉÏ'\0' 
+			//æœ€ååŠ ä¸Š'\0' 
 			uText[uLen] = '\0';
 
 			return uText;
@@ -96,48 +96,48 @@ namespace Matrix
 
 
 		/// <summary>
-		/// ½«Ö¸¶¨Unicode±àÂëÄÚÈİ×ª»»ÎªANSI±àÂë
+		/// å°†æŒ‡å®šUnicodeç¼–ç å†…å®¹è½¬æ¢ä¸ºANSIç¼–ç 
 		/// </summary>
-		/// <param name="uText">Ö¸¶¨Unicode±àÂëÎÄ±¾</param>
-		/// <returns>×ª»»ºóµÄANSIÎÄ±¾</returns>
+		/// <param name="uText">æŒ‡å®šUnicodeç¼–ç æ–‡æœ¬</param>
+		/// <returns>è½¬æ¢åçš„ANSIæ–‡æœ¬</returns>
 		LPSTR UnicodeToAnsi(LPCWSTR uText)
 		{
-			//Ô¤×ª»»£¬µÃµ½ËùĞè¿Õ¼äµÄ´óĞ¡£¬Õâ´ÎÓÃµÄº¯ÊıºÍÉÏÃæÃû×ÖÏà·´ 
+			//é¢„è½¬æ¢ï¼Œå¾—åˆ°æ‰€éœ€ç©ºé—´çš„å¤§å°ï¼Œè¿™æ¬¡ç”¨çš„å‡½æ•°å’Œä¸Šé¢åå­—ç›¸å 
 			int ansiLen = ::WideCharToMultiByte(CP_ACP, NULL, uText, wcslen(uText), NULL, 0, NULL, NULL);
-			//Í¬ÉÏ£¬·ÖÅä¿Õ¼äÒª¸ø'\0'Áô¸ö¿Õ¼ä 
+			//åŒä¸Šï¼Œåˆ†é…ç©ºé—´è¦ç»™'\0'ç•™ä¸ªç©ºé—´ 
 			LPSTR ansiText = new char[ansiLen + 1];
-			//unicode°æ¶ÔÓ¦µÄstrlenÊÇwcslen 
+			//unicodeç‰ˆå¯¹åº”çš„strlenæ˜¯wcslen 
 			::WideCharToMultiByte(CP_ACP, NULL, uText, wcslen(uText), ansiText, ansiLen, NULL, NULL);
-			//×îºó¼ÓÉÏ'\0' 
+			//æœ€ååŠ ä¸Š'\0' 
 			ansiText[ansiLen] = '\0';
 
 			return ansiText;
 		}
 
 		/// <summary>
-		/// ½«Ö¸¶¨Unicode±àÂëÄÚÈİ×ª»»ÎªUTF8±àÂë
+		/// å°†æŒ‡å®šUnicodeç¼–ç å†…å®¹è½¬æ¢ä¸ºUTF8ç¼–ç 
 		/// </summary>
-		/// <param name="uText">Ö¸¶¨Unicode±àÂëÎÄ±¾</param>
-		/// <returns>×ª»»ºóµÄUTF8ÎÄ±¾</returns>
+		/// <param name="uText">æŒ‡å®šUnicodeç¼–ç æ–‡æœ¬</param>
+		/// <returns>è½¬æ¢åçš„UTF8æ–‡æœ¬</returns>
 		LPSTR UnicodeToUTF8(LPCWSTR uText)
 		{
-			//Ô¤×ª»»£¬µÃµ½ËùĞè¿Õ¼äµÄ´óĞ¡£¬Õâ´ÎÓÃµÄº¯ÊıºÍÉÏÃæÃû×ÖÏà·´ 
+			//é¢„è½¬æ¢ï¼Œå¾—åˆ°æ‰€éœ€ç©ºé—´çš„å¤§å°ï¼Œè¿™æ¬¡ç”¨çš„å‡½æ•°å’Œä¸Šé¢åå­—ç›¸å 
 			int u8Len = ::WideCharToMultiByte(CP_UTF8, NULL, uText, wcslen(uText), NULL, 0, NULL, NULL);
-			//Í¬ÉÏ£¬·ÖÅä¿Õ¼äÒª¸ø'\0'Áô¸ö¿Õ¼ä 
-			//UTF8ËäÈ»ÊÇUnicodeµÄÑ¹ËõĞÎÊ½£¬µ«Ò²ÊÇ¶à×Ö½Ú×Ö·û´®£¬ËùÒÔ¿ÉÒÔÒÔcharµÄĞÎÊ½±£´æ 
+			//åŒä¸Šï¼Œåˆ†é…ç©ºé—´è¦ç»™'\0'ç•™ä¸ªç©ºé—´ 
+			//UTF8è™½ç„¶æ˜¯Unicodeçš„å‹ç¼©å½¢å¼ï¼Œä½†ä¹Ÿæ˜¯å¤šå­—èŠ‚å­—ç¬¦ä¸²ï¼Œæ‰€ä»¥å¯ä»¥ä»¥charçš„å½¢å¼ä¿å­˜ 
 			char* u8Text = new char[u8Len + 1];
-			//unicode°æ¶ÔÓ¦µÄstrlenÊÇwcslen 
+			//unicodeç‰ˆå¯¹åº”çš„strlenæ˜¯wcslen 
 			::WideCharToMultiByte(CP_UTF8, NULL, uText, wcslen(uText), u8Text, u8Len, NULL, NULL);
-			//×îºó¼ÓÉÏ'\0' 
+			//æœ€ååŠ ä¸Š'\0' 
 			u8Text[u8Len] = '\0';
 			return u8Text;
 		}
 
 		/// <summary>
-		/// »ñÈ¡Ö¸¶¨ÎÄ±¾±àÂë¸ñÊ½£¬ÅĞ±ğÊ§Ğ§Ê±ÓÅÏÈUTF8
+		/// è·å–æŒ‡å®šæ–‡æœ¬ç¼–ç æ ¼å¼ï¼Œåˆ¤åˆ«å¤±æ•ˆæ—¶ä¼˜å…ˆUTF8
 		/// </summary>
-		/// <param name="text">Ö¸¶¨ÎÄ±¾ÄÚÈİ</param>
-		/// <returns>¶ÔÓ¦±àÂëµÄºê</returns>
+		/// <param name="text">æŒ‡å®šæ–‡æœ¬å†…å®¹</param>
+		/// <returns>å¯¹åº”ç¼–ç çš„å®</returns>
 		int GetEncoding(std::string text)
 		{
 			if ((text[0] == 0xEF)
@@ -149,12 +149,12 @@ namespace Matrix
 			else if ((text[0] == 0xFF)
 				&& (text[1] == 0xFE))
 			{
-				return 0;//UTF16 Ğ¡Í·
+				return 0;//UTF16 å°å¤´
 			}
 			else if ((text[0] == 0xFE)
 				&& (text[0] == 0xFF))
 			{
-				return 0;//UTF16 ´óÍ·
+				return 0;//UTF16 å¤§å¤´
 			}
 			else
 			{
@@ -164,10 +164,10 @@ namespace Matrix
 
 
 		/// <summary>
-		/// Ê¶±ğÎŞBom UTF8ÓëANSI±àÂëÎÄ±¾£¬ÅĞ±ğÊ§Ğ§Ê±ÓÅÏÈUTF8
+		/// è¯†åˆ«æ— Bom UTF8ä¸ANSIç¼–ç æ–‡æœ¬ï¼Œåˆ¤åˆ«å¤±æ•ˆæ—¶ä¼˜å…ˆUTF8
 		/// </summary>
-		/// <param name="text">Ö¸¶¨ÎÄ±¾ÄÚÈİ</param>
-		/// <returns>¶ÔÓ¦±àÂëµÄºê</returns>
+		/// <param name="text">æŒ‡å®šæ–‡æœ¬å†…å®¹</param>
+		/// <returns>å¯¹åº”ç¼–ç çš„å®</returns>
 		int AnsiOrUTF8(std::string text)
 		{
 			int index = -1;
@@ -179,7 +179,7 @@ namespace Matrix
 				ch = text[index];
 				if ((ch & 0x80) == 0)
 				{
-					continue;//Ansi×Ö·û
+					continue;//Ansiå­—ç¬¦
 				}
 				else if ((ch & 0xC0) == 0xC0)
 				{
@@ -218,7 +218,7 @@ namespace Matrix
 					return CP_ACP;
 				}
 			}
-			//Ä¬ÈÏUTF8
+			//é»˜è®¤UTF8
 			return CP_UTF8;
 		}
 

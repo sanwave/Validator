@@ -17,7 +17,7 @@
 #include <fstream>
 #include <string>
 
-//#define WIN32_LEAN_AND_MEAN             //  ╢с Windows м╥нд╪ЧжпееЁЩ╪╚иый╧сц╣дпео╒
+//#define WIN32_LEAN_AND_MEAN             //  Д╩▌ Windows Е╓╢Ф√┤Д╩╤Д╦╜Ф▌▓И≥╓Ф·│Е╟▒Д╫©Г■╗Г └Д©║Ф│╞
 #include <windows.h>
 
 #include <d2d1.h>
