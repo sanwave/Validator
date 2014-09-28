@@ -110,6 +110,11 @@ namespace Matrix
 				{
 					;//<****/>节点直接结束，不予处理
 				}
+				else if (text.substr(iPrefix, 4) == L"<!--")
+				{
+					//#跳过注释
+					iSuffix = text.find(L"-->") + 2;
+				}
 				//若为节点开始标识，将节点名压栈
 				else if (iPrefix != iClosePrefix)
 				{
