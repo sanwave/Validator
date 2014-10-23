@@ -17,6 +17,7 @@
 #include "Dialog.h"
 #include "MFile.h"
 #include "MXml.h"
+#include "MDocument.h"
 
 class MainWindow : public BaseWindow<MainWindow>
 {
@@ -93,8 +94,11 @@ public:
 	/// </summary>
 	int ValidateXmlFile(LPCWSTR fileName)
 	{
-		Matrix::File tFile;
-		LPCWSTR szContent = tFile.ReadFile(tFile.UnicodeToAnsi(fileName));
+		//Matrix::File tFile;
+		//LPCWSTR szContent = tFile.ReadFile(tFile.UnicodeToAnsi(fileName));
+		Matrix::Document document;
+		document.LoadFromFile(Matrix::File().UnicodeToAnsi(fileName));
+		LPCWSTR szContent = document.m_buffer;
 		Matrix::XML tXml;
 		Matrix::XmlValidateError tError;
 		tXml.ValidateXml(std::wstring(szContent), tError);

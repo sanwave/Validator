@@ -81,6 +81,7 @@
     <ClInclude Include="BaseWin.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="Dialog.h" />
+    <ClInclude Include="MDocument.h" />
     <ClInclude Include="MFile.h" />
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="Resource.h" />

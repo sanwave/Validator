@@ -36,6 +36,9 @@
     <ClInclude Include="MainWindow.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="MDocument.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinMain.cpp">
@@ -43,7 +46,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="MainWin.rc">
+    <ResourceCompile Include="MainWindow.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
   </ItemGroup>
