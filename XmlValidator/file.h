@@ -10,10 +10,10 @@
 */
 
 
-#ifndef _MFILE_H_
-#define _MFILE_H_
+#ifndef _FILE_H_
+#define _FILE_H_
 
-#include "Common.h"
+#include "common.h"
 
 namespace Matrix
 {

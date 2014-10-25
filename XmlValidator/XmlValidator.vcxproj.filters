@@ -15,39 +15,42 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BaseWin.h">
+    <ClInclude Include="mysql_helper.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Dialog.h">
+    <ClInclude Include="xml.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Common.h">
+    <ClInclude Include="resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Resource.h">
+    <ClInclude Include="file.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="MFile.h">
+    <ClInclude Include="document.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="MXml.h">
+    <ClInclude Include="basewin.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="MainWindow.h">
+    <ClInclude Include="common.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="MDocument.h">
+    <ClInclude Include="mainwindow.h">
       <Filter>头文件</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="WinMain.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
+    <ClInclude Include="dialog.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MainWindow.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="winmain.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

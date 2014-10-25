@@ -13,8 +13,8 @@
 #ifndef _BASEWIN_H_
 #define _BASEWIN_H_
 
-#include "Common.h"
-#include "Resource.h"
+#include "common.h"
+#include "resource.h"
 
 template <class DERIVED_TYPE>
 class BaseWindow

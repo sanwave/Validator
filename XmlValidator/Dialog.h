@@ -10,10 +10,10 @@
 */
 
 
-#ifndef _Dialog_H_
-#define _Dialog_H_
+#ifndef _DIALOG_H_
+#define _DIALOG_H_
 
-#include "Common.h"
+#include "common.h"
 #include <shobjidl.h> 
 
 //template <class DERIVED_TYPE>

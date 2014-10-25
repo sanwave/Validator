@@ -9,11 +9,11 @@
 *
 */
 
-#ifndef _MDOCUMENT_H_
-#define _MDOCUMENT_H_
+#ifndef _DOCUMENT_H_
+#define _DOCUMENT_H_
 
-#include "Common.h"
-#include "MFile.h"
+#include "common.h"
+#include "file.h"
 
 namespace Matrix{
 

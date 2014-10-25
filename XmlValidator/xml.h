@@ -10,10 +10,10 @@
 */
 
 
-#ifndef _MXML_H_
-#define _MXML_H_
+#ifndef _XML_H_
+#define _XML_H_
 
-#include "Common.h"
+#include "common.h"
 #include <stack>
 
 namespace Matrix
