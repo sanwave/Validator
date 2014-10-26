@@ -3,9 +3,9 @@
 *
 *
 *
-*	File Class		In Matrix
+*	Scintilla Editor Class		In Matrix
 *
-*	Created by Bonbon	2014.09.25
+*	Created by Bonbon	2014.10.26
 *
 */
 
@@ -17,6 +17,9 @@
 class SciEditor
 {
 public:
+
+	SciEditor() :m_line_wrap(true)
+	{}
 
 	void Create(HWND hwndParent)
 	{
@@ -38,7 +41,7 @@ public:
 
 	void Init()
 	{
-		SendEditor(SCI_SETLEXER, SCLEX_CPP);
+		SendEditor(SCI_SETLEXER, SCLEX_XML);
 		SendEditor(SCI_STYLESETFONT, STYLE_DEFAULT, (sptr_t)"Consolas");
 		SendEditor(SCI_STYLESETSIZE, STYLE_DEFAULT, 12);
 
@@ -49,17 +52,26 @@ public:
 		SendEditor(SCI_SETMARGINWIDTHN, 2, 29);
 
 		SendEditor(SCI_SETTABWIDTH, 4);
-
 		SendEditor(SCI_SETCODEPAGE, SC_CP_UTF8);
-
 		SendEditor(SCI_SETWRAPMODE, (WPARAM)1);
-
 		SendEditor(SCI_STYLECLEARALL);
+
+		SendEditor(SCI_STYLESETFORE, SCE_H_TAG, 0x00FF0000);
+		SendEditor(SCI_STYLESETFORE, SCE_H_TAGUNKNOWN, 0x00FF0000);
+		SendEditor(SCI_STYLESETFORE, SCE_H_ATTRIBUTE, 0x000000FF);
+		SendEditor(SCI_STYLESETFORE, SCE_H_ATTRIBUTEUNKNOWN, 0x0000FF00);
+		SendEditor(SCI_STYLESETBOLD, SCE_H_DEFAULT, true);
+		SendEditor(SCI_STYLESETFORE, SCE_H_DOUBLESTRING, 0x00F08000);		
+		SendEditor(SCI_STYLESETFORE, SCE_H_COMMENT, 0x0000A000);		
+
+		SendEditor(SCI_SETCARETLINEVISIBLE, TRUE);
+		SendEditor(SCI_SETCARETLINEBACK, 0xb0ffff);
 	}
 
 	void SetPos(RECT rect)
 	{
-		SetWindowPos(m_hwnd, HWND_TOP, 0, 0, rect.right - rect.left - 11, rect.bottom - rect.top - 50, SWP_SHOWWINDOW);
+		SetWindowPos(m_hwnd, HWND_TOP, 0, 0,
+			rect.right - rect.left - 11, rect.bottom - rect.top - 50, SWP_SHOWWINDOW);
 	}
 
 	void SetText(const char *text)
@@ -67,13 +79,26 @@ public:
 		SendEditor(SCI_SETTEXT, NULL, (sptr_t)text);
 	}
 
+	void SetWrap(bool iflag)
+	{		
+		SendEditor(SCI_SETWRAPMODE, (WPARAM)iflag ? 1 : 0);
+		
+	}
+
 	sptr_t SendEditor(unsigned int iMessage, uptr_t wParam = 0, sptr_t lParam = 0)
 	{
 		return m_fnDirect(m_ptrDirect, iMessage, wParam, lParam);
+	}
+
+	void SetFocus()
+	{
+		::SetFocus(m_hwnd);
 	}
 
 private:
 	HWND m_hwnd;
 	SciFnDirect m_fnDirect;
 	sptr_t m_ptrDirect;
+
+	bool m_line_wrap;
 };

@@ -41,9 +41,9 @@ namespace Matrix
 	public:
 		int Line;
 		int Row;
-		Position()
+		int Index;
+		Position() :Line(1), Row(1), Index(0)
 		{
-			Line = Row = 1;
 		}
 	};
 
@@ -187,6 +187,7 @@ namespace Matrix
 			}
 
 			position.Row += text.length();
+			position.Index = index;
 		}
 	};
 

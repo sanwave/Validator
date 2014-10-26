@@ -30,7 +30,7 @@ public:
 			pThis = (DERIVED_TYPE*)pCreate->lpCreateParams;
 			SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)pThis);
 
-			pThis->m_hWnd = hWnd;
+			pThis->m_hwnd = hWnd;
 		}
 		else
 		{
@@ -46,7 +46,7 @@ public:
 		}
 	}
 
-	BaseWindow() : m_hWnd(NULL) { }
+	BaseWindow() : m_hwnd(NULL) { }
 
 	BOOL Create(
 		PCWSTR lpWindowName,
@@ -77,22 +77,22 @@ public:
 
 		RegisterClassEx(&wcex);
 
-		m_hWnd = CreateWindowEx(
+		m_hwnd = CreateWindowEx(
 			dwExStyle, ClassName(), lpWindowName, dwStyle, x, y,
 			nWidth, nHeight, hWndParent, hMenu, GetModuleHandle(NULL), this
 			);
 
-		return (m_hWnd ? TRUE : FALSE);
+		return (m_hwnd ? TRUE : FALSE);
 	}
 
-	HWND Window() const { return m_hWnd; }
+	HWND Window() const { return m_hwnd; }
 
 protected:
 
 	virtual PCWSTR  ClassName() const = 0;
 	virtual LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) = 0;
 
-	HWND m_hWnd;
+	HWND m_hwnd;
 };
 
 #endif
