@@ -53,12 +53,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>E:\Program\Libraries\mysql-5.6.21-win32\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\Program\Libraries\scintilla\include;E:\Program\Libraries\mysql-5.6.21-win32\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>E:\Program\Libraries\mysql-5.6.21-win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>E:\Program\scintilla\win32\Release;E:\Program\Libraries\mysql-5.6.21-win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -88,6 +88,7 @@
     <ClInclude Include="mainwindow.h" />
     <ClInclude Include="mysql_helper.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="sci_editor.h" />
     <ClInclude Include="xml.h" />
   </ItemGroup>
   <ItemGroup>

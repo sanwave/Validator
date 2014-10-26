@@ -15,9 +15,10 @@
 
 #include "basewin.h"
 #include "dialog.h"
-#include "file.h"
+//#include "file.h"
 #include "xml.h"
 #include "document.h"
+#include "sci_editor.h"
 
 class MainWindow : public BaseWindow<MainWindow>
 {
@@ -29,6 +30,23 @@ public:
 	/// </summary>
 	LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 	
+	/// <summary>
+	/// 载入所需组件
+	/// </summary>
+	void LocaComponent()
+	{
+		editor.Create(m_hWnd);
+		editor.Init();
+	}
+
+	/// <summary>
+	/// 自适应父窗体大小
+	/// </summary>
+	void AdaptSize(RECT &rect)
+	{
+		editor.SetPos(rect);
+	}
+
 	/// <summary>
 	/// 处理拖放文件
 	/// </summary>
@@ -102,6 +120,8 @@ public:
 		Matrix::XML tXml;
 		Matrix::XmlValidateError tError;
 		tXml.ValidateXml(std::wstring(szContent), tError);
+
+		editor.SetText(Matrix::File().UnicodeToUTF8(szContent));
 		this->DrawText(szContent);
 
 		TCHAR err[BUFSIZ];
@@ -129,6 +149,8 @@ private:
 	//m_ps与m_hdc为Paint中临时变量，放在类中仅仅为了性能考虑
 	PAINTSTRUCT m_ps;
 	HDC m_hdc;
+
+	SciEditor editor;
 };
 
 /// <summary>
@@ -142,6 +164,7 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 
 	case WM_CREATE:
+		LocaComponent();
 		DragAcceptFiles(m_hWnd, TRUE);
 		break;
 
@@ -150,6 +173,13 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_DROPFILES:
 		DropFile((HDROP)wParam);
+		break;
+
+	case WM_SIZE:
+		RECT rect;
+		ZeroMemory(&rect, sizeof(rect));
+		GetWindowRect(m_hWnd, &rect);
+		AdaptSize(rect);
 		break;
 
 	case WM_PAINT:
