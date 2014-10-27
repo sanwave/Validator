@@ -53,12 +53,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;MATRIX</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>E:\Program\Libraries\scintilla\include;E:\Program\Libraries\mysql-5.6.21-win32\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Onedrive\Program\Libraries\MySQL\include.5.6.20.x86;D:\Onedrive\Program\scintilla++\scintilla\include;E:\Program\Libraries\scintilla\include;E:\Program\Libraries\mysql-5.6.21-win32\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>E:\Program\scintilla\win32\Release;E:\Program\Libraries\mysql-5.6.21-win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\Onedrive\Program\scintilla++\scintilla\win32\Release;D:\Onedrive\Program\Libraries\MySQL\lib.5.6.20.x86;E:\Program\scintilla\win32\Release;E:\Program\Libraries\mysql-5.6.21-win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

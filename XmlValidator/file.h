@@ -14,6 +14,7 @@
 #define _FILE_H_
 
 #include "common.h"
+#include "text_encoder.h"
 
 namespace Matrix
 {
@@ -46,14 +47,14 @@ namespace Matrix
 		LPCWSTR ReadFile(LPCSTR fileName)
 		{
 			std::string content = Read(fileName);
-			int encoding = GetEncoding(content);
+			int encoding = Matrix::TextEncoder::DetectEncode(content);
 			if (encoding == CP_UTF8)
 			{
-				return Utf8ToUnicode(content.c_str());
+				return Matrix::TextEncoder::Utf8ToUnicode(content.c_str());
 			}
 			else
 			{
-				return AnsiToUnicode(content.c_str());
+				return Matrix::TextEncoder::AnsiToUnicode(content.c_str());
 			}
 		}
 		

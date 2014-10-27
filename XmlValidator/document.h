@@ -22,7 +22,7 @@ namespace Matrix
 	{
 	public:
 
-		TCHAR *m_buffer;
+		const wchar_t *m_buffer;
 
 		Document() :m_buffer(NULL){}
 		~Document()
@@ -82,19 +82,21 @@ namespace Matrix
 				return false;
 			}
 			//get encode
-			
+
+			m_buffer = Matrix::TextEncoder(buffer).Unicode();
+			/*
 			bool multiBytes = false;
-			TextEncode encode = Matrix::TextEncoder().DetectEncode(buffer, size, multiBytes);
+			TextEncode encode = Matrix::TextEncoder::DetectEncode(buffer, size, multiBytes);
 
 			if (encode == UTF_8 || encode == UTF_8_NO_MARK)
 			{
-				m_buffer = Matrix::TextEncoder().Utf8ToUnicode(buffer);
+				m_buffer = Matrix::TextEncoder::Utf8ToUnicode(buffer);
 			}
 			else
 			{
-				m_buffer = Matrix::TextEncoder().AnsiToUnicode(buffer);
+				m_buffer = Matrix::TextEncoder::AnsiToUnicode(buffer);
 			}
-			
+			*/
 
 			return true;
 		}		

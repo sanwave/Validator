@@ -129,11 +129,11 @@ public:
 		//Matrix::File tFile;
 		//LPCWSTR szContent = tFile.ReadFile(tFile.UnicodeToAnsi(fileName));
 		Matrix::Document document;
-		document.LoadFromFile(Matrix::File().UnicodeToAnsi(filename));
+		document.LoadFromFile(Matrix::TextEncoder::UnicodeToAnsi(filename));
 		LPCWSTR szContent = document.m_buffer;
 
 
-		editor.SetText(Matrix::File().UnicodeToUTF8(szContent));
+		editor.SetText(Matrix::TextEncoder::UnicodeToUTF8(szContent));
 
 		if (m_auto_validate)
 		{
@@ -162,7 +162,7 @@ public:
 			}
 			else
 			{
-				documnet = Matrix::File().Utf8ToUnicode(content);
+				documnet = Matrix::TextEncoder::Utf8ToUnicode(content);
 			}
 		}
 		

@@ -3,7 +3,7 @@
 *
 *
 *
-*	Encode Class		In Matrix
+*	TextEncoder Class		In Matrix
 *
 *	Created by Bonbon	2014.10.27
 *
@@ -21,7 +21,6 @@
 
 namespace Matrix
 {
-
 	enum TextEncode
 	{
 		ANSI = 0,
@@ -35,16 +34,79 @@ namespace Matrix
 	class TextEncoder
 	{
 	public:
+
+		TextEncoder(const char *buffer)
+		{
+			TextEncode encode = DetectEncode(std::string(buffer));
+			if (ANSI == encode)
+			{
+				m_buffer = AnsiToUnicode(buffer);
+			}
+			else if (UTF_8_NO_MARK == encode)
+			{
+				m_buffer = Utf8ToUnicode(buffer);
+			}
+			else if (UTF_8 == encode)
+			{
+				m_buffer = Utf8ToUnicode(buffer + 3);
+			}
+			else
+			{
+				m_buffer = NULL;
+			}
+		}
 		
+		TextEncoder(const wchar_t *buffer) :m_buffer(buffer)
+		{}
+
+		TextEncoder(std::string buffer)
+		{
+			TextEncode encode = DetectEncode(buffer);
+			if (ANSI == encode)
+			{
+				m_buffer = AnsiToUnicode(buffer.c_str());
+			}
+			else if (UTF_8_NO_MARK == encode)
+			{
+				m_buffer = Utf8ToUnicode(buffer.c_str());
+			}
+			else if (UTF_8 == encode)
+			{
+				m_buffer = Utf8ToUnicode(buffer.substr(3).c_str());
+			}
+			else
+			{
+				m_buffer = NULL;
+			}
+		}
+
+		TextEncoder(std::wstring buffer) :m_buffer(buffer.c_str())
+		{}
+
+		const char* Ansi()
+		{
+			return UnicodeToAnsi(m_buffer);
+		}
+
+		const char* Utf8()
+		{
+			return UnicodeToUTF8(m_buffer);
+		}
+
+		const wchar_t* Unicode()
+		{
+			return m_buffer;
+		}
+
 		/// <summary>
 		/// 将指定ANSI编码内容转换为Unicode编码
 		/// </summary>
 		/// <param name="ansiText">指定ANSI编码文本</param>
 		/// <returns>转换后的Unicode文本</returns>
-		wchar_t* AnsiToUnicode(const char * atext)
+		static wchar_t* AnsiToUnicode(const char * atext, size_t size = 0)
 		{
 			int len = ::MultiByteToWideChar(CP_ACP, NULL, atext, strlen(atext), NULL, 0);
-			LPWSTR utext = new TCHAR[len + 1];
+			wchar_t* utext = new wchar_t[len + 1];
 			::MultiByteToWideChar(CP_ACP, NULL, atext, strlen(atext), utext, len);
 			utext[len] = '\0';
 			return utext;
@@ -55,10 +117,10 @@ namespace Matrix
 		/// </summary>
 		/// <param name="u8Text">指定UTF8编码文本</param>
 		/// <returns>转换后的Unicode文本</returns>
-		LPWSTR Utf8ToUnicode(const char * u8text)
+		static wchar_t* Utf8ToUnicode(const char * u8text, size_t size = 0)
 		{
 			int len = ::MultiByteToWideChar(CP_UTF8, NULL, u8text, strlen(u8text), NULL, 0);
-			LPWSTR utext = new TCHAR[len + 1];
+			wchar_t* utext = new wchar_t[len + 1];
 			::MultiByteToWideChar(CP_UTF8, NULL, u8text, strlen(u8text), utext, len);
 			utext[len] = '\0';
 			return utext;
@@ -70,10 +132,10 @@ namespace Matrix
 		/// </summary>
 		/// <param name="uText">指定Unicode编码文本</param>
 		/// <returns>转换后的ANSI文本</returns>
-		LPSTR UnicodeToAnsi(LPCWSTR utext)
+		static char* UnicodeToAnsi(const wchar_t* utext, size_t size = 0)
 		{
 			int len = ::WideCharToMultiByte(CP_ACP, NULL, utext, wcslen(utext), NULL, 0, NULL, NULL);
-			LPSTR atext = new char[len + 1];
+			char *atext = new char[len + 1];
 			::WideCharToMultiByte(CP_ACP, NULL, utext, wcslen(utext), atext, len, NULL, NULL);
 			atext[len] = '\0';
 			return atext;
@@ -84,10 +146,10 @@ namespace Matrix
 		/// </summary>
 		/// <param name="uText">指定Unicode编码文本</param>
 		/// <returns>转换后的UTF8文本</returns>
-		LPSTR UnicodeToUTF8(LPCWSTR utext)
+		static char* UnicodeToUTF8(const wchar_t* utext, size_t size = 0)
 		{
 			int len = ::WideCharToMultiByte(CP_UTF8, NULL, utext, wcslen(utext), NULL, 0, NULL, NULL);
-			char* u8text = new char[len + 1];
+			char *u8text = new char[len + 1];
 			::WideCharToMultiByte(CP_UTF8, NULL, utext, wcslen(utext), u8text, len, NULL, NULL);
 			u8text[len] = '\0';
 			return u8text;
@@ -98,37 +160,32 @@ namespace Matrix
 		/// </summary>
 		/// <param name="text">指定文本内容</param>
 		/// <returns>对应编码的宏</returns>
-		int GetEncoding(std::string text)
+		static TextEncode DetectEncode(std::string text)
 		{
-			if ((text[0] == 0xEF)
-				&& (text[1] == 0xBB)
-				&& (text[2] == 0xBF))
+			if ((text[0] == 0xEF) && (text[1] == 0xBB) && (text[2] == 0xBF))
 			{
-				return CP_UTF8;//UTF8 With Bom
+				return UTF_8;//UTF8 With Bom
 			}
-			else if ((text[0] == 0xFF)
-				&& (text[1] == 0xFE))
+			else if ((text[0] == 0xFF) && (text[1] == 0xFE))
 			{
-				return 0;//UTF16 小头
+				return UTF_16;
 			}
-			else if ((text[0] == 0xFE)
-				&& (text[0] == 0xFF))
+			else if ((text[0] == 0xFE) && (text[0] == 0xFF))
 			{
-				return 0;//UTF16 大头
+				return UTF_16_BIG_ENDIAN;
 			}
 			else
 			{
-				return AnsiOrUTF8(text);
+				return DetectAnsiOrUtf8(text);
 			}
 		}
-
-
+		
 		/// <summary>
 		/// 识别无Bom UTF8与ANSI编码文本，判别失效时优先UTF8
 		/// </summary>
 		/// <param name="text">指定文本内容</param>
 		/// <returns>对应编码的宏</returns>
-		int AnsiOrUTF8(std::string text)
+		static TextEncode DetectAnsiOrUtf8(std::string text)
 		{
 			int index = -1;
 			int u8Count = 0;
@@ -167,7 +224,7 @@ namespace Matrix
 					{
 						if ((text[index + 1 + i] & 0x80) != 0x80)
 						{
-							return CP_ACP;
+							return ANSI;
 						}
 					}
 					index += u8Count;
@@ -175,14 +232,19 @@ namespace Matrix
 				}
 				else
 				{
-					return CP_ACP;
+					return ANSI;
 				}
 			}
 			//默认UTF8
-			return CP_UTF8;
+			return UTF_8_NO_MARK;
 		}
 
-		TextEncode DetectEncode(const char* buffer, size_t size, bool& multiBytes)
+		/// <summary>
+		/// 获取指定文本编码格式，判别失效时优先UTF8
+		/// </summary>
+		/// <param name="buffer">指定文本内容</param>
+		/// <returns>对应编码的宏</returns>
+		static TextEncode DetectEncode(const char* buffer, size_t size, bool& multiBytes)
 		{
 			TextEncode encode = ANSI;		
 
@@ -203,11 +265,15 @@ namespace Matrix
 			{
 				encode = DetectAnsiOrUtf8(buffer, size, multiBytes);
 			}
-
 			return encode;			
 		}
 
-		TextEncode DetectAnsiOrUtf8(const char* str, size_t size, bool& multiBytes)
+		/// <summary>
+		/// 识别无Bom UTF8与ANSI编码文本，判别失效时优先UTF8
+		/// </summary>
+		/// <param name="str">指定文本内容</param>
+		/// <returns>对应编码的宏</returns>
+		static TextEncode DetectAnsiOrUtf8(const char* str, size_t size, bool& multiBytes)
 		{
 			while (size > 0)
 			{
@@ -255,7 +321,8 @@ namespace Matrix
 						{
 							return ANSI;
 						}
-						if ((*(str + 1) & 0xc0) != 0x80 || (*(str + 2) & 0xc0) != 0x80 || (*(str + 3) & 0xc0) != 0x80)
+						if ((*(str + 1) & 0xc0) != 0x80 || (*(str + 2) & 0xc0) != 0x80
+							|| (*(str + 3) & 0xc0) != 0x80)
 						{
 							return ANSI;
 						}
@@ -272,6 +339,8 @@ namespace Matrix
 		}
 
 	private:
+
+		const wchar_t *m_buffer;
 
 	};
 }
