@@ -12,8 +12,16 @@
 #ifndef _MYSQL_HELPER_H_
 #define _MYSQL_HELPER_H_
 
-#include "common.h"
-#include <winsock.h>
+#include <iostream>
+
+#ifdef MATRIX
+	#include "common.h"
+#endif
+
+#ifdef WIN32
+	#include <winsock.h>
+#endif
+
 #include <mysql.h>
 
 #pragma comment(lib,"libmysql.lib") 
@@ -53,6 +61,11 @@ namespace{
 			m_user = user;
 			m_pwd = pwd;
 			m_db_name = db_name;
+		}
+		
+		void SetEncode(std::string encode)
+		{
+			m_encode = encode;
 		}
 
 		int InitMySQL()

@@ -13,6 +13,10 @@
 #ifndef _MAINWIN_H_
 #define _MAINWIN_H_
 
+#ifndef MATRIX
+	#define MATRIX
+#endif
+
 #include "basewin.h"
 #include "dialog.h"
 //#include "file.h"
@@ -24,7 +28,7 @@ class MainWindow : public BaseWindow<MainWindow>
 {
 public:
 
-	MainWindow() :m_auto_validate(true)
+	MainWindow() :m_auto_validate(false)
 	{}
 
 	PCWSTR  ClassName() const { return L"Main Window"; }
