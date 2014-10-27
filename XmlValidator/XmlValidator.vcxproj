@@ -51,7 +51,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;MATRIX</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>E:\Program\Libraries\scintilla\include;E:\Program\Libraries\mysql-5.6.21-win32\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
@@ -84,6 +84,7 @@
     <ClInclude Include="common.h" />
     <ClInclude Include="dialog.h" />
     <ClInclude Include="document.h" />
+    <ClInclude Include="text_encoder.h" />
     <ClInclude Include="file.h" />
     <ClInclude Include="mainwindow.h" />
     <ClInclude Include="mysql_helper.h" />

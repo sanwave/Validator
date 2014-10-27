@@ -13,19 +13,10 @@
 #define _DOCUMENT_H_
 
 #include "common.h"
-#include "file.h"
+#include "text_encoder.h"
 
-namespace Matrix{
-
-	enum Encode
-	{
-		ANSI = 0,
-		UTF_8,
-		UTF_8_NO_MARK,
-		UTF_16,
-		UTF_16_BIG_ENDIAN,
-		DefaultEncode = UTF_8
-	};
+namespace Matrix
+{
 
 	class Document
 	{
@@ -91,101 +82,23 @@ namespace Matrix{
 				return false;
 			}
 			//get encode
-			Encode encode = ANSI;
-			bool multiBytes = false;
-			const unsigned char* bom = reinterpret_cast<const unsigned char*>(buffer);
-			if (bom[0] == 0xfe && bom[1] == 0xff)
-			{
-				encode = UTF_16_BIG_ENDIAN;
-			}
-			else if (bom[0] == 0xff && bom[1] == 0xfe)
-			{
-				encode = UTF_16;
-			}
-			else if (bom[0] == 0xef && bom[1] == 0xbb && bom[2] == 0xbf)
-			{
-				encode = UTF_8;
-			}
-			else
-			{
-				encode = DetectEncode(buffer, size, multiBytes);
-			}
 			
+			bool multiBytes = false;
+			TextEncode encode = Matrix::TextEncoder().DetectEncode(buffer, size, multiBytes);
+
 			if (encode == UTF_8 || encode == UTF_8_NO_MARK)
 			{
-				m_buffer = Matrix::File().Utf8ToUnicode(buffer);
+				m_buffer = Matrix::TextEncoder().Utf8ToUnicode(buffer);
 			}
 			else
 			{
-				m_buffer = Matrix::File().AnsiToUnicode(buffer);
+				m_buffer = Matrix::TextEncoder().AnsiToUnicode(buffer);
 			}
+			
 
 			return true;
-		}
+		}		
 		
-		Encode DetectEncode(const char* str, size_t size, bool& multiBytes)
-		{
-			while (size > 0)
-			{
-				if ((*str & 0x80) == 0)
-				{
-					//1 byte
-					++str;
-					--size;
-				}
-				else
-				{
-					multiBytes = true;
-					if ((*str & 0xf0) == 0xe0)
-					{
-						//3 bytes
-						if (size < 3)
-						{
-							return ANSI;
-						}
-						if ((*(str + 1) & 0xc0) != 0x80 || (*(str + 2) & 0xc0) != 0x80)
-						{
-							return ANSI;
-						}
-						str += 3;
-						size -= 3;
-					}
-					else if ((*str & 0xe0) == 0xc0)
-					{
-						//2 bytes
-						if (size < 2)
-						{
-							return ANSI;
-						}
-						if ((*(str + 1) & 0xc0) != 0x80)
-						{
-							return ANSI;
-						}
-						str += 2;
-						size -= 2;
-					}
-					else if ((*str & 0xf8) == 0xf0)
-					{
-						//4 bytes
-						if (size < 4)
-						{
-							return ANSI;
-						}
-						if ((*(str + 1) & 0xc0) != 0x80 || (*(str + 2) & 0xc0) != 0x80 || (*(str + 3) & 0xc0) != 0x80)
-						{
-							return ANSI;
-						}
-						str += 4;
-						size -= 4;
-					}
-					else
-					{
-						return ANSI;
-					}
-				}
-			}
-			return UTF_8_NO_MARK;
-		}
 	};
 }
 

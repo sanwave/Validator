@@ -12,14 +12,16 @@
 #ifndef _MYSQL_HELPER_H_
 #define _MYSQL_HELPER_H_
 
-#include <iostream>
 
-#ifdef MATRIX
-	#include "common.h"
+
+#ifndef MATRIX
+#include <iostream>	
+#else
+#include "common.h"
 #endif
 
 #ifdef WIN32
-	#include <winsock.h>
+#include <winsock.h>
 #endif
 
 #include <mysql.h>

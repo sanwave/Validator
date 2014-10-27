@@ -45,6 +45,9 @@
     <ClInclude Include="sci_editor.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="text_encoder.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MainWindow.rc">

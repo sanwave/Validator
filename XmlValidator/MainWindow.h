@@ -13,9 +13,6 @@
 #ifndef _MAINWIN_H_
 #define _MAINWIN_H_
 
-#ifndef MATRIX
-	#define MATRIX
-#endif
 
 #include "basewin.h"
 #include "dialog.h"
