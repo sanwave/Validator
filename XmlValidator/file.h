@@ -22,45 +22,61 @@ namespace Matrix
 	{
 	public:
 
-		/// <summary>
-		/// 获取指定文件内容，此函数不考虑文件编码
-		/// </summary>
-		/// <param name="fileName">指定文件名</param>
-		/// <returns>文件内容的ANSI字符串</returns>
-		std::string Read(LPCSTR fileName)
+		File() :m_buffer(NULL)
 		{
-			std::ifstream fin(fileName);
-			std::string content, tmp;
 
-			while (std::getline(fin, tmp))
-			{
-				content += tmp + "\r\n";
-			}
-			return content;
 		}
 
 		/// <summary>
-		/// 读取指定文本文件内容，根据Bom及UTF8编码特点识别文件编码
+		/// 以文本方式读取指定文件内容
+		/// </summary>
+		/// <param name="fileName">指定文件名</param>
+		/// <returns>文件内容的Unicode字符串</returns>
+		static const wchar_t * ReadAsText(const char *filename)
+		{
+			const char *text = ReadAsBinary(filename);
+			return Matrix::TextEncoder(text).Unicode();
+		}
+
+		static const wchar_t * ReadAsText(const wchar_t *filename)
+		{
+			const char *text = ReadAsBinary(Matrix::TextEncoder::UnicodeToAnsi(filename));
+			return Matrix::TextEncoder(text).Unicode();
+		}
+
+		/// <summary>
+		/// 以二进制方式读取指定文本文件内容
 		/// </summary>
 		/// <param name="fileName">指定文件名</param>
 		/// <returns>文件文本内容</returns>
-		LPCWSTR ReadFile(LPCSTR fileName)
+		static const char * ReadAsBinary(const char * filename)
 		{
-			std::string content = Read(fileName);
-			int encoding = Matrix::TextEncoder::DetectEncode(content);
-			if (encoding == CP_UTF8)
+			assert(filename != NULL);
+			std::fstream file;
+			file.open(filename, std::ios_base::in | std::ios_base::binary);
+			if (!file.is_open())
 			{
-				return Matrix::TextEncoder::Utf8ToUnicode(content.c_str());
+				return false;
 			}
-			else
-			{
-				return Matrix::TextEncoder::AnsiToUnicode(content.c_str());
-			}
+
+			file.seekg(0, std::ios::end);
+			size_t size = static_cast<size_t>(file.tellg());
+			file.seekg(0, std::ios::beg);
+
+			char* buffer = new char[size + 1];
+			file.read(buffer, size);
+			buffer[size] = '\0';
+			
+			return buffer;
 		}
-		
+
+		static const char * ReadAsBinary(const wchar_t * filename)
+		{
+			return ReadAsBinary(Matrix::TextEncoder::UnicodeToAnsi(filename));
+		}
 
 	private:
-
+		const wchar_t *m_buffer;
 	};
 }
 

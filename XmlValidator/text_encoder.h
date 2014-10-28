@@ -14,7 +14,8 @@
 #define _TEXT_ENCODER_H_
 
 #ifndef MATRIX
-#include <iostream>	
+#include <iostream>
+#include <string>
 #else
 #include "common.h"
 #endif
@@ -28,7 +29,7 @@ namespace Matrix
 		UTF_8_NO_MARK,
 		UTF_16,
 		UTF_16_BIG_ENDIAN,
-		DefaultEncode = UTF_8
+		DefaultEncode = UTF_8_NO_MARK
 	};
 
 	class TextEncoder
@@ -37,7 +38,7 @@ namespace Matrix
 
 		TextEncoder(const char *buffer)
 		{
-			TextEncode encode = DetectEncode(std::string(buffer));
+			TextEncode encode = DetectEncode(buffer);
 			if (ANSI == encode)
 			{
 				m_buffer = AnsiToUnicode(buffer);
@@ -55,7 +56,7 @@ namespace Matrix
 				m_buffer = NULL;
 			}
 		}
-		
+
 		TextEncoder(const wchar_t *buffer) :m_buffer(buffer)
 		{}
 
@@ -179,7 +180,7 @@ namespace Matrix
 				return DetectAnsiOrUtf8(text);
 			}
 		}
-		
+
 		/// <summary>
 		/// 识别无Bom UTF8与ANSI编码文本，判别失效时优先UTF8
 		/// </summary>
@@ -244,9 +245,9 @@ namespace Matrix
 		/// </summary>
 		/// <param name="buffer">指定文本内容</param>
 		/// <returns>对应编码的宏</returns>
-		static TextEncode DetectEncode(const char* buffer, size_t size, bool& multiBytes)
+		static TextEncode DetectEncode(const char* buffer, size_t size = 0)
 		{
-			TextEncode encode = ANSI;		
+			TextEncode encode = ANSI;
 
 			const unsigned char* bom = reinterpret_cast<const unsigned char*>(buffer);
 			if (bom[0] == 0xfe && bom[1] == 0xff)
@@ -263,9 +264,9 @@ namespace Matrix
 			}
 			else
 			{
-				encode = DetectAnsiOrUtf8(buffer, size, multiBytes);
+				encode = DetectAnsiOrUtf8(buffer, size);
 			}
-			return encode;			
+			return encode;
 		}
 
 		/// <summary>
@@ -273,8 +274,13 @@ namespace Matrix
 		/// </summary>
 		/// <param name="str">指定文本内容</param>
 		/// <returns>对应编码的宏</returns>
-		static TextEncode DetectAnsiOrUtf8(const char* str, size_t size, bool& multiBytes)
+		static TextEncode DetectAnsiOrUtf8(const char* str, size_t size = 0)
 		{
+			if (0 == size)
+			{
+				size = strlen(str);
+			}
+
 			while (size > 0)
 			{
 				if ((*str & 0x80) == 0)
@@ -285,7 +291,6 @@ namespace Matrix
 				}
 				else
 				{
-					multiBytes = true;
 					if ((*str & 0xf0) == 0xe0)
 					{
 						//3 bytes

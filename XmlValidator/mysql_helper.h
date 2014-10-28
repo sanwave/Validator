@@ -15,7 +15,8 @@
 
 
 #ifndef MATRIX
-#include <iostream>	
+#include <iostream>
+#include <string>
 #else
 #include "common.h"
 #endif

@@ -16,16 +16,16 @@
 
 #include "basewin.h"
 #include "dialog.h"
-//#include "file.h"
+#include "file.h"
 #include "xml.h"
-#include "document.h"
+//#include "document.h"
 #include "sci_editor.h"
 
 class MainWindow : public BaseWindow<MainWindow>
 {
 public:
 
-	MainWindow() :m_auto_validate(false)
+	MainWindow() : m_auto_validate(false)
 	{}
 
 	PCWSTR  ClassName() const { return L"Main Window"; }
@@ -52,8 +52,9 @@ public:
 	/// </summary>
 	void LoadComponent()
 	{
-		editor.Create(m_hwnd);
-		editor.Init();
+		//m_editor = &(SciEditor());
+		m_editor.Create(m_hwnd);
+		m_editor.Init();
 	}
 
 	/// <summary>
@@ -61,7 +62,7 @@ public:
 	/// </summary>
 	void AdaptSize(RECT &rect)
 	{
-		editor.SetPos(rect);
+		m_editor.SetPos(rect);
 	}
 
 	/// <summary>
@@ -128,12 +129,11 @@ public:
 	{
 		//Matrix::File tFile;
 		//LPCWSTR szContent = tFile.ReadFile(tFile.UnicodeToAnsi(fileName));
-		Matrix::Document document;
-		document.LoadFromFile(Matrix::TextEncoder::UnicodeToAnsi(filename));
-		LPCWSTR szContent = document.m_buffer;
-
-
-		editor.SetText(Matrix::TextEncoder::UnicodeToUTF8(szContent));
+		//Matrix::Document document;
+		//document.LoadFromFile(Matrix::TextEncoder::UnicodeToAnsi(filename));
+		LPCWSTR szContent = Matrix::File::ReadAsText(filename);
+				
+		m_editor.SetText(Matrix::TextEncoder::UnicodeToUTF8(szContent));
 
 		if (m_auto_validate)
 		{
@@ -153,9 +153,9 @@ public:
 		char *content = NULL;
 		if (NULL == documnet)
 		{
-			int nlen = editor.SendEditor(SCI_GETLENGTH);
+			int nlen = m_editor.SendEditor(SCI_GETLENGTH);
 			content = new char[nlen + 1];
-			editor.SendEditor(SCI_GETTEXT, nlen, (sptr_t)content);
+			m_editor.SendEditor(SCI_GETTEXT, nlen, (sptr_t)content);
 			if (NULL == *content)
 			{
 				return -1;
@@ -182,8 +182,8 @@ public:
 		else if (tError.Count > 0)
 		{
 			MessageBox(m_hwnd, err, L"Error", MB_ICONERROR|MB_OK);
-			editor.SendEditor(SCI_GOTOLINE, 0 );
-			editor.SetFocus();
+			m_editor.SendEditor(SCI_GOTOLINE, 0);
+			m_editor.SetFocus();
 		}
 		else
 		{
@@ -198,7 +198,7 @@ private:
 	PAINTSTRUCT m_ps;
 	HDC m_hdc;
 
-	SciEditor editor;
+	SciEditor m_editor;
 	bool m_auto_validate;
 };
 
@@ -263,7 +263,7 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		case IDM_WRAP:
 			checked = MF_CHECKED == GetMenuState(h_menu, IDM_WRAP, MF_BYCOMMAND);
-			editor.SetWrap(!checked);
+			m_editor.SetWrap(!checked);
 			CheckMenuItem(h_menu, IDM_WRAP, (!checked ? MF_CHECKED : MF_UNCHECKED));
 			break;
 
