@@ -25,7 +25,7 @@ class MainWindow : public BaseWindow<MainWindow>
 {
 public:
 
-	MainWindow() : m_auto_validate(false)
+	MainWindow() : m_auto_validate(false), m_single_text(NULL)
 	{}
 
 	PCWSTR  ClassName() const { return L"Main Window"; }
@@ -127,17 +127,18 @@ public:
 
 	int LoadFile(LPCWSTR filename)
 	{
-		//Matrix::File tFile;
-		//LPCWSTR szContent = tFile.ReadFile(tFile.UnicodeToAnsi(fileName));
-		//Matrix::Document document;
-		//document.LoadFromFile(Matrix::TextEncoder::UnicodeToAnsi(filename));
-		LPCWSTR szContent = Matrix::File::ReadAsText(filename);
-				
-		m_editor.SetText(Matrix::TextEncoder::UnicodeToUTF8(szContent));
+		if (NULL != m_single_text)
+		{
+			delete m_single_text;
+		}
+		m_single_text =Matrix::File(filename).Utf8Text();
+
+		m_editor.SetText(m_single_text);
+
 
 		if (m_auto_validate)
 		{
-			ValidateXml(szContent);
+			//ValidateXml();
 		}
 
 		return 0;
@@ -148,7 +149,7 @@ public:
 	/// <summary>
 	/// 简单校验XML文件一致性错误
 	/// </summary>
-	int ValidateXml(LPCWSTR documnet)
+	int ValidateXml(LPCWSTR documnet=NULL)
 	{
 		char *content = NULL;
 		if (NULL == documnet)
@@ -200,6 +201,7 @@ private:
 
 	SciEditor m_editor;
 	bool m_auto_validate;
+	const char * m_single_text;
 };
 
 /// <summary>

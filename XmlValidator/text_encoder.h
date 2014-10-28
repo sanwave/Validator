@@ -36,7 +36,7 @@ namespace Matrix
 	{
 	public:
 
-		TextEncoder(const char *buffer)
+		TextEncoder(const char *buffer) :m_copy_flag(false)
 		{
 			TextEncode encode = DetectEncode(buffer);
 			if (ANSI == encode)
@@ -57,10 +57,12 @@ namespace Matrix
 			}
 		}
 
-		TextEncoder(const wchar_t *buffer) :m_buffer(buffer)
-		{}
+		TextEncoder(const wchar_t *buffer) :m_copy_flag(true)
+		{
+			m_buffer = const_cast<wchar_t *>(buffer);
+		}
 
-		TextEncoder(std::string buffer)
+		TextEncoder(std::string &buffer) :m_copy_flag(false)
 		{
 			TextEncode encode = DetectEncode(buffer);
 			if (ANSI == encode)
@@ -81,20 +83,33 @@ namespace Matrix
 			}
 		}
 
-		TextEncoder(std::wstring buffer) :m_buffer(buffer.c_str())
-		{}
-
-		const char* Ansi()
+		TextEncoder(std::wstring &buffer) :m_copy_flag(false)
 		{
-			return UnicodeToAnsi(m_buffer);
+			m_buffer = const_cast<wchar_t *>(buffer.c_str());
 		}
 
-		const char* Utf8()
+		~TextEncoder()
 		{
-			return UnicodeToUTF8(m_buffer);
+			//delete (void *)NULL;
 		}
 
-		const wchar_t* Unicode()
+		char* Ansi()
+		{
+			char * atext = UnicodeToAnsi(m_buffer);
+			if(false == m_copy_flag)
+				delete m_buffer;
+			return atext;
+		}
+
+		char* Utf8()
+		{
+			char * u8text = UnicodeToUTF8(m_buffer);
+			if (false == m_copy_flag)
+				delete m_buffer;
+			return u8text;
+		}
+
+		wchar_t* Unicode()
 		{
 			return m_buffer;
 		}
@@ -345,7 +360,8 @@ namespace Matrix
 
 	private:
 
-		const wchar_t *m_buffer;
+		wchar_t *m_buffer;
+		bool m_copy_flag;
 
 	};
 }
