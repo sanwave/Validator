@@ -13,12 +13,14 @@
 #include "common.h"
 #include <scintilla.h> 
 #include <scilexer.h> 
+#include "file.h"
+
 
 class SciEditor
 {
 public:
 
-	SciEditor() :m_line_wrap(true)
+	SciEditor() :m_line_wrap(true), m_current_page(0), m_filename(NULL), m_file_pos(Matrix::FilePos::HEAD)
 	{}
 
 	void Create(HWND hwndParent)
@@ -74,9 +76,70 @@ public:
 			rect.right - rect.left - 11, rect.bottom - rect.top - 50, SWP_SHOWWINDOW);
 	}
 
-	void SetText(const char *text)
+	int LoadFromFile(const wchar_t *filename)
 	{
+		m_current_page = 0;
+		m_filename = filename;
+		const char * text = Matrix::File(filename).Utf8Text(m_current_page);
+		m_file_pos = Matrix::FilePos::HEAD;
 		SendEditor(SCI_SETTEXT, NULL, (sptr_t)text);
+		delete text;
+		text = NULL;
+		return m_current_page;
+	}
+
+	int LastPage()
+	{
+		if (Matrix::FilePos::HEAD == m_file_pos)
+		{
+			return -2;
+		}
+		else if (NULL != m_filename)
+		{
+			const char * text = Matrix::File(m_filename).Utf8Text(--m_current_page);
+			if (m_current_page == 0)
+			{
+				m_file_pos = Matrix::FilePos::HEAD;
+			}
+			else
+			{
+				m_file_pos = Matrix::FilePos::INSIDE;
+			}			
+			SendEditor(SCI_SETTEXT, NULL, (sptr_t)text);
+			delete text;
+			text = NULL;
+			return m_current_page;
+		}
+		else
+		{			
+			return -1;
+		}
+	}
+
+	int NextPage()
+	{
+		if (Matrix::FilePos::END == m_file_pos)
+		{
+			return -2;
+		}
+		else if (NULL != m_filename)
+		{
+			const char * text = Matrix::File(m_filename).Utf8Text(++m_current_page);
+			if (NULL == text)
+			{
+				m_file_pos = Matrix::FilePos::END;
+				return --m_current_page;
+			}
+			m_file_pos = Matrix::FilePos::INSIDE;
+			SendEditor(SCI_APPENDTEXT, NULL, (sptr_t)text);
+			delete text;
+			text = NULL;
+			return m_current_page;
+		}
+		else
+		{
+			return -1;
+		}		
 	}
 
 	void SetWrap(bool iflag)
@@ -101,4 +164,7 @@ private:
 	sptr_t m_ptrDirect;
 
 	bool m_line_wrap;
+	const wchar_t * m_filename;
+	int m_current_page;
+	Matrix::FilePos m_file_pos;
 };

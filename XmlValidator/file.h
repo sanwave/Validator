@@ -21,8 +21,19 @@
 #endif
 #include "text_encoder.h"
 
+#define FBUFSIZ 4096
+#define FPAGESIZ 1024 * 1024
+
 namespace Matrix
 {
+	enum FilePos
+	{
+		HEAD,
+		INSIDE,
+		END
+	};
+
+
 	class File
 	{
 	public:
@@ -36,7 +47,7 @@ namespace Matrix
 		{
 			size_t ulen = wcslen(filename);
 			m_filename = new wchar_t[ulen + 1];
-			lstrcpynW(m_filename, filename, ulen+1);
+			lstrcpynW(m_filename, filename, ulen + 1);
 		}
 
 		~File()
@@ -50,25 +61,25 @@ namespace Matrix
 			return ReadAsText(m_filename);
 		}
 
-		const char * AnsiText()
+		const char * AnsiText(int page = 0)
 		{
-			const wchar_t * utext = ReadAsText(m_filename);
+			const wchar_t * utext = ReadAsText(m_filename, page);
 			const char * atext = Matrix::TextEncoder::UnicodeToAnsi(utext);
 			delete utext;
 			return atext;
 		}
 
-		const char * Utf8Text()
+		const char * Utf8Text(int page = 0)
 		{
-			const wchar_t * utext = ReadAsText(m_filename);
+			const wchar_t * utext = ReadAsText(m_filename, page);
 			const char * u8text = Matrix::TextEncoder::UnicodeToUTF8(utext);
 			delete utext;
 			return u8text;
 		}
 
-		const char * Binary()
+		const char * Binary(int page = 0)
 		{
-			return ReadAsBinary(m_filename);
+			return ReadAsBinary(m_filename, page);
 		}
 
 		TextEncode Encode()
@@ -76,33 +87,36 @@ namespace Matrix
 			return Matrix::TextEncoder::DetectEncode(ReadAsBinary(m_filename));
 		}
 
-		/// <summary>
-		/// 以文本方式读取指定文件内容
-		/// </summary>
-		/// <param name="fileName">指定文件名</param>
-		/// <returns>文件内容的Unicode字符串</returns>
-		static const wchar_t * ReadAsText(const char *filename)
+		static const wchar_t * ReadAsText(const char *filename, int page = 0)
 		{
 			const char * ufilename = Matrix::TextEncoder(filename).Ansi();
-			const wchar_t * utext = ReadAsText(ufilename);
+			const wchar_t * utext = ReadAsText(ufilename, page);
 			delete ufilename;
 			return utext;
 		}
 
-		static const wchar_t * ReadAsText(const wchar_t *filename)
+		static const wchar_t * ReadAsText(const wchar_t *filename, int page = 0)
 		{
-			const char * text = ReadAsBinary(filename);
+			const char * text = ReadBlock(filename, FPAGESIZ * page);
 			const wchar_t * utext = Matrix::TextEncoder(text).Unicode();
 			delete text;
 			return utext;
 		}
 
-		/// <summary>
-		/// 以二进制方式读取指定文本文件内容
-		/// </summary>
-		/// <param name="fileName">指定文件名</param>
-		/// <returns>文件文本内容</returns>
-		static const char * ReadAsBinary(const wchar_t * filename)
+		static const char * ReadAsBinary(const wchar_t * filename, int page = 0)
+		{
+			return ReadBlock(filename, FPAGESIZ * page);
+		}
+
+		static const char * ReadAsBinary(const char * filename, int page = 0)
+		{
+			const wchar_t * ufilename = Matrix::TextEncoder(filename).Unicode();
+			const char * buffer = ReadBlock(ufilename, FPAGESIZ * page);
+			delete ufilename;
+			return buffer;
+		}
+
+		static const char * ReadBlock(const wchar_t * filename, off_t off = 0, size_t read_size = FPAGESIZ)
 		{
 			std::fstream file;
 			file.open(filename, std::ios_base::in | std::ios_base::binary);
@@ -112,22 +126,23 @@ namespace Matrix
 			}
 
 			file.seekg(0, std::ios::end);
-			size_t size = static_cast<size_t>(file.tellg());
-			file.seekg(0, std::ios::beg);
+			size_t size = static_cast<size_t>(file.tellg());			
 
-			char* buffer = new char[size + 1];
-			file.read(buffer, size);
-			buffer[size] = '\0';
+			if (off>= size)
+			{
+				return NULL;
+			}
+			else if (read_size <= 0 || off + read_size > size)
+			{
+				read_size = size - off;
+			}
+
+			file.seekg(off);
+			char* buffer = new char[read_size + 1];
+			file.read(buffer, read_size);
+			buffer[read_size] = '\0';
 			file.close();
 
-			return buffer;
-		}
-
-		static const char * ReadAsBinary(const char * filename)
-		{
-			const wchar_t * ufilename = Matrix::TextEncoder(filename).Unicode();
-			const char * buffer = ReadAsBinary(ufilename);
-			delete ufilename;
 			return buffer;
 		}
 

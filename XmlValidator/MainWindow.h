@@ -132,9 +132,9 @@ public:
 			delete m_single_text;
 			m_single_text = NULL;
 		}
-		m_single_text = Matrix::File(filename).Utf8Text();
+		//m_single_text = Matrix::File(filename).Utf8Text();
 
-		m_editor.SetText(m_single_text);
+		m_editor.LoadFromFile(filename);// .SetText(m_single_text);
 
 		if (NULL != m_single_text)
 		{
