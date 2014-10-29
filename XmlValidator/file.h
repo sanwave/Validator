@@ -7,6 +7,8 @@
 *
 *	Created by Bonbon	2014.09.25
 *
+*	Updated by Bonbon	2014.10.29
+*
 */
 
 
@@ -19,6 +21,7 @@
 #else
 #include "common.h"
 #endif
+
 #include "text_encoder.h"
 
 #define FBUFSIZ 4096
@@ -84,7 +87,10 @@ namespace Matrix
 
 		TextEncode Encode()
 		{
-			return Matrix::TextEncoder::DetectEncode(ReadAsBinary(m_filename));
+			const char * sample = ReadBlock(m_filename, 0, FBUFSIZ);
+			TextEncode encode = Matrix::TextEncoder::DetectEncode(sample);
+			delete sample;
+			return encode;
 		}
 
 		static const wchar_t * ReadAsText(const char *filename, int page = 0)
@@ -126,10 +132,11 @@ namespace Matrix
 			}
 
 			file.seekg(0, std::ios::end);
-			size_t size = static_cast<size_t>(file.tellg());			
+			size_t size = static_cast<size_t>(file.tellg());
 
-			if (off>= size)
+			if (off >= size)
 			{
+				file.close();
 				return NULL;
 			}
 			else if (read_size <= 0 || off + read_size > size)
