@@ -7,6 +7,8 @@
 *
 *	Created by Bonbon	2014.10.27
 *
+*	Updated by Bonbon	2014.10.29
+*
 */
 
 
@@ -90,27 +92,26 @@ namespace Matrix
 
 		~TextEncoder()
 		{
-			//delete (void *)NULL;
+			if (false == m_copy_flag)
+			{
+				delete m_buffer;
+				m_buffer = NULL;
+			}
 		}
 
 		char* Ansi()
 		{
-			char * atext = UnicodeToAnsi(m_buffer);
-			if(false == m_copy_flag)
-				delete m_buffer;
-			return atext;
+			return UnicodeToAnsi(m_buffer);
 		}
 
 		char* Utf8()
 		{
-			char * u8text = UnicodeToUTF8(m_buffer);
-			if (false == m_copy_flag)
-				delete m_buffer;
-			return u8text;
+			return UnicodeToUTF8(m_buffer);
 		}
 
 		wchar_t* Unicode()
 		{
+			m_copy_flag = true;
 			return m_buffer;
 		}
 

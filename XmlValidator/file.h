@@ -42,6 +42,7 @@ namespace Matrix
 		~File()
 		{
 			delete m_filename;
+			m_filename = NULL;
 		}
 
 		const wchar_t * Text()
@@ -68,6 +69,11 @@ namespace Matrix
 		const char * Binary()
 		{
 			return ReadAsBinary(m_filename);
+		}
+
+		TextEncode Encode()
+		{
+			return Matrix::TextEncoder::DetectEncode(ReadAsBinary(m_filename));
 		}
 
 		/// <summary>
@@ -112,7 +118,8 @@ namespace Matrix
 			char* buffer = new char[size + 1];
 			file.read(buffer, size);
 			buffer[size] = '\0';
-			
+			file.close();
+
 			return buffer;
 		}
 
