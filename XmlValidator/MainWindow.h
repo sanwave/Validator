@@ -204,6 +204,7 @@ LRESULT Matrix::MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lPara
 {
 	UINT wmId = 0, wmEvent = 0;
 	HMENU h_menu;
+	SCNotification *notify = NULL;
 	h_menu = GetMenu(m_hwnd);
 	bool checked = true;
 
@@ -276,11 +277,22 @@ LRESULT Matrix::MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lPara
 		}
 		break;
 
-	case WM_NOTIFY:
-		SCNotification *notify = (SCNotification*)lParam;
-		if (notify->nmhdr.hwndFrom == &m_editor)
+	case WM_NOTIFY:	
+		notify = (SCNotification*)lParam;
+		//if (notify->nmhdr.hwndFrom == &m_editor)
+		//{
+			m_editor.HandleMsg(notify, wParam);
+		//}
+		break;
+
+	case WM_VSCROLL:
+		switch (LOWORD(wParam))
 		{
-			m_editor.HandleMsg(notify);
+		case SB_BOTTOM:
+			break;
+
+		default:
+			break;
 		}
 		break;
 

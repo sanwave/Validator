@@ -31,6 +31,7 @@ namespace Matrix
 		UTF_8_NO_MARK,
 		UTF_16,
 		UTF_16_BIG_ENDIAN,
+		UNKNOWN,
 		DefaultEncode = UTF_8_NO_MARK
 	};
 
@@ -41,15 +42,19 @@ namespace Matrix
 		TextEncoder(const char *buffer) :m_copy_flag(false)
 		{
 			TextEncode encode = DetectEncode(buffer);
-			if (ANSI == encode)
+			if (strlen(buffer)<=3)
+			{
+				m_buffer = NULL;
+			}
+			else if (TextEncode::ANSI == encode)
 			{
 				m_buffer = AnsiToUnicode(buffer);
 			}
-			else if (UTF_8_NO_MARK == encode)
+			else if (TextEncode::UTF_8_NO_MARK == encode)
 			{
 				m_buffer = Utf8ToUnicode(buffer);
 			}
-			else if (UTF_8 == encode)
+			else if (TextEncode::UTF_8 == encode)
 			{
 				m_buffer = Utf8ToUnicode(buffer + 3);
 			}
@@ -67,7 +72,11 @@ namespace Matrix
 		TextEncoder(std::string &buffer) :m_copy_flag(false)
 		{
 			TextEncode encode = DetectEncode(buffer);
-			if (ANSI == encode)
+			if (buffer.length() <= 3)
+			{
+				m_buffer = NULL;
+			}
+			else if (ANSI == encode)
 			{
 				m_buffer = AnsiToUnicode(buffer.c_str());
 			}
@@ -101,12 +110,26 @@ namespace Matrix
 
 		char* Ansi()
 		{
-			return UnicodeToAnsi(m_buffer);
+			if (NULL != m_buffer)
+			{
+				return UnicodeToAnsi(m_buffer);
+			}
+			else
+			{
+				return NULL;
+			}
 		}
 
 		char* Utf8()
 		{
-			return UnicodeToUTF8(m_buffer);
+			if (NULL != m_buffer)
+			{
+				return UnicodeToUTF8(m_buffer);
+			}
+			else
+			{
+				return NULL;
+			}
 		}
 
 		wchar_t* Unicode()
@@ -181,15 +204,15 @@ namespace Matrix
 		{
 			if ((text[0] == 0xEF) && (text[1] == 0xBB) && (text[2] == 0xBF))
 			{
-				return UTF_8;//UTF8 With Bom
+				return TextEncode::UTF_8;//UTF8 With Bom
 			}
 			else if ((text[0] == 0xFF) && (text[1] == 0xFE))
 			{
-				return UTF_16;
+				return TextEncode::UTF_16;
 			}
 			else if ((text[0] == 0xFE) && (text[0] == 0xFF))
 			{
-				return UTF_16_BIG_ENDIAN;
+				return TextEncode::UTF_16_BIG_ENDIAN;
 			}
 			else
 			{
@@ -241,7 +264,7 @@ namespace Matrix
 					{
 						if ((text[index + 1 + i] & 0x80) != 0x80)
 						{
-							return ANSI;
+							return TextEncode::ANSI;
 						}
 					}
 					index += u8Count;
@@ -249,11 +272,11 @@ namespace Matrix
 				}
 				else
 				{
-					return ANSI;
+					return TextEncode::ANSI;
 				}
 			}
 			//Ä¬ÈÏUTF8
-			return UTF_8_NO_MARK;
+			return TextEncode::UTF_8_NO_MARK;
 		}
 
 		/// <summary>
@@ -265,18 +288,23 @@ namespace Matrix
 		{
 			TextEncode encode = ANSI;
 
+			if (strlen(buffer) <= 3)
+			{
+				return TextEncode::DefaultEncode;
+			}
+
 			const unsigned char* bom = reinterpret_cast<const unsigned char*>(buffer);
 			if (bom[0] == 0xfe && bom[1] == 0xff)
 			{
-				encode = UTF_16_BIG_ENDIAN;
+				encode = TextEncode::UTF_16_BIG_ENDIAN;
 			}
 			else if (bom[0] == 0xff && bom[1] == 0xfe)
 			{
-				encode = UTF_16;
+				encode = TextEncode::UTF_16;
 			}
 			else if (bom[0] == 0xef && bom[1] == 0xbb && bom[2] == 0xbf)
 			{
-				encode = UTF_8;
+				encode = TextEncode::UTF_8;
 			}
 			else
 			{
@@ -312,11 +340,11 @@ namespace Matrix
 						//3 bytes
 						if (size < 3)
 						{
-							return ANSI;
+							return TextEncode::ANSI;
 						}
 						if ((*(str + 1) & 0xc0) != 0x80 || (*(str + 2) & 0xc0) != 0x80)
 						{
-							return ANSI;
+							return TextEncode::ANSI;
 						}
 						str += 3;
 						size -= 3;
@@ -326,11 +354,11 @@ namespace Matrix
 						//2 bytes
 						if (size < 2)
 						{
-							return ANSI;
+							return TextEncode::ANSI;
 						}
 						if ((*(str + 1) & 0xc0) != 0x80)
 						{
-							return ANSI;
+							return TextEncode::ANSI;
 						}
 						str += 2;
 						size -= 2;
@@ -340,23 +368,23 @@ namespace Matrix
 						//4 bytes
 						if (size < 4)
 						{
-							return ANSI;
+							return TextEncode::ANSI;
 						}
 						if ((*(str + 1) & 0xc0) != 0x80 || (*(str + 2) & 0xc0) != 0x80
 							|| (*(str + 3) & 0xc0) != 0x80)
 						{
-							return ANSI;
+							return TextEncode::ANSI;
 						}
 						str += 4;
 						size -= 4;
 					}
 					else
 					{
-						return ANSI;
+						return TextEncode::ANSI;
 					}
 				}
 			}
-			return UTF_8_NO_MARK;
+			return TextEncode::UTF_8_NO_MARK;
 		}
 
 	private:

@@ -64,24 +64,44 @@ namespace Matrix
 			return ReadAsText(m_filename);
 		}
 
-		const char * AnsiText(int page = 0)
+		const char * AnsiText(int page = 0,size_t *size=NULL)
 		{
 			const wchar_t * utext = ReadAsText(m_filename, page);
+			if (NULL != size)
+			{
+				*size = wcslen(utext);
+			}
+			if (NULL == utext)
+			{
+				return NULL;
+			}
 			const char * atext = Matrix::TextEncoder::UnicodeToAnsi(utext);
 			delete utext;
 			return atext;
 		}
 
-		const char * Utf8Text(int page = 0)
+		const char * Utf8Text(int page = 0, size_t *size=NULL)
 		{
-			const wchar_t * utext = ReadAsText(m_filename, page);
+			const wchar_t * utext = ReadAsText(m_filename, page);			
+			if (NULL == utext)
+			{
+				return NULL;
+			}
+			else if (NULL != size)
+			{
+				*size = wcslen(utext);
+			}			
 			const char * u8text = Matrix::TextEncoder::UnicodeToUTF8(utext);
 			delete utext;
 			return u8text;
 		}
 
-		const char * Binary(int page = 0)
+		const char * Binary(int page = 0, size_t *size = NULL)
 		{
+			if (NULL != size)
+			{
+				*size = FBUFSIZ;
+			}
 			return ReadAsBinary(m_filename, page);
 		}
 
@@ -104,6 +124,10 @@ namespace Matrix
 		static const wchar_t * ReadAsText(const wchar_t *filename, int page = 0)
 		{
 			const char * text = ReadBlock(filename, FPAGESIZ * page);
+			if (NULL == text)
+			{
+				return NULL;
+			}
 			const wchar_t * utext = Matrix::TextEncoder(text).Unicode();
 			delete text;
 			return utext;

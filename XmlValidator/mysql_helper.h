@@ -29,7 +29,8 @@
 
 #pragma comment(lib,"libmysql.lib") 
 
-namespace{
+namespace
+{
 
 	class MySqlHelper
 	{

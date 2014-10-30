@@ -25,7 +25,9 @@ namespace Matrix
 			m_line_wrap(true), 
 			m_current_page(0),
 			m_filename(NULL),
-			m_file_pos(Matrix::FilePos::HEAD)
+			m_file_pos(Matrix::FilePos::HEAD),
+			m_vscroll_pos(0),
+			m_vscroll_size(0)
 		{}
 
 		void Create(HWND hwndParent)
@@ -91,12 +93,17 @@ namespace Matrix
 		int LoadFromFile(const wchar_t *filename)
 		{
 			m_current_page = 0;
-			m_filename = filename;
+
+			size_t ulen = wcslen(filename);
+			m_filename = new wchar_t[ulen + 1];
+			lstrcpynW(m_filename, filename, ulen + 1);
+
 			const char * text = Matrix::File(filename).Utf8Text(m_current_page);
 			m_file_pos = Matrix::FilePos::HEAD;
 			SendEditor(SCI_SETTEXT, NULL, (sptr_t)text);
 			delete text;
 			text = NULL;
+			GetScrollSize();
 			return m_current_page;
 		}
 
@@ -136,16 +143,18 @@ namespace Matrix
 			}
 			else if (NULL != m_filename)
 			{
-				const char * text = Matrix::File(m_filename).Utf8Text(++m_current_page);
+				size_t size = 0;
+				const char * text = Matrix::File(m_filename).Utf8Text(++m_current_page,&size);
 				if (NULL == text)
 				{
 					m_file_pos = Matrix::FilePos::END;
 					return --m_current_page;
 				}
 				m_file_pos = Matrix::FilePos::INSIDE;
-				SendEditor(SCI_APPENDTEXT, NULL, (sptr_t)text);
+				SendEditor(SCI_APPENDTEXT,  size, (sptr_t)text);				
 				delete text;
 				text = NULL;
+				GetScrollSize();
 				return m_current_page;
 			}
 			else
@@ -169,9 +178,47 @@ namespace Matrix
 			::SetFocus(m_hwnd);
 		}
 
-		void HandleMsg(SCNotification * msg)
+		void GetScrollSize()
 		{
+			SCROLLINFO si;
+			ZeroMemory(&si, sizeof(si));
+			si.cbSize = sizeof(si);
+			si.fMask = SIF_ALL;
+			::GetScrollInfo(m_hwnd, SB_VERT, &si);
+			m_vscroll_pos = si.nPos;
+			m_vscroll_size = si.nMax;
+			return;
+		}
 
+		void HandleMsg(SCNotification * msg, WPARAM wParam)
+		{
+			
+			int i = LOWORD(wParam);
+			int vpos = 0; 
+
+			switch (msg->nmhdr.code)
+			{
+			case SCN_UPDATEUI:
+				switch (msg->updated)
+				{
+				case SC_UPDATE_V_SCROLL:
+					GetScrollSize();
+					vpos = GetScrollPos(m_hwnd, SB_VERT);
+					if (m_vscroll_size <= m_vscroll_pos+50)
+					{
+						//MessageBox(m_hwnd, L"已经是最后了", L"Info", MB_ICONINFORMATION | MB_OK);
+						NextPage();
+					}
+					break;
+
+				default:
+					break;
+				}
+				break;
+
+			default:
+				break;
+			}
 		}
 
 	private:
@@ -180,8 +227,10 @@ namespace Matrix
 		sptr_t m_ptrDirect;
 
 		bool m_line_wrap;
-		const wchar_t * m_filename;
+		wchar_t * m_filename;
 		int m_current_page;
 		Matrix::FilePos m_file_pos;
+		int m_vscroll_size;
+		int m_vscroll_pos;
 	};
 }
