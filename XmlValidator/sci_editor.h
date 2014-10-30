@@ -206,7 +206,6 @@ namespace Matrix
 					vpos = GetScrollPos(m_hwnd, SB_VERT);
 					if (m_vscroll_size <= m_vscroll_pos+50)
 					{
-						//MessageBox(m_hwnd, L"已经是最后了", L"Info", MB_ICONINFORMATION | MB_OK);
 						NextPage();
 					}
 					break;

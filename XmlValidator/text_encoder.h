@@ -7,7 +7,7 @@
 *
 *	Created by Bonbon	2014.10.27
 *
-*	Updated by Bonbon	2014.10.29
+*	Updated by Bonbon	2014.10.30
 *
 */
 
@@ -32,7 +32,7 @@ namespace Matrix
 		UTF_16,
 		UTF_16_BIG_ENDIAN,
 		UNKNOWN,
-		DefaultEncode = UTF_8_NO_MARK
+		DEFAULT_ENCODE = UTF_8_NO_MARK
 	};
 
 	class TextEncoder
@@ -42,7 +42,7 @@ namespace Matrix
 		TextEncoder(const char *buffer) :m_copy_flag(false)
 		{
 			TextEncode encode = DetectEncode(buffer);
-			if (strlen(buffer)<=3)
+			if (NULL == buffer || strlen(buffer)<=3)
 			{
 				m_buffer = NULL;
 			}
@@ -64,9 +64,19 @@ namespace Matrix
 			}
 		}
 
-		TextEncoder(const wchar_t *buffer) :m_copy_flag(true)
+		TextEncoder(const wchar_t *buffer) :m_copy_flag(false)
 		{
-			m_buffer = const_cast<wchar_t *>(buffer);
+			if (NULL == buffer || wcslen(buffer) <= 3)
+			{
+				m_buffer = NULL;
+			}
+			else
+			{
+				size_t ulen = wcslen(buffer);
+				m_buffer = new wchar_t[ulen + 1];
+				lstrcpynW(m_buffer, buffer, ulen + 1);
+				//m_buffer = const_cast<wchar_t *>(buffer);
+			}
 		}
 
 		TextEncoder(std::string &buffer) :m_copy_flag(false)
@@ -96,12 +106,22 @@ namespace Matrix
 
 		TextEncoder(std::wstring &buffer) :m_copy_flag(false)
 		{
-			m_buffer = const_cast<wchar_t *>(buffer.c_str());
+			if (buffer.length() <= 3)
+			{
+				m_buffer = NULL;
+			}
+			else
+			{
+				size_t ulen =buffer.length();
+				m_buffer = new wchar_t[ulen + 1];
+				lstrcpynW(m_buffer, buffer.c_str(), ulen + 1);
+				//m_buffer = const_cast<wchar_t *>(buffer.c_str());
+			}
 		}
 
 		~TextEncoder()
 		{
-			if (false == m_copy_flag)
+			if (false == m_copy_flag && NULL != m_buffer)
 			{
 				delete m_buffer;
 				m_buffer = NULL;
@@ -110,32 +130,39 @@ namespace Matrix
 
 		char* Ansi()
 		{
-			if (NULL != m_buffer)
+			if (NULL == m_buffer)
 			{
-				return UnicodeToAnsi(m_buffer);
+				return NULL;				
 			}
 			else
 			{
-				return NULL;
+				return UnicodeToAnsi(m_buffer);
 			}
 		}
 
 		char* Utf8()
 		{
-			if (NULL != m_buffer)
+			if (NULL == m_buffer)
 			{
-				return UnicodeToUTF8(m_buffer);
+				return NULL;
 			}
 			else
 			{
-				return NULL;
+				return UnicodeToUTF8(m_buffer);
 			}
 		}
 
 		wchar_t* Unicode()
 		{
-			m_copy_flag = true;
-			return m_buffer;
+			if (NULL == m_buffer)
+			{
+				return NULL;
+			}
+			else
+			{
+				m_copy_flag = true;
+				return m_buffer;
+			}			
 		}
 
 		/// <summary>
@@ -145,10 +172,18 @@ namespace Matrix
 		/// <returns>转换后的Unicode文本</returns>
 		static wchar_t* AnsiToUnicode(const char * atext, size_t size = 0)
 		{
-			int len = ::MultiByteToWideChar(CP_ACP, NULL, atext, strlen(atext), NULL, 0);
-			wchar_t* utext = new wchar_t[len + 1];
-			::MultiByteToWideChar(CP_ACP, NULL, atext, strlen(atext), utext, len);
-			utext[len] = '\0';
+			if (NULL == atext)
+			{
+				return NULL;
+			}
+			else if (0 == size)
+			{
+				size = strlen(atext);
+			}
+			int ulen = ::MultiByteToWideChar(CP_ACP, NULL, atext, size, NULL, 0);
+			wchar_t* utext = new wchar_t[ulen + 1];
+			::MultiByteToWideChar(CP_ACP, NULL, atext, size, utext, ulen);
+			utext[ulen] = '\0';
 			return utext;
 		}
 
@@ -159,14 +194,21 @@ namespace Matrix
 		/// <returns>转换后的Unicode文本</returns>
 		static wchar_t* Utf8ToUnicode(const char * u8text, size_t size = 0)
 		{
-			int len = ::MultiByteToWideChar(CP_UTF8, NULL, u8text, strlen(u8text), NULL, 0);
-			wchar_t* utext = new wchar_t[len + 1];
-			::MultiByteToWideChar(CP_UTF8, NULL, u8text, strlen(u8text), utext, len);
-			utext[len] = '\0';
+			if (NULL == u8text)
+			{
+				return NULL;
+			}
+			else if (0 == size)
+			{
+				size = strlen(u8text);
+			}
+			int ulen = ::MultiByteToWideChar(CP_UTF8, NULL, u8text, size, NULL, 0);
+			wchar_t* utext = new wchar_t[ulen + 1];
+			::MultiByteToWideChar(CP_UTF8, NULL, u8text, size, utext, ulen);
+			utext[ulen] = '\0';
 			return utext;
 		}
-
-
+		
 		/// <summary>
 		/// 将指定Unicode编码内容转换为ANSI编码
 		/// </summary>
@@ -174,9 +216,17 @@ namespace Matrix
 		/// <returns>转换后的ANSI文本</returns>
 		static char* UnicodeToAnsi(const wchar_t* utext, size_t size = 0)
 		{
-			int len = ::WideCharToMultiByte(CP_ACP, NULL, utext, wcslen(utext), NULL, 0, NULL, NULL);
+			if (NULL == utext)
+			{
+				return NULL;
+			}
+			else if (0 == size)
+			{
+				size = wcslen(utext);
+			}
+			int len = ::WideCharToMultiByte(CP_ACP, NULL, utext, size, NULL, 0, NULL, NULL);
 			char *atext = new char[len + 1];
-			::WideCharToMultiByte(CP_ACP, NULL, utext, wcslen(utext), atext, len, NULL, NULL);
+			::WideCharToMultiByte(CP_ACP, NULL, utext, size, atext, len, NULL, NULL);
 			atext[len] = '\0';
 			return atext;
 		}
@@ -188,9 +238,17 @@ namespace Matrix
 		/// <returns>转换后的UTF8文本</returns>
 		static char* UnicodeToUTF8(const wchar_t* utext, size_t size = 0)
 		{
-			int len = ::WideCharToMultiByte(CP_UTF8, NULL, utext, wcslen(utext), NULL, 0, NULL, NULL);
+			if (NULL == utext)
+			{
+				return NULL;
+			}
+			else if (0 == size)
+			{
+				size = wcslen(utext);
+			}
+			int len = ::WideCharToMultiByte(CP_UTF8, NULL, utext, size, NULL, 0, NULL, NULL);
 			char *u8text = new char[len + 1];
-			::WideCharToMultiByte(CP_UTF8, NULL, utext, wcslen(utext), u8text, len, NULL, NULL);
+			::WideCharToMultiByte(CP_UTF8, NULL, utext, size, u8text, len, NULL, NULL);
 			u8text[len] = '\0';
 			return u8text;
 		}
@@ -202,7 +260,11 @@ namespace Matrix
 		/// <returns>对应编码的宏</returns>
 		static TextEncode DetectEncode(std::string text)
 		{
-			if ((text[0] == 0xEF) && (text[1] == 0xBB) && (text[2] == 0xBF))
+			if (text.length() <= 3)
+			{
+				return TextEncode::UNKNOWN;
+			}
+			else if ((text[0] == 0xEF) && (text[1] == 0xBB) && (text[2] == 0xBF))
 			{
 				return TextEncode::UTF_8;//UTF8 With Bom
 			}
@@ -276,7 +338,7 @@ namespace Matrix
 				}
 			}
 			//默认UTF8
-			return TextEncode::UTF_8_NO_MARK;
+			return TextEncode::DEFAULT_ENCODE;
 		}
 
 		/// <summary>
@@ -288,9 +350,9 @@ namespace Matrix
 		{
 			TextEncode encode = ANSI;
 
-			if (strlen(buffer) <= 3)
+			if (NULL == buffer || strlen(buffer) <= 3)
 			{
-				return TextEncode::DefaultEncode;
+				return TextEncode::UNKNOWN;
 			}
 
 			const unsigned char* bom = reinterpret_cast<const unsigned char*>(buffer);
@@ -388,10 +450,8 @@ namespace Matrix
 		}
 
 	private:
-
 		wchar_t *m_buffer;
 		bool m_copy_flag;
-
 	};
 }
 
