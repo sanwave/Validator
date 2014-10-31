@@ -233,6 +233,72 @@ namespace Matrix
 			return buffer;
 		}
 
+		int WriteText(const char * text, size_t size = 0)
+		{
+			if (NULL == m_filename || NULL == text)
+			{
+				return -2;
+			}
+			if (0 >= size)
+			{
+				size = strlen(text);
+			}
+			Write(m_filename, text);
+		}
+
+		int AppendText(const char * text, size_t size = 0)
+		{
+			if (NULL == m_filename || NULL == text)
+			{
+				return -2;
+			}
+			if (0 >= size)
+			{
+				size = strlen(text);
+			}
+			Append(m_filename, text);
+		}
+
+		static int Write(const wchar_t * filename, const char * text, off_t off = 0, size_t write_size = 0)
+		{
+			std::fstream file;
+			if (NULL == filename || NULL == text)
+			{
+				return -2;
+			}
+			file.open(filename, std::ios_base::out | std::ios_base::binary);
+			if (!file.is_open())
+			{
+				return -2;
+			}
+			else if (0 >= write_size)
+			{
+				write_size = strlen(text);
+			}
+			file.write(text, write_size);
+			file.close();
+		}
+
+		static int Append(const wchar_t * filename, const char * text, off_t off = 0, size_t app_size = 0)
+		{
+			std::fstream file;
+			if (NULL == filename || NULL == text)
+			{
+				return -2;
+			}
+			file.open(filename, std::ios_base::app | std::ios_base::binary);
+			if (!file.is_open())
+			{
+				return -2;
+			}
+			else if (0 >= app_size)
+			{
+				app_size = strlen(text);
+			}
+			file.write(text, app_size);
+			file.close();
+		}
+
 	private:
 		wchar_t *m_filename;
 	};

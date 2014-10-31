@@ -163,6 +163,21 @@ namespace Matrix
 			}
 		}
 
+		int Save()
+		{
+			int nlen = SendEditor(SCI_GETLENGTH);
+			char * content = new char[nlen + 1];
+			SendEditor(SCI_GETTEXT, nlen, (sptr_t)content);
+			if (NULL == *content)
+			{
+				return -1;
+			}
+			else
+			{
+				Matrix::File(m_filename).AppendText(content, nlen);
+			}
+		}
+
 		void SetWrap(bool iflag)
 		{
 			SendEditor(SCI_SETWRAPMODE, (WPARAM)iflag ? 1 : 0);

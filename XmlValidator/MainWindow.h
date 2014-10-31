@@ -250,6 +250,10 @@ LRESULT Matrix::MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lPara
 			OpenFileDlg();
 			break;
 
+		case IDM_SAVE:
+			m_editor.Save();
+			break;
+
 		case IDM_PRINT:
 			break;
 
