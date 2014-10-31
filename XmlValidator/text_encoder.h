@@ -7,7 +7,7 @@
 *
 *	Created by Bonbon	2014.10.27
 *
-*	Updated by Bonbon	2014.10.30
+*	Updated by Bonbon	2014.10.31
 *
 */
 
@@ -18,9 +18,17 @@
 #ifndef MATRIX
 #include <iostream>
 #include <string>
+
+#ifdef WIN32
+#include <Windows.h>
+#define WSTRCOPYN lstrcpynW
+#endif
+
 #else
 #include "common.h"
+#define WSTRCOPYN lstrcpynW
 #endif
+
 
 namespace Matrix
 {
@@ -74,8 +82,7 @@ namespace Matrix
 			{
 				size_t ulen = wcslen(buffer);
 				m_buffer = new wchar_t[ulen + 1];
-				lstrcpynW(m_buffer, buffer, ulen + 1);
-				//m_buffer = const_cast<wchar_t *>(buffer);
+				WSTRCOPYN(m_buffer, buffer, ulen + 1);
 			}
 		}
 
@@ -114,8 +121,7 @@ namespace Matrix
 			{
 				size_t ulen =buffer.length();
 				m_buffer = new wchar_t[ulen + 1];
-				lstrcpynW(m_buffer, buffer.c_str(), ulen + 1);
-				//m_buffer = const_cast<wchar_t *>(buffer.c_str());
+				WSTRCOPYN(m_buffer, buffer.c_str(), ulen + 1);
 			}
 		}
 

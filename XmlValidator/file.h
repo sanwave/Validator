@@ -7,7 +7,7 @@
 *
 *	Created by Bonbon	2014.09.25
 *
-*	Updated by Bonbon	2014.10.29
+*	Updated by Bonbon	2014.10.31
 *
 */
 
@@ -18,6 +18,7 @@
 #ifndef MATRIX
 #include <iostream>
 #include <string>
+#include <fstream>
 #else
 #include "common.h"
 #endif
@@ -52,7 +53,7 @@ namespace Matrix
 			{
 				m_filename = Matrix::TextEncoder(filename).Unicode();
 			}
-			
+
 		}
 
 		File(const wchar_t *filename)
@@ -65,14 +66,33 @@ namespace Matrix
 			{
 				size_t ulen = wcslen(filename);
 				m_filename = new wchar_t[ulen + 1];
-				lstrcpynW(m_filename, filename, ulen + 1);
+				WSTRCOPYN(m_filename, filename, ulen + 1);
 			}
 		}
 
 		~File()
 		{
-			delete m_filename;
-			m_filename = NULL;
+			if (NULL != m_filename)
+			{
+				delete m_filename;
+				m_filename = NULL;
+			}
+		}
+
+		TextEncode Encode()
+		{
+			if (NULL == m_filename)
+			{
+				return Matrix::TextEncode::UNKNOWN;
+			}
+			const char * sample = ReadBlock(m_filename, 0, FBUFSIZ);
+			TextEncode encode = Matrix::TextEncoder::DetectEncode(sample);
+			if (NULL != sample)
+			{
+				delete sample;
+				sample = NULL;
+			}
+			return encode;
 		}
 
 		const wchar_t * Text()
@@ -80,7 +100,7 @@ namespace Matrix
 			return ReadAsText(m_filename);
 		}
 
-		const char * AnsiText(int page = 0,size_t *size=NULL)
+		const char * AnsiText(int page = 0, size_t *size = NULL)
 		{
 			const wchar_t * utext = ReadAsText(m_filename, page);
 			if (NULL == utext)
@@ -90,7 +110,7 @@ namespace Matrix
 			else if (NULL != size)
 			{
 				*size = wcslen(utext);
-			}			
+			}
 			const char * atext = Matrix::TextEncoder::UnicodeToAnsi(utext);
 			if (NULL != utext)
 			{
@@ -100,9 +120,9 @@ namespace Matrix
 			return atext;
 		}
 
-		const char * Utf8Text(int page = 0, size_t *size=NULL)
+		const char * Utf8Text(int page = 0, size_t *size = NULL)
 		{
-			const wchar_t * utext = ReadAsText(m_filename, page);			
+			const wchar_t * utext = ReadAsText(m_filename, page);
 			if (NULL == utext)
 			{
 				return NULL;
@@ -110,7 +130,7 @@ namespace Matrix
 			else if (NULL != size)
 			{
 				*size = wcslen(utext);
-			}			
+			}
 			const char * u8text = Matrix::TextEncoder::UnicodeToUTF8(utext);
 			if (NULL != utext)
 			{
@@ -129,20 +149,30 @@ namespace Matrix
 			return ReadAsBinary(m_filename, page);
 		}
 
-		TextEncode Encode()
+		int WriteText(const char * text, size_t size = 0, bool over_write = false)
 		{
-			if (NULL == m_filename)
+			if (NULL == m_filename || NULL == text)
 			{
-				return Matrix::TextEncode::UNKNOWN;
+				return -2;
 			}
-			const char * sample = ReadBlock(m_filename, 0, FBUFSIZ);
-			TextEncode encode = Matrix::TextEncoder::DetectEncode(sample);
-			if (NULL != sample)
+			if (0 >= size)
 			{
-				delete sample;
-				sample = NULL;
-			}			
-			return encode;
+				size = strlen(text);
+			}
+			Write(m_filename, text, over_write);
+		}
+
+		int AppendText(const char * text, size_t size = 0)
+		{
+			if (NULL == m_filename || NULL == text)
+			{
+				return -2;
+			}
+			if (0 >= size)
+			{
+				size = strlen(text);
+			}
+			Append(m_filename, text, size);
 		}
 
 		static const wchar_t * ReadAsText(const char *filename, int page = 0)
@@ -173,7 +203,7 @@ namespace Matrix
 			{
 				delete text;
 				text = NULL;
-			}			
+			}
 			return utext;
 		}
 
@@ -189,7 +219,7 @@ namespace Matrix
 			{
 				delete ufilename;
 				ufilename = NULL;
-			}			
+			}
 			return buffer;
 		}
 
@@ -233,53 +263,39 @@ namespace Matrix
 			return buffer;
 		}
 
-		int WriteText(const char * text, size_t size = 0)
-		{
-			if (NULL == m_filename || NULL == text)
-			{
-				return -2;
-			}
-			if (0 >= size)
-			{
-				size = strlen(text);
-			}
-			Write(m_filename, text);
-		}
-
-		int AppendText(const char * text, size_t size = 0)
-		{
-			if (NULL == m_filename || NULL == text)
-			{
-				return -2;
-			}
-			if (0 >= size)
-			{
-				size = strlen(text);
-			}
-			Append(m_filename, text);
-		}
-
-		static int Write(const wchar_t * filename, const char * text, off_t off = 0, size_t write_size = 0)
+		static int Write(const wchar_t * filename, const char * text, off_t off = 0, size_t write_size = 0, bool over_write = false)
 		{
 			std::fstream file;
 			if (NULL == filename || NULL == text)
 			{
 				return -2;
 			}
-			file.open(filename, std::ios_base::out | std::ios_base::binary);
-			if (!file.is_open())
+			file.open(filename, std::ios_base::in);
+			bool exist = file.is_open();
+			file.close();
+			if (exist && false == over_write)
 			{
+				file.close();
 				return -2;
 			}
-			else if (0 >= write_size)
+			else if (exist)
+			{
+				file.open(filename, std::ios_base::in | std::ios_base::out | std::ios_base::binary);
+			}
+			else
+			{
+				file.open(filename, std::ios_base::out | std::ios_base::binary);
+			}
+			if (0 >= write_size)
 			{
 				write_size = strlen(text);
 			}
+			file.seekg(off);
 			file.write(text, write_size);
 			file.close();
 		}
 
-		static int Append(const wchar_t * filename, const char * text, off_t off = 0, size_t app_size = 0)
+		static int Append(const wchar_t * filename, const char * text, size_t app_size = 0)
 		{
 			std::fstream file;
 			if (NULL == filename || NULL == text)
