@@ -17,6 +17,34 @@
 
 namespace Matrix
 {
+	const COLORREF red = RGB(0xFF, 0x00, 0x00);
+	const COLORREF green = RGB(0x00, 0xFF, 0x00);
+	const COLORREF blue = RGB(0x00, 0x00, 0xFF);
+	const COLORREF dark_green = RGB(0, 0x80, 0);	
+	const COLORREF yellow = red | green;
+	const COLORREF white = red | green | blue;
+	const COLORREF black = red & green & blue;
+
+	const COLORREF xml_string_blue = RGB(0x80, 0x00, 0xFF);		//字符串	
+	const COLORREF tag_blue = blue;		//节点
+	const COLORREF attr_red = red;
+
+	const COLORREF cpp_string_gray = RGB(0xC8, 0xC8, 0xC8);
+	const COLORREF keywords_blude = RGB(0x56, 0x9C, 0xD6);
+	const COLORREF preprocessor_purple = RGB(0xBD, 0x63, 0xC5);		//宏
+
+	const COLORREF fore_white = RGB(0xC8, 0xC8, 0xC8);			//黑背景下的文字
+	const COLORREF back_black = RGB(0x1E, 0x1E, 0x1E);			//背景
+	const COLORREF caret_white = RGB(0xDC, 0xDC, 0xDC);
+	const COLORREF caret_black = back_black;
+	const COLORREF current_line_black = RGB(0x0F,0x0F,0x0F);
+	const COLORREF current_line_yellow = RGB(0xFF, 0xFF, 0x80);
+	const COLORREF line_number_blue = RGB(0x2B, 0x91, 0xAF);		//行号
+	const COLORREF line_number_black = RGB(0x2B,0x2B,0x2B);
+	const COLORREF selection_blue = RGB(0x26,0x4F,0x78);
+	const COLORREF selection_wight = fore_white;
+	const COLORREF comment_green = RGB(0x57, 0xA6, 0x4A);		// 注释	
+
 	class SciEditor
 	{
 	public:
@@ -58,7 +86,6 @@ namespace Matrix
 			SendEditor(SCI_STYLECLEARALL);
 			SetLineNumber();
 			SetWrap(true);
-			SetTextStyle(SCLEX_XML);
 		}
 
 		void SetLineNumber()
@@ -69,19 +96,110 @@ namespace Matrix
 
 		void SetTextStyle(int style)
 		{
-			if (SCLEX_XML == style)
-			{
-				SendEditor(SCI_SETLEXER, SCLEX_XML);
-				SendEditor(SCI_STYLESETFORE, SCE_H_TAG, 0x00FF0000);
-				SendEditor(SCI_STYLESETFORE, SCE_H_TAGUNKNOWN, 0x00FF0000);
-				SendEditor(SCI_STYLESETFORE, SCE_H_ATTRIBUTE, 0x000000FF);
-				SendEditor(SCI_STYLESETFORE, SCE_H_ATTRIBUTEUNKNOWN, 0x0000FF00);
-				SendEditor(SCI_STYLESETBOLD, SCE_H_DEFAULT, true);
-				SendEditor(SCI_STYLESETFORE, SCE_H_DOUBLESTRING, 0x00F08000);
-				SendEditor(SCI_STYLESETFORE, SCE_H_COMMENT, 0x0000A000);
-			}
+			SendEditor(SCI_STYLESETFONT, STYLE_DEFAULT, (sptr_t)"Microsoft Yahei");
 			SendEditor(SCI_STYLESETFONT, STYLE_DEFAULT, (sptr_t)"Consolas");
 			SendEditor(SCI_STYLESETSIZE, STYLE_DEFAULT, 12);
+			
+			const char* cpp_keywords =
+				"asm auto break case catch class const "
+				"const_cast continue default delete do double "
+				"dynamic_cast else enum explicit extern false "
+				"for friend goto if inline mutable "
+				"namespace new operator private protected public "
+				"register reinterpret_cast return signed "
+				"sizeof static static_cast struct switch template "
+				"this throw true try typedef typeid typename "
+				"union unsigned using virtual volatile while";
+			const char* cpp_type_keywords =
+				"bool char float int long short void wchar_t";			
+
+			if (SCLEX_XML == style)
+			{
+				SendEditor(SCI_STYLESETFORE, STYLE_DEFAULT, back_black );
+				SendEditor(SCI_STYLESETBACK, STYLE_DEFAULT, white);
+				SendEditor(SCI_STYLECLEARALL);
+				SendEditor(SCI_SETSELBACK, true, selection_wight);
+				SendEditor(SCI_SETCARETFORE, caret_black);	//光标
+
+				SendEditor(SCI_SETLEXER, SCLEX_HTML);
+				SendEditor(SCI_STYLESETFORE, SCE_H_XMLSTART, red);
+				SendEditor(SCI_STYLESETBACK, SCE_H_XMLSTART, yellow);
+				SendEditor(SCI_STYLESETFORE, SCE_H_XMLEND, red);
+				SendEditor(SCI_STYLESETBACK, SCE_H_XMLEND, yellow);
+
+				SendEditor(SCI_STYLESETFORE, SCE_D_DEFAULT, black);
+				SendEditor(SCI_STYLESETBACK, SCE_D_DEFAULT, white);
+				SendEditor(SCI_STYLESETBOLD, SCE_D_DEFAULT, true);
+
+				SendEditor(SCI_STYLESETFORE, SCE_D_NUMBER, red);
+
+				SendEditor(SCI_STYLESETFORE, SCE_H_TAG, tag_blue);
+				SendEditor(SCI_STYLESETFORE, SCE_H_TAGEND, tag_blue);
+				SendEditor(SCI_STYLESETFORE, SCE_H_TAGUNKNOWN, tag_blue);
+
+				SendEditor(SCI_STYLESETFORE, SCE_H_ATTRIBUTE, attr_red);
+				SendEditor(SCI_STYLESETFORE, SCE_H_ATTRIBUTEUNKNOWN, attr_red);
+
+				SendEditor(SCI_STYLESETFORE, SCE_H_DOUBLESTRING, xml_string_blue);
+				SendEditor(SCI_STYLESETFORE, SCE_H_SINGLESTRING, xml_string_blue);
+
+				SendEditor(SCI_STYLESETFORE, SCE_H_COMMENT, comment_green);
+
+				SendEditor(SCI_SETCARETLINEVISIBLE, TRUE);
+				SendEditor(SCI_SETCARETLINEBACK, current_line_yellow);
+			}
+			else if (SCLEX_CPP == style)
+			{				
+				SendEditor(SCI_STYLESETFORE, STYLE_DEFAULT, fore_white);
+				SendEditor(SCI_STYLESETBACK, STYLE_DEFAULT, back_black);
+				SendEditor(SCI_STYLECLEARALL);
+
+				SendEditor(SCI_STYLESETFORE, STYLE_LINENUMBER, line_number_blue);
+				SendEditor(SCI_STYLESETBACK, STYLE_LINENUMBER, line_number_black);
+				SendEditor(SCI_SETCARETFORE, caret_white);	//光标
+
+				//试图同步高亮，失败
+				//int pos = SendEditor(SCI_GETCURRENTPOS, 0, 0);
+				//SendEditor(SCI_STYLESETBACK, STYLE_BRACELIGHT, red);
+				//SendEditor(SCI_BRACEHIGHLIGHT, 20, 10);
+				//SendEditor(SCI_SETHIGHLIGHTGUIDE, 20);
+
+				SendEditor(SCI_SETSELBACK,true, selection_blue);
+
+				SendEditor(SCI_SETLEXER, SCLEX_CPP);
+				SendEditor(SCI_SETKEYWORDS, 0, (sptr_t)cpp_keywords);//设置关键字 
+				SendEditor(SCI_SETKEYWORDS, 1, (sptr_t)cpp_type_keywords);//设置关键字 
+				
+				SendEditor(SCI_STYLESETFORE, SCE_C_DEFAULT, fore_white);
+				SendEditor(SCI_STYLESETBACK, SCE_C_DEFAULT, back_black);
+				// 下面设置各种语法元素风格 
+				SendEditor(SCI_STYLESETFORE, SCE_C_WORD, keywords_blude);   //关键字 
+				SendEditor(SCI_STYLESETFORE, SCE_C_WORD2, keywords_blude);   //关键字 
+				SendEditor(SCI_STYLESETBOLD, SCE_C_WORD2, TRUE);   //关键字 
+				SendEditor(SCI_STYLESETFORE, SCE_C_STRING, cpp_string_gray); //字符串 
+				SendEditor(SCI_STYLESETFORE, SCE_C_CHARACTER, cpp_string_gray); //字符 
+				SendEditor(SCI_STYLESETFORE, SCE_C_PREPROCESSOR, preprocessor_purple);//预编译开关 
+
+				SendEditor(SCI_STYLESETFORE, SCE_C_COMMENT, comment_green);//块注释 
+				SendEditor(SCI_STYLESETFORE, SCE_C_COMMENTLINE, comment_green);//行注释 
+				SendEditor(SCI_STYLESETFORE, SCE_C_COMMENTDOC, comment_green);//文档注释（/**开头） 
+				
+				SendEditor(SCI_SETCARETLINEVISIBLE, TRUE);
+				SendEditor(SCI_SETCARETLINEBACK, current_line_black);
+			}
+			else
+			{
+				SendEditor(SCI_STYLESETFORE, STYLE_DEFAULT, back_black);
+				SendEditor(SCI_STYLESETBACK, STYLE_DEFAULT, white);
+				SendEditor(SCI_STYLECLEARALL);
+				SendEditor(SCI_SETCARETFORE, caret_black);	//光标
+				SendEditor(SCI_SETSELBACK, true, selection_wight);
+				SendEditor(SCI_STYLESETSIZE, STYLE_DEFAULT, 14);
+
+				SendEditor(SCI_SETCARETLINEVISIBLE, TRUE);
+				SendEditor(SCI_SETCARETLINEBACK, current_line_yellow);
+			}
+			
 		}
 
 		void SetPos(RECT rect)
@@ -98,9 +216,23 @@ namespace Matrix
 			m_filename = new wchar_t[ulen + 1];
 			lstrcpynW(m_filename, filename, ulen + 1);
 
+			if (wcsstr(m_filename, L".xml"))
+			{
+				SetTextStyle(SCLEX_XML);
+			}
+			else if (wcsstr(m_filename, L".cpp") || wcsstr(m_filename, L".h"))
+			{
+				SetTextStyle(SCLEX_CPP);
+			}
+			else
+			{
+				SetTextStyle(0);
+			}
+
 			const char * text = Matrix::File(filename).Utf8Text(m_current_page);
 			m_file_pos = Matrix::FilePos::HEAD;
 			SendEditor(SCI_SETTEXT, NULL, (sptr_t)text);
+			
 			delete text;
 			text = NULL;
 			GetScrollSize();
@@ -174,7 +306,7 @@ namespace Matrix
 			}
 			else
 			{
-				Matrix::File(m_filename).AppendText(content, nlen);
+				Matrix::File(m_filename).WriteText(content, nlen, true);
 			}
 		}
 
@@ -246,5 +378,6 @@ namespace Matrix
 		Matrix::FilePos m_file_pos;
 		int m_vscroll_size;
 		int m_vscroll_pos;
+
 	};
 }
