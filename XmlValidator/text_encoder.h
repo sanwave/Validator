@@ -17,11 +17,16 @@
 
 #ifndef MATRIX
 #include <iostream>
+#include <cstring>
 #include <string>
 
 #ifdef WIN32
 #include <Windows.h>
 #define WSTRCOPYN lstrcpynW
+#else
+#include<iconv.h>
+#define ICONV
+#define WSTRCOPYN wcsncpy
 #endif
 
 #else
@@ -50,19 +55,19 @@ namespace Matrix
 		TextEncoder(const char *buffer) :m_copy_flag(false)
 		{
 			TextEncode encode = DetectEncode(buffer);
-			if (NULL == buffer || strlen(buffer)<=3)
+			if (NULL == buffer || strlen(buffer) <= 3)
 			{
 				m_buffer = NULL;
 			}
-			else if (TextEncode::ANSI == encode)
+			else if (Matrix::ANSI == encode)
 			{
 				m_buffer = AnsiToUnicode(buffer);
 			}
-			else if (TextEncode::UTF_8_NO_MARK == encode)
+			else if (Matrix::UTF_8_NO_MARK == encode)
 			{
 				m_buffer = Utf8ToUnicode(buffer);
 			}
-			else if (TextEncode::UTF_8 == encode)
+			else if (Matrix::UTF_8 == encode)
 			{
 				m_buffer = Utf8ToUnicode(buffer + 3);
 			}
@@ -119,7 +124,7 @@ namespace Matrix
 			}
 			else
 			{
-				size_t ulen =buffer.length();
+				size_t ulen = buffer.length();
 				m_buffer = new wchar_t[ulen + 1];
 				WSTRCOPYN(m_buffer, buffer.c_str(), ulen + 1);
 			}
@@ -138,7 +143,7 @@ namespace Matrix
 		{
 			if (NULL == m_buffer)
 			{
-				return NULL;				
+				return NULL;
 			}
 			else
 			{
@@ -168,7 +173,7 @@ namespace Matrix
 			{
 				m_copy_flag = true;
 				return m_buffer;
-			}			
+			}
 		}
 
 		/// <summary>
@@ -186,10 +191,16 @@ namespace Matrix
 			{
 				size = strlen(atext);
 			}
+#ifdef WIN32
 			int ulen = ::MultiByteToWideChar(CP_ACP, NULL, atext, size, NULL, 0);
 			wchar_t* utext = new wchar_t[ulen + 1];
 			::MultiByteToWideChar(CP_ACP, NULL, atext, size, utext, ulen);
 			utext[ulen] = '\0';
+#else
+			size_t len = size * 2 + 2;
+			wchar_t *utext = new wchar_t[len];
+			ConvertCode("UTF-8", "UNICODE", atext, size, (char *)utext, len);
+#endif
 			return utext;
 		}
 
@@ -208,13 +219,19 @@ namespace Matrix
 			{
 				size = strlen(u8text);
 			}
+#ifdef WIN32
 			int ulen = ::MultiByteToWideChar(CP_UTF8, NULL, u8text, size, NULL, 0);
 			wchar_t* utext = new wchar_t[ulen + 1];
 			::MultiByteToWideChar(CP_UTF8, NULL, u8text, size, utext, ulen);
 			utext[ulen] = '\0';
+#else
+			size_t len = size * 2 + 2;
+			wchar_t *utext = new wchar_t[len];
+			ConvertCode("UTF-8", "UNICODE", u8text, size, (char *)utext, len);
+#endif
 			return utext;
 		}
-		
+
 		/// <summary>
 		/// 将指定Unicode编码内容转换为ANSI编码
 		/// </summary>
@@ -230,10 +247,16 @@ namespace Matrix
 			{
 				size = wcslen(utext);
 			}
+#ifdef WIN32
 			int len = ::WideCharToMultiByte(CP_ACP, NULL, utext, size, NULL, 0, NULL, NULL);
 			char *atext = new char[len + 1];
 			::WideCharToMultiByte(CP_ACP, NULL, utext, size, atext, len, NULL, NULL);
 			atext[len] = '\0';
+#else
+			size_t len=size*2 + 1;
+			char *atext = new char[len];
+			ConvertCode( "UNICODE", "GB2312", (char *)utext, size, atext, len);			
+#endif
 			return atext;
 		}
 
@@ -252,12 +275,38 @@ namespace Matrix
 			{
 				size = wcslen(utext);
 			}
+#ifdef WIN32
 			int len = ::WideCharToMultiByte(CP_UTF8, NULL, utext, size, NULL, 0, NULL, NULL);
 			char *u8text = new char[len + 1];
 			::WideCharToMultiByte(CP_UTF8, NULL, utext, size, u8text, len, NULL, NULL);
 			u8text[len] = '\0';
+#else
+			size_t len=size*4 + 1;
+			char *u8text = new char[len];
+			ConvertCode("UNICODE","UTF-8",(char *)utext,size,u8text,len);
+#endif
 			return u8text;
 		}
+
+#ifdef ICONV
+		static int ConvertCode(const char * from,const char * to,const char *inbuf, size_t inlen, char *outbuf, size_t outlen)
+		{
+			char *_inbuf=const_cast<char *>inbuf;
+			char **pin = &_inbuf;
+			char **pout = &outbuf;
+			iconv_t cd = iconv_open(to,from);
+			if (0==cd)
+			{
+				return -2;
+			}
+			memset(outbuf, 0, outlen);
+			if (-1 == iconv(cd, pin, &inlen, pout, &outlen))
+			{
+				return -1;
+			}
+			iconv_close(cd);
+		}
+#endif
 
 		/// <summary>
 		/// 获取指定文本编码格式，判别失效时优先UTF8
@@ -268,19 +317,19 @@ namespace Matrix
 		{
 			if (text.length() <= 3)
 			{
-				return TextEncode::UNKNOWN;
+				return Matrix::UNKNOWN;
 			}
 			else if ((text[0] == 0xEF) && (text[1] == 0xBB) && (text[2] == 0xBF))
 			{
-				return TextEncode::UTF_8;//UTF8 With Bom
+				return Matrix::UTF_8;//UTF8 With Bom
 			}
 			else if ((text[0] == 0xFF) && (text[1] == 0xFE))
 			{
-				return TextEncode::UTF_16;
+				return Matrix::UTF_16;
 			}
 			else if ((text[0] == 0xFE) && (text[0] == 0xFF))
 			{
-				return TextEncode::UTF_16_BIG_ENDIAN;
+				return Matrix::UTF_16_BIG_ENDIAN;
 			}
 			else
 			{
@@ -332,7 +381,7 @@ namespace Matrix
 					{
 						if ((text[index + 1 + i] & 0x80) != 0x80)
 						{
-							return TextEncode::ANSI;
+							return Matrix::ANSI;
 						}
 					}
 					index += u8Count;
@@ -340,11 +389,11 @@ namespace Matrix
 				}
 				else
 				{
-					return TextEncode::ANSI;
+					return Matrix::ANSI;
 				}
 			}
 			//默认UTF8
-			return TextEncode::DEFAULT_ENCODE;
+			return Matrix::DEFAULT_ENCODE;
 		}
 
 		/// <summary>
@@ -358,21 +407,21 @@ namespace Matrix
 
 			if (NULL == buffer || strlen(buffer) <= 3)
 			{
-				return TextEncode::UNKNOWN;
+				return Matrix::UNKNOWN;
 			}
 
 			const unsigned char* bom = reinterpret_cast<const unsigned char*>(buffer);
 			if (bom[0] == 0xfe && bom[1] == 0xff)
 			{
-				encode = TextEncode::UTF_16_BIG_ENDIAN;
+				encode = Matrix::UTF_16_BIG_ENDIAN;
 			}
 			else if (bom[0] == 0xff && bom[1] == 0xfe)
 			{
-				encode = TextEncode::UTF_16;
+				encode = Matrix::UTF_16;
 			}
 			else if (bom[0] == 0xef && bom[1] == 0xbb && bom[2] == 0xbf)
 			{
-				encode = TextEncode::UTF_8;
+				encode = Matrix::UTF_8;
 			}
 			else
 			{
@@ -408,11 +457,11 @@ namespace Matrix
 						//3 bytes
 						if (size < 3)
 						{
-							return TextEncode::ANSI;
+							return Matrix::ANSI;
 						}
 						if ((*(str + 1) & 0xc0) != 0x80 || (*(str + 2) & 0xc0) != 0x80)
 						{
-							return TextEncode::ANSI;
+							return Matrix::ANSI;
 						}
 						str += 3;
 						size -= 3;
@@ -422,11 +471,11 @@ namespace Matrix
 						//2 bytes
 						if (size < 2)
 						{
-							return TextEncode::ANSI;
+							return Matrix::ANSI;
 						}
 						if ((*(str + 1) & 0xc0) != 0x80)
 						{
-							return TextEncode::ANSI;
+							return Matrix::ANSI;
 						}
 						str += 2;
 						size -= 2;
@@ -436,23 +485,23 @@ namespace Matrix
 						//4 bytes
 						if (size < 4)
 						{
-							return TextEncode::ANSI;
+							return Matrix::ANSI;
 						}
 						if ((*(str + 1) & 0xc0) != 0x80 || (*(str + 2) & 0xc0) != 0x80
 							|| (*(str + 3) & 0xc0) != 0x80)
 						{
-							return TextEncode::ANSI;
+							return Matrix::ANSI;
 						}
 						str += 4;
 						size -= 4;
 					}
 					else
 					{
-						return TextEncode::ANSI;
+						return Matrix::ANSI;
 					}
 				}
 			}
-			return TextEncode::UTF_8_NO_MARK;
+			return Matrix::UTF_8_NO_MARK;
 		}
 
 	private:

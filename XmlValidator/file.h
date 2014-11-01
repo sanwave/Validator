@@ -83,7 +83,7 @@ namespace Matrix
 		{
 			if (NULL == m_filename)
 			{
-				return Matrix::TextEncode::UNKNOWN;
+				return Matrix::UNKNOWN;
 			}
 			const char * sample = ReadBlock(m_filename, 0, FBUFSIZ);
 			TextEncode encode = Matrix::TextEncoder::DetectEncode(sample);
@@ -235,7 +235,8 @@ namespace Matrix
 			{
 				return NULL;
 			}
-			file.open(filename, std::ios_base::in | std::ios_base::binary);
+			char * afilename = Matrix::TextEncoder(filename).Ansi();
+			file.open(afilename, std::ios_base::in | std::ios_base::binary);			
 			if (!file.is_open())
 			{
 				return NULL;
@@ -260,6 +261,11 @@ namespace Matrix
 			buffer[read_size] = '\0';
 			file.close();
 
+			if (NULL != afilename)
+			{
+				delete afilename;
+				afilename = NULL;
+			}
 			return buffer;
 		}
 
@@ -270,7 +276,8 @@ namespace Matrix
 			{
 				return -2;
 			}
-			file.open(filename, std::ios_base::in);
+			char * afilename = Matrix::TextEncoder(filename).Ansi();
+			file.open(afilename, std::ios_base::in);
 			bool exist = file.is_open();
 			file.close();
 			if (exist && false == over_write)
@@ -280,11 +287,11 @@ namespace Matrix
 			}
 			else if (exist)
 			{
-				file.open(filename, std::ios_base::in | std::ios_base::out | std::ios_base::binary);
+				file.open(afilename, std::ios_base::in | std::ios_base::out | std::ios_base::binary);
 			}
 			else
 			{
-				file.open(filename, std::ios_base::out | std::ios_base::binary);
+				file.open(afilename, std::ios_base::out | std::ios_base::binary);
 			}
 			if (0 >= write_size)
 			{
@@ -293,6 +300,13 @@ namespace Matrix
 			file.seekg(off);
 			file.write(text, write_size);
 			file.close();
+
+			if (NULL != afilename)
+			{
+				delete afilename;
+				afilename = NULL;
+			}
+			return 0;
 		}
 
 		static int Append(const wchar_t * filename, const char * text, size_t app_size = 0)
@@ -302,7 +316,8 @@ namespace Matrix
 			{
 				return -2;
 			}
-			file.open(filename, std::ios_base::app | std::ios_base::binary);
+			char * afilename = Matrix::TextEncoder(filename).Ansi();
+			file.open(afilename, std::ios_base::app | std::ios_base::binary);
 			if (!file.is_open())
 			{
 				return -2;
@@ -313,6 +328,13 @@ namespace Matrix
 			}
 			file.write(text, app_size);
 			file.close();
+
+			if (NULL != afilename)
+			{
+				delete afilename;
+				afilename = NULL;
+			}
+			return 0;
 		}
 
 	private:
