@@ -159,7 +159,7 @@ namespace Matrix
 			}
 			else
 			{
-				return UnicodeToUTF8(m_buffer);
+				return UnicodeToUtf8(m_buffer);
 			}
 		}
 
@@ -199,7 +199,7 @@ namespace Matrix
 #else
 			size_t len = size * 2 + 2;
 			wchar_t *utext = new wchar_t[len];
-			ConvertCode("UTF-8", "UNICODE", atext, size, (char *)utext, len);
+			ConvertCode("GB2312", "UNICODE", atext, size, (char *)utext, len);
 #endif
 			return utext;
 		}
@@ -253,7 +253,8 @@ namespace Matrix
 			::WideCharToMultiByte(CP_ACP, NULL, utext, size, atext, len, NULL, NULL);
 			atext[len] = '\0';
 #else
-			size_t len=size*2 + 1;
+			size *= 4;
+			size_t len=size + 1;
 			char *atext = new char[len];
 			ConvertCode( "UNICODE", "GB2312", (char *)utext, size, atext, len);			
 #endif
@@ -265,7 +266,7 @@ namespace Matrix
 		/// </summary>
 		/// <param name="uText">指定Unicode编码文本</param>
 		/// <returns>转换后的UTF8文本</returns>
-		static char* UnicodeToUTF8(const wchar_t* utext, size_t size = 0)
+		static char* UnicodeToUtf8(const wchar_t* utext, size_t size = 0)
 		{
 			if (NULL == utext)
 			{
@@ -281,7 +282,8 @@ namespace Matrix
 			::WideCharToMultiByte(CP_UTF8, NULL, utext, size, u8text, len, NULL, NULL);
 			u8text[len] = '\0';
 #else
-			size_t len=size*4 + 1;
+			size *= 4;
+			size_t len = size * 2 + 1;
 			char *u8text = new char[len];
 			ConvertCode("UNICODE","UTF-8",(char *)utext,size,u8text,len);
 #endif
@@ -291,20 +293,21 @@ namespace Matrix
 #ifdef ICONV
 		static int ConvertCode(const char * from,const char * to,const char *inbuf, size_t inlen, char *outbuf, size_t outlen)
 		{
-			char *_inbuf=const_cast<char *>inbuf;
-			char **pin = &_inbuf;
-			char **pout = &outbuf;
+			char *pin = const_cast<char *> (inbuf);
+			char *pout = outbuf;
 			iconv_t cd = iconv_open(to,from);
 			if (0==cd)
 			{
 				return -2;
 			}
+			iconv( cd, NULL, NULL, NULL, NULL );
 			memset(outbuf, 0, outlen);
-			if (-1 == iconv(cd, pin, &inlen, pout, &outlen))
+			if ((size_t)-1 == iconv(cd, &pin, &inlen, &pout, &outlen))
 			{
 				return -1;
 			}
 			iconv_close(cd);
+			return 0;
 		}
 #endif
 

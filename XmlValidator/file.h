@@ -131,7 +131,7 @@ namespace Matrix
 			{
 				*size = wcslen(utext);
 			}
-			const char * u8text = Matrix::TextEncoder::UnicodeToUTF8(utext);
+			const char * u8text = Matrix::TextEncoder::UnicodeToUtf8(utext);
 			if (NULL != utext)
 			{
 				delete utext;
@@ -159,7 +159,7 @@ namespace Matrix
 			{
 				size = strlen(text);
 			}
-			Write(m_filename, text, over_write);
+			return Write(m_filename, text, over_write);
 		}
 
 		int AppendText(const char * text, size_t size = 0)
@@ -172,7 +172,7 @@ namespace Matrix
 			{
 				size = strlen(text);
 			}
-			Append(m_filename, text, size);
+			return Append(m_filename, text, size);
 		}
 
 		static const wchar_t * ReadAsText(const char *filename, int page = 0)
