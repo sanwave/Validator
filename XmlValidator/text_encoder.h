@@ -23,9 +23,8 @@
 #ifdef WIN32
 #include <Windows.h>
 #define WSTRCOPYN lstrcpynW
-#else
-#include<iconv.h>
-#define ICONV
+#elif __linux__
+#include <iconv.h>
 #define WSTRCOPYN wcsncpy
 #endif
 
@@ -196,7 +195,7 @@ namespace Matrix
 			wchar_t* utext = new wchar_t[ulen + 1];
 			::MultiByteToWideChar(CP_ACP, NULL, atext, size, utext, ulen);
 			utext[ulen] = '\0';
-#else
+#elif __linux__
 			size_t len = size * 2 + 2;
 			wchar_t *utext = new wchar_t[len];
 			ConvertCode("GB2312", "UNICODE", atext, size, (char *)utext, len);
@@ -224,7 +223,7 @@ namespace Matrix
 			wchar_t* utext = new wchar_t[ulen + 1];
 			::MultiByteToWideChar(CP_UTF8, NULL, u8text, size, utext, ulen);
 			utext[ulen] = '\0';
-#else
+#elif __linux__
 			size_t len = size * 2 + 2;
 			wchar_t *utext = new wchar_t[len];
 			ConvertCode("UTF-8", "UNICODE", u8text, size, (char *)utext, len);
@@ -252,11 +251,11 @@ namespace Matrix
 			char *atext = new char[len + 1];
 			::WideCharToMultiByte(CP_ACP, NULL, utext, size, atext, len, NULL, NULL);
 			atext[len] = '\0';
-#else
+#elif __linux__
 			size *= 4;
-			size_t len=size + 1;
+			size_t len = size + 1;
 			char *atext = new char[len];
-			ConvertCode( "UNICODE", "GB2312", (char *)utext, size, atext, len);			
+			ConvertCode("UNICODE", "GB2312", (char *)utext, size, atext, len);			
 #endif
 			return atext;
 		}
@@ -281,26 +280,27 @@ namespace Matrix
 			char *u8text = new char[len + 1];
 			::WideCharToMultiByte(CP_UTF8, NULL, utext, size, u8text, len, NULL, NULL);
 			u8text[len] = '\0';
-#else
+#elif __linux__
 			size *= 4;
 			size_t len = size * 2 + 1;
 			char *u8text = new char[len];
-			ConvertCode("UNICODE","UTF-8",(char *)utext,size,u8text,len);
+			ConvertCode("UNICODE", "UTF-8", (char *)utext, size, u8text, len);
 #endif
 			return u8text;
 		}
 
-#ifdef ICONV
-		static int ConvertCode(const char * from,const char * to,const char *inbuf, size_t inlen, char *outbuf, size_t outlen)
+#ifdef __linux__
+		static int ConvertCode(const char * from, const char * to, 
+			const char *inbuf, size_t inlen, char *outbuf, size_t outlen)
 		{
 			char *pin = const_cast<char *> (inbuf);
 			char *pout = outbuf;
-			iconv_t cd = iconv_open(to,from);
-			if (0==cd)
+			iconv_t cd = iconv_open(to, from);
+			if (0 == cd)
 			{
 				return -2;
 			}
-			iconv( cd, NULL, NULL, NULL, NULL );
+			iconv(cd, NULL, NULL, NULL, NULL);
 			memset(outbuf, 0, outlen);
 			if ((size_t)-1 == iconv(cd, &pin, &inlen, &pout, &outlen))
 			{

@@ -236,7 +236,7 @@ namespace Matrix
 				return NULL;
 			}
 			char * afilename = Matrix::TextEncoder(filename).Ansi();
-			file.open(afilename, std::ios_base::in | std::ios_base::binary);			
+			file.open(afilename, std::ios_base::in | std::ios_base::binary);
 			if (!file.is_open())
 			{
 				return NULL;

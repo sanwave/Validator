@@ -63,17 +63,17 @@ public:
 		WNDCLASSEXW wcex = { 0 };
 
 		wcex.cbSize = sizeof(WNDCLASSEX);
-		//wcex.style = CS_HREDRAW | CS_VREDRAW;
+		wcex.style = CS_HREDRAW | CS_VREDRAW;
 		wcex.lpfnWndProc = DERIVED_TYPE::WindowProc;
 		wcex.cbClsExtra = 0;
 		wcex.cbWndExtra = 0;
 		wcex.hInstance = GetModuleHandle(NULL);
-		//wcex.hIcon = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_XMLVALIDATORCPLUS));
+		wcex.hIcon = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_ICON_T));
 		wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
 		wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 		wcex.lpszMenuName = MAKEINTRESOURCE(IDR_MENU);
 		wcex.lpszClassName = ClassName();
-		//wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+		wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_ICON_T));
 
 		RegisterClassEx(&wcex);
 

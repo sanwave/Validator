@@ -300,7 +300,11 @@ namespace Matrix
 			int nlen = SendEditor(SCI_GETLENGTH);
 			char * content = new char[nlen + 1];
 			SendEditor(SCI_GETTEXT, nlen, (sptr_t)content);
-			if (NULL == *content)
+			if (NULL == m_filename)
+			{
+				return -2;
+			}
+			else if (NULL == *content)
 			{
 				return -1;
 			}

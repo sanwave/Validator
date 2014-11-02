@@ -20,6 +20,7 @@
 #include "xml.h"
 //#include "document.h"
 #include "sci_editor.h"
+#include <commdlg.h>
 
 namespace Matrix
 {
@@ -94,12 +95,42 @@ namespace Matrix
 		/// </summary>
 		int OpenFileDlg()
 		{
-			FileDialog dlg = FileDialog();
-			LPCWSTR tFileName = dlg.Open();
-			if (tFileName != NULL)
+			OPENFILENAME ofn;      // 公共对话框结构。     
+			wchar_t filename[MAX_PATH]; // 保存获取文件名称的缓冲区。               
+			// 初始化选择文件对话框。
+			ZeroMemory(&ofn, sizeof(OPENFILENAME));
+			ZeroMemory(filename, MAX_PATH);
+			ofn.lStructSize = sizeof(OPENFILENAME);
+			ofn.hwndOwner = m_hwnd;
+			ofn.lpstrFile = filename;
+			ofn.nMaxFile = sizeof(filename);
+			ofn.lpstrFilter = L"All(*.*)\0*.*\0Xml(*.xml)\0*.xml\0Header(*.h)\0*.h\0Text(*.txt)\0*.TXT\0\0";
+			ofn.nFilterIndex = 1;
+			ofn.lpstrFileTitle = NULL;
+			ofn.nMaxFileTitle = 0;
+			ofn.lpstrInitialDir = NULL;
+			ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+			//ofn.lpTemplateName =  MAKEINTRESOURCE(ID_TEMP_DIALOG);    
+			// 显示打开选择文件对话框。     
+
+			if (GetOpenFileName(&ofn))
 			{
-				LoadFile(tFileName);
+				LoadFile(filename);
 			}
+			//GetSaveFileName
+			return 0;
+		}
+
+		//有问题
+		int Search(wchar_t * text)
+		{
+			FINDREPLACE fr;
+			text = new wchar_t[100];
+			ZeroMemory(text, 200);
+			fr.lpstrFindWhat = text;
+			fr.lStructSize = sizeof(FINDREPLACE);
+			fr.hwndOwner = m_hwnd;
+			FindText(&fr);
 			return 0;
 		}
 
@@ -203,9 +234,8 @@ namespace Matrix
 LRESULT Matrix::MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	UINT wmId = 0, wmEvent = 0;
-	HMENU h_menu;
+	HMENU h_menu = GetMenu(m_hwnd);
 	SCNotification *notify = NULL;
-	h_menu = GetMenu(m_hwnd);
 	bool checked = true;
 
 	switch (uMsg)
@@ -259,6 +289,10 @@ LRESULT Matrix::MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lPara
 
 		case IDM_EXIT:
 			DestroyWindow(m_hwnd);
+			break;
+
+		case IDM_FIND:
+			Search(NULL);
 			break;
 
 		case IDM_WRAP:
