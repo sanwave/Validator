@@ -95,9 +95,18 @@ namespace Matrix
 			return encode;
 		}
 
-		const wchar_t * Text()
+		const wchar_t * Text(int page = 0, size_t *size = NULL)
 		{
-			return ReadAsText(m_filename);
+			const wchar_t * utext = ReadAsText(m_filename, page);
+			if (NULL == utext)
+			{
+				return NULL;
+			}
+			else if (NULL != size)
+			{
+				*size = wcslen(utext);
+			}
+			return utext;
 		}
 
 		const char * AnsiText(int page = 0, size_t *size = NULL)
