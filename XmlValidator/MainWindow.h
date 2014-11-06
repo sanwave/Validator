@@ -17,9 +17,10 @@
 #include "basewin.h"
 #include "dialog.h"
 //#include "file.h"
-#include "xml.h"
+#include "xml_validater.h"
 //#include "document.h"
 #include "sci_editor.h"
+#include "xml.h"
 #include <commdlg.h>
 
 namespace Matrix
@@ -124,13 +125,13 @@ namespace Matrix
 		//有问题
 		int Search(wchar_t * text)
 		{
-			FINDREPLACE fr;
+			/*FINDREPLACE fr;
 			text = new wchar_t[100];
 			ZeroMemory(text, 200);
 			fr.lpstrFindWhat = text;
 			fr.lStructSize = sizeof(FINDREPLACE);
 			fr.hwndOwner = m_hwnd;
-			FindText(&fr);
+			FindText(&fr);*/
 			return 0;
 		}
 
@@ -163,6 +164,8 @@ namespace Matrix
 		{
 			m_editor.LoadFromFile(filename);
 
+			SetWindowText(m_hwnd, std::wstring(filename).append(L" - Matrix").c_str());
+
 			if (m_auto_validate)
 			{
 				//ValidateXml();
@@ -173,10 +176,10 @@ namespace Matrix
 		/// <summary>
 		/// 简单校验XML文件一致性错误
 		/// </summary>
-		int ValidateXml(LPCWSTR documnet = NULL)
+		int ValidateXml(LPCWSTR document = NULL)
 		{
 			char *content = NULL;
-			if (NULL == documnet)
+			if (NULL == document)
 			{
 				int nlen = m_editor.SendEditor(SCI_GETLENGTH);
 				content = new char[nlen + 1];
@@ -187,13 +190,18 @@ namespace Matrix
 				}
 				else
 				{
-					documnet = Matrix::TextEncoder::Utf8ToUnicode(content);
+					document = Matrix::TextEncoder::Utf8ToUnicode(content);
 				}
 			}
 
-			Matrix::XML tXml;
+			Matrix::XmlDocument xml;
+			wchar_t * wdocument = const_cast<wchar_t *>(document);
+			xml.Parse(wdocument, wcslen(document));
+			MessageBox(NULL, xml.Name(), L"", MB_OK);
+
+			Matrix::XMLValidater tXml;
 			Matrix::XmlValidateError tError;
-			tXml.ValidateXml(std::wstring(documnet), tError);
+			tXml.ValidateXml(std::wstring(document), tError);
 
 			TCHAR err[BUFSIZ];
 			wsprintf(err, L"第%d行%d列%s与第%d行%d列%s不匹配",

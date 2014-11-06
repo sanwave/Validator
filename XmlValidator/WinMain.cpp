@@ -16,7 +16,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow
 {
 	Matrix::MainWindow win;
 
-	if (!win.Create(L"Xml Validator", WS_OVERLAPPEDWINDOW))
+	if (!win.Create(L"Matrix", WS_OVERLAPPEDWINDOW))
 	{
 		return 0;
 	}

@@ -18,9 +18,6 @@
     <ClInclude Include="mysql_helper.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="xml.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -46,6 +43,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="text_encoder.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="xml_validater.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="xml.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
