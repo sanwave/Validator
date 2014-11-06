@@ -194,10 +194,10 @@ namespace Matrix
 				}
 			}
 
-			Matrix::XmlDocument xml;
-			wchar_t * wdocument = const_cast<wchar_t *>(document);
-			xml.Parse(wdocument, wcslen(document));
-			MessageBox(NULL, xml.Name(), L"", MB_OK);
+			//Matrix::XmlDocument xml;
+			//wchar_t * wdocument = const_cast<wchar_t *>(document);
+			//xml.Parse(wdocument, wcslen(document));
+			//MessageBox(NULL, xml.Name(), L"", MB_OK);
 
 			Matrix::XMLValidater tXml;
 			Matrix::XmlValidateError tError;

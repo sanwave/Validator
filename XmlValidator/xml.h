@@ -18,7 +18,7 @@
 #ifndef MATRIX
 #include <iostream>
 #include <string>
-#include <vector>
+#include <list>
 #include <istream>
 #include <algorithm>
 #else
@@ -41,8 +41,8 @@ namespace Matrix
 	class XmlAttribute;
 	class XmlNode;
 
-	typedef std::vector<XmlAttribute*> AttributeList;
-	typedef std::vector<XmlNode*> NodeList;
+	typedef std::list<XmlAttribute*> AttributeList;
+	typedef std::list<XmlNode*> NodeList;
 
 	typedef AttributeList::const_iterator AttributeIterator;
 	typedef NodeList::const_iterator NodeIterator;
@@ -61,12 +61,12 @@ namespace Matrix
 		{
 			if (NULL != m_name)
 			{
-				//delete[] m_name;
+				delete m_name;
 				m_name = NULL;
 			}
 			if (NULL != m_value)
 			{
-				//delete[] m_value;
+				delete m_value;
 				m_value = NULL;
 			}
 		}
@@ -86,7 +86,7 @@ namespace Matrix
 			{
 				size_t ulen = wcslen(name);
 				m_name = new wchar_t[ulen + 1];
-				WSTRCOPYN(m_name, name, ulen + 1);
+				WSTRCOPYN(m_name, name, ulen+1);
 			}
 			else
 			{
@@ -109,7 +109,7 @@ namespace Matrix
 			{
 				size_t ulen = wcslen(value);
 				m_value = new wchar_t[ulen + 1];
-				WSTRCOPYN(m_value, value, ulen + 1);
+				WSTRCOPYN(m_value, value, ulen);
 			}
 			else
 			{
@@ -127,12 +127,24 @@ namespace Matrix
 			const wchar_t * found = NULL;
 			if (!transferCharacter || (found = wmemchr(buffer, L'&', length)) == NULL)
 			{
-				str = buffer;
-				str[length] = 0;
+				if (NULL != str)
+				{
+					delete str;
+				}
+				if (NULL != buffer)
+				{
+					int ulen = wcslen(buffer);
+					str = new wchar_t[ulen + 1];
+					WSTRCOPYN(str, buffer, ulen + 1);
+				}
+				else
+				{
+					str = NULL;
+				}
 				return;
 			}
 			std::wstring temp;
-			for (;NULL !=found  ; found = wmemchr(buffer, L'&', length))
+			for (; NULL != found; found = wmemchr(buffer, L'&', length))
 			{
 				temp.append(buffer, found - buffer);
 				length -= (found - buffer + 1);
@@ -184,9 +196,20 @@ namespace Matrix
 				temp.append(1, L'&');
 			}
 			temp.append(buffer, length);
-			size_t actualLength = temp.length();
-			memcpy(str, temp.c_str(), sizeof(wchar_t) * actualLength);
-			str[actualLength] = 0;
+			if (NULL != str)
+			{
+				delete str;
+			}
+			if (!temp.empty())
+			{
+				int ulen = temp.length();
+				str = new wchar_t[ulen + 1];
+				WSTRCOPYN(str, temp.c_str(), ulen + 1);
+			}
+			else
+			{
+				str = NULL;
+			}
 		}
 
 	protected:
