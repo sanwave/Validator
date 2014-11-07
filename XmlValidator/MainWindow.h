@@ -21,6 +21,7 @@
 //#include "document.h"
 #include "sci_editor.h"
 #include "xml.h"
+//#include "SlimXml.h"
 #include <commdlg.h>
 
 namespace Matrix
@@ -194,10 +195,18 @@ namespace Matrix
 				}
 			}
 
+			//SetWindowLong(m_hwnd, GWL_STYLE, GetWindowLong(m_hwnd, GWL_STYLE) & ~WS_CAPTION &~WS_BORDER);
+			//SetWindowLong(m_hwnd, GWL_STYLE, GetWindowLong(m_hwnd, GWL_STYLE) | (WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_POPUP));
+
+			//SetWindowLong(m_hwnd, GWL_STYLE, GetWindowLong(m_hwnd, GWL_STYLE) &	(~(WS_CAPTION | WS_BORDER | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX)));
+
+			//SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_DRAWFRAME);
+
 			//Matrix::XmlDocument xml;
 			//wchar_t * wdocument = const_cast<wchar_t *>(document);
-			//xml.Parse(wdocument, wcslen(document));
-			//MessageBox(NULL, xml.Name(), L"", MB_OK);
+			//xml.LoadFromFile(m_editor.FileName());
+			//xml.parse(wdocument, wcslen(document));
+			//MessageBox(NULL,xml.Name(), L"", MB_OK);
 
 			Matrix::XMLValidater tXml;
 			Matrix::XmlValidateError tError;

@@ -76,6 +76,11 @@ namespace Matrix
 			m_ptrDirect = (sptr_t)SendMessage(m_hwnd, SCI_GETDIRECTPOINTER, 0, 0);
 		}
 
+		wchar_t * FileName()
+		{
+			return m_filename;
+		}
+
 		void Init()
 		{
 			SendEditor(SCI_SETCARETLINEVISIBLE, TRUE);
@@ -86,6 +91,7 @@ namespace Matrix
 			SendEditor(SCI_STYLECLEARALL);
 			SetLineNumber();
 			SetWrap(true);
+			SetTextStyle(0);
 		}
 
 		void SetLineNumber()
@@ -238,35 +244,7 @@ namespace Matrix
 			GetScrollSize();
 			return m_current_page;
 		}
-
-		/*int LastPage()
-		{
-		if (Matrix::FilePos::HEAD == m_file_pos)
-		{
-		return -2;
-		}
-		else if (NULL != m_filename)
-		{
-		const char * text = Matrix::File(m_filename).Utf8Text(--m_current_page);
-		if (m_current_page == 0)
-		{
-		m_file_pos = Matrix::FilePos::HEAD;
-		}
-		else
-		{
-		m_file_pos = Matrix::FilePos::INSIDE;
-		}
-		SendEditor(SCI_SETTEXT, NULL, (sptr_t)text);
-		delete text;
-		text = NULL;
-		return m_current_page;
-		}
-		else
-		{
-		return -1;
-		}
-		}*/
-
+		
 		int NextPage()
 		{
 			if (Matrix::FilePos::END == m_file_pos)
