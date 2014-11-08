@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<Application xmlns="http://schemas.microsoft.com/windows/2009/Ribbon">
+  <Application.Commands>
+    <Command Name="TabHome" Symbol="cmdTabHome">
+      <Command.LabelTitle>
+        <String>Home</String>
+      </Command.LabelTitle>
+    </Command>
+    <Command Name="Font" Symbol="IDC_FONT">
+      <Command.LabelTitle>
+        <String>My Font</String>
+      </Command.LabelTitle>
+    </Command>
+    <Command Name="cmdExit" LabelTitle="Exit application2" />
+  </Application.Commands>
+
+  <Application.Views>
+    <Ribbon>
+      
+      <Ribbon.ApplicationMenu >
+        <ApplicationMenu CommandName="FileMenu" >
+          <MenuGroup Class="MajorItems" >
+            <Button CommandName="New" />
+            <Button CommandName="Open" />
+            <Button CommandName="Save" />
+            <Button CommandName="SaveAs" />
+          </MenuGroup>
+          <MenuGroup >
+            <Button CommandName="Exit" />
+          </MenuGroup>
+        </ApplicationMenu>
+      </Ribbon.ApplicationMenu >
+
+      <Ribbon.Tabs>
+
+        <Tab CommandName="Home">
+          <Group CommandName="Common" SizeDefinition="ThreeButtons">
+            <Button CommandName="InsertPicture"/>
+            <Button CommandName="Hyperlink"/>
+            <ToggleButton CommandName="cmdToggleButton1" />
+          </Group>
+          <Group>
+            <Button />
+          </Group>
+        </Tab>
+        
+        <Tab CommandName="More">
+          <Group>
+            <Button CommandName="cmdExit1" />
+            <Button CommandName="cmdExit2" />
+            <ComboBox />
+          </Group>
+        </Tab>
+        
+      </Ribbon.Tabs>
+    </Ribbon>
+  </Application.Views>
+</Application>

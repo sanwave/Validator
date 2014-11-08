@@ -50,7 +50,7 @@ bool InitializeFramework(HWND hWnd)
     // Finally, we load the binary markup.  This will initiate callbacks to the IUIApplication object 
     // that was provided to the framework earlier, allowing command handlers to be bound to individual
     // commands.
-    hr = g_pFramework->LoadUI(GetModuleHandle(NULL), L"SIMPLERIBBON_RIBBON");
+    hr = g_pFramework->LoadUI(GetModuleHandle(NULL), L"RIBBON_UI_RIBBON");
     if (FAILED(hr))
     {
         return false;

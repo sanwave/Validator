@@ -15,6 +15,7 @@
 #include <uiribbon.h>
 
 #include "ribbon_framework.h"
+#include "ribbon_ui.h"
 
 // This is a generic command handler used by every command in this sample.
 

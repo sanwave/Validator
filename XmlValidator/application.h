@@ -10,7 +10,6 @@
 #include <uiribbon.h>
 #include <uiribbonPropertyhelpers.h>
 
-
 #include "command_handler.h"
 
 //

@@ -25,7 +25,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -53,7 +53,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;MATRIX</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Onedrive\Program\Libraries\MySQL\include.5.6.20.x86;D:\Onedrive\Program\scintilla++\scintilla\include;E:\Program\Libraries\scintilla\include;E:\Program\Libraries\mysql-5.6.21-win32\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)$(Configuration)\;D:\Onedrive\Program\Libraries\MySQL\include.5.6.20.x86;D:\Onedrive\Program\scintilla++\scintilla\include;E:\Program\Libraries\scintilla\include;E:\Program\Libraries\mysql-5.6.21-win32\include;%(AdditionalIncludeDirectories);$(SolutionDir)$(Configuration)\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -71,7 +71,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Onedrive\Program\Libraries\slimxml\include;D:\Onedrive\Program\Libraries\MySQL\include.5.6.20.x86;D:\Onedrive\Program\Libraries\scintilla\include.3.5.x86;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Onedrive\Program\Libraries\slimxml\include;D:\Onedrive\Program\Libraries\MySQL\include.5.6.20.x86;D:\Onedrive\Program\Libraries\scintilla\include.3.5.x86;%(AdditionalIncludeDirectories);$(SolutionDir)$(Configuration)\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -107,6 +107,14 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="twitter.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="ribbon_ui.xml">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">uicc.exe ribbon_ui.xml $(IntDir)../ribbon_ui.bml /header:$(IntDir)../ribbon_ui.h /res:$(IntDir)../ribbon_ui.rc /name:ribbon_ui</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ribbon_ui.bml;ribbon_ui.h;ribbon_ui.rc;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">uicc.exe ribbon_ui.xml $(IntDir)ribbon_ui.bml /header:$(IntDir)..\\ribbon_ui.h /res:$(IntDir)..\\ribbon_ui.rc /name:ribbon_ui</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ribbon_ui.bml;ribbon_ui.h;ribbon_ui.rc;%(Outputs)</Outputs>
+    </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

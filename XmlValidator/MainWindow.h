@@ -46,18 +46,22 @@ namespace Matrix
 		/// </summary>
 		int InitWindow()
 		{
-			LoadComponent();
-			HMENU menu;
-			menu = GetMenu(m_hwnd);
-			CheckMenuItem(menu, IDM_WRAP, MF_CHECKED);
-			CheckMenuItem(menu, IDM_AUTOVALIDATE, m_auto_validate ? MF_CHECKED : MF_UNCHECKED);
+			//LoadComponent();
 
 			bool init_success = true;
-			//init_success= InitializeFramework(m_hwnd);
+			//init_success = InitializeFramework(m_hwnd);
 			if (!init_success)
 			{
 				return -1;
 			}
+
+			LoadComponent();
+			
+			//HMENU menu;
+			//menu = GetMenu(m_hwnd);
+			//CheckMenuItem(menu, IDM_WRAP, MF_CHECKED);
+			//CheckMenuItem(menu, IDM_AUTOVALIDATE, m_auto_validate ? MF_CHECKED : MF_UNCHECKED);
+						
 		}
 
 		/// <summary>
@@ -65,7 +69,6 @@ namespace Matrix
 		/// </summary>
 		void LoadComponent()
 		{
-			//m_editor = &(SciEditor());
 			m_editor.Create(m_hwnd);
 			m_editor.Init();
 		}
@@ -269,7 +272,7 @@ LRESULT Matrix::MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lPara
 
 	case WM_CREATE:
 		InitWindow();
-		DragAcceptFiles(m_hwnd, TRUE);
+		//DragAcceptFiles(m_hwnd, TRUE);
 		break;
 
 	case WM_SHOWWINDOW:

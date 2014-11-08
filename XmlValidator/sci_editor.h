@@ -211,7 +211,7 @@ namespace Matrix
 		void SetPos(RECT rect)
 		{
 			SetWindowPos(m_hwnd, HWND_TOP, 0, 0,
-				rect.right - rect.left - 11, rect.bottom - rect.top - 50, SWP_SHOWWINDOW);
+				rect.right - rect.left - 11, rect.bottom - rect.top - 50 - 100, SWP_SHOWWINDOW);
 		}
 
 		int LoadFromFile(const wchar_t *filename)

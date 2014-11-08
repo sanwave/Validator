@@ -6,7 +6,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 #include "command_handler.h"
-//#include "ribbon_ui.h"
 
 // Static method to create an instance of the object.
 HRESULT CCommandHandler::CreateInstance(IUICommandHandler **ppCommandHandler)
