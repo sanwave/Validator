@@ -210,8 +210,8 @@ namespace Matrix
 
 		void SetPos(RECT rect)
 		{
-			SetWindowPos(m_hwnd, HWND_TOP, 0, 0,
-				rect.right - rect.left - 11, rect.bottom - rect.top - 50 - 100, SWP_SHOWWINDOW);
+			SetWindowPos(m_hwnd, HWND_TOP, 0, 160,
+				rect.right - rect.left - 11, rect.bottom - rect.top - 50 - 110, SWP_SHOWWINDOW);
 		}
 
 		int LoadFromFile(const wchar_t *filename)
@@ -290,6 +290,7 @@ namespace Matrix
 			{
 				Matrix::File(m_filename).WriteText(content, nlen, true);
 			}
+			return 0;
 		}
 
 		void SetWrap(bool iflag)

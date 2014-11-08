@@ -2,17 +2,37 @@
 
 <Application xmlns="http://schemas.microsoft.com/windows/2009/Ribbon">
   <Application.Commands>
-    <Command Name="TabHome" Symbol="cmdTabHome">
+    
+    <Command Name="tabHome" Symbol="cmdTabHome">
       <Command.LabelTitle>
         <String>Home</String>
       </Command.LabelTitle>
     </Command>
-    <Command Name="Font" Symbol="IDC_FONT">
+    
+    <Command Name="tabMore" Symbol="cmdTabMore">
       <Command.LabelTitle>
-        <String>My Font</String>
+        <String>More</String>
       </Command.LabelTitle>
     </Command>
-    <Command Name="cmdExit" LabelTitle="Exit application2" />
+
+    <Command Name="New" Symbol="IDC_NEW">
+      <Command.LabelTitle>
+        <String>New</String>
+      </Command.LabelTitle>
+      <Command.LabelDescription>
+        <String>Create a new file.</String>
+      </Command.LabelDescription>
+    </Command>
+
+    <Command Name="Exit" Symbol="IDR_EXIT" Id="8201">
+      <Command.LabelTitle>
+        <String>Exit</String>
+      </Command.LabelTitle>
+      <Command.LabelDescription>
+        <String>Exit the current program.</String>
+      </Command.LabelDescription>
+    </Command>
+    
   </Application.Commands>
 
   <Application.Views>
@@ -34,8 +54,8 @@
 
       <Ribbon.Tabs>
 
-        <Tab CommandName="Home">
-          <Group CommandName="Common" SizeDefinition="ThreeButtons">
+        <Tab CommandName="tabHome">
+          <Group CommandName="tabCommon" SizeDefinition="ThreeButtons">
             <Button CommandName="InsertPicture"/>
             <Button CommandName="Hyperlink"/>
             <ToggleButton CommandName="cmdToggleButton1" />

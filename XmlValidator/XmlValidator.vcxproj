@@ -112,7 +112,7 @@
     <CustomBuild Include="ribbon_ui.xml">
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">uicc.exe ribbon_ui.xml $(IntDir)../ribbon_ui.bml /header:$(IntDir)../ribbon_ui.h /res:$(IntDir)../ribbon_ui.rc /name:ribbon_ui</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ribbon_ui.bml;ribbon_ui.h;ribbon_ui.rc;%(Outputs)</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">uicc.exe ribbon_ui.xml $(IntDir)ribbon_ui.bml /header:$(IntDir)..\\ribbon_ui.h /res:$(IntDir)..\\ribbon_ui.rc /name:ribbon_ui</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">uicc.exe ribbon_ui.xml ribbon_ui.bml /header:ribbon_ui.h /res:ribbon_ui.rc /name:ribbon_ui</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ribbon_ui.bml;ribbon_ui.h;ribbon_ui.rc;%(Outputs)</Outputs>
     </CustomBuild>
   </ItemGroup>

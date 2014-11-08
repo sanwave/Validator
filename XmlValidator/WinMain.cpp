@@ -12,11 +12,20 @@
 
 #include "MainWindow.h"
 
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow)
+int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
+	UNREFERENCED_PARAMETER(hPrevInstance);
+	UNREFERENCED_PARAMETER(pCmdLine);
+
+	HRESULT hr = CoInitialize(NULL);
+	if (FAILED(hr))
+	{
+		return FALSE;
+	}
+
 	Matrix::MainWindow win;
 
-	if (!win.Create(L"Matrix", WS_OVERLAPPEDWINDOW))
+	if (!win.Create(L"Matrix", WS_OVERLAPPEDWINDOW,hInstance))
 	{
 		return 0;
 	}
@@ -32,5 +41,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow
 		DispatchMessage(&msg);
 	}
 
-	return 0;
+	CoUninitialize();
+
+	return (int)msg.wParam;
 }

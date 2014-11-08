@@ -154,7 +154,6 @@ STDMETHODIMP CApplication::OnViewChanged(
     return hr;
 }
 
-
 //
 //  FUNCTION: OnDestroyUICommand(UINT, UI_COMMANDTYPE, IUICommandHandler*)
 //

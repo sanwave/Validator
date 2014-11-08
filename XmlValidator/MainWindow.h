@@ -45,23 +45,15 @@ namespace Matrix
 		/// ≥ı ºªØ¥∞ÃÂ
 		/// </summary>
 		int InitWindow()
-		{
-			//LoadComponent();
-
-			bool init_success = true;
-			//init_success = InitializeFramework(m_hwnd);
+		{			
+			//InitMenu();
+			bool init_success = InitializeFramework(m_hwnd);
 			if (!init_success)
 			{
 				return -1;
-			}
-
-			LoadComponent();
-			
-			//HMENU menu;
-			//menu = GetMenu(m_hwnd);
-			//CheckMenuItem(menu, IDM_WRAP, MF_CHECKED);
-			//CheckMenuItem(menu, IDM_AUTOVALIDATE, m_auto_validate ? MF_CHECKED : MF_UNCHECKED);
-						
+			}			
+			LoadComponent();			
+			return 0;
 		}
 
 		/// <summary>
@@ -71,6 +63,16 @@ namespace Matrix
 		{
 			m_editor.Create(m_hwnd);
 			m_editor.Init();
+		}
+
+		int InitMenu()
+		{
+			HMENU menu = LoadMenu(m_hinst, MAKEINTRESOURCE(IDR_MENU));
+			SetMenu(m_hwnd, menu);
+			//GetMenu(m_hwnd);
+			CheckMenuItem(menu, IDM_WRAP, MF_CHECKED);
+			CheckMenuItem(menu, IDM_AUTOVALIDATE, m_auto_validate ? MF_CHECKED : MF_UNCHECKED);
+			return 0;
 		}
 
 		/// <summary>
@@ -291,7 +293,7 @@ LRESULT Matrix::MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lPara
 
 	case WM_PAINT:
 		m_hdc = BeginPaint(m_hwnd, &m_ps);
-		FillRect(m_hdc, &m_ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
+		//FillRect(m_hdc, &m_ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
 		EndPaint(m_hwnd, &m_ps);
 		break;
 

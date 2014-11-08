@@ -109,6 +109,12 @@ STDMETHODIMP CCommandHandler::Execute(
     const PROPVARIANT* ppropvarValue,
     IUISimplePropertySet* pCommandExecutionProperties)
 {
+
+	if (nCmdID == IDR_EXIT)
+	{
+		MessageBox(NULL, L"Clicked on My Button!", L"My Button Execute", MB_OK);
+	}
+
     UNREFERENCED_PARAMETER(pCommandExecutionProperties);
     UNREFERENCED_PARAMETER(ppropvarValue);
     UNREFERENCED_PARAMETER(key);

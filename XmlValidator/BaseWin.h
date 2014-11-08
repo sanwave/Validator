@@ -51,6 +51,7 @@ public:
 	BOOL Create(
 		PCWSTR lpWindowName,
 		DWORD dwStyle,
+		HINSTANCE hinst = GetModuleHandle(NULL),
 		DWORD dwExStyle = 0,
 		int x = CW_USEDEFAULT,
 		int y = CW_USEDEFAULT,
@@ -67,7 +68,7 @@ public:
 		wcex.lpfnWndProc = DERIVED_TYPE::WindowProc;
 		wcex.cbClsExtra = 0;
 		wcex.cbWndExtra = 0;
-		wcex.hInstance = GetModuleHandle(NULL);
+		wcex.hInstance = hinst;
 		wcex.hIcon = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_ICON_T));
 		wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
 		wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
@@ -76,6 +77,8 @@ public:
 		wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_ICON_T));
 
 		RegisterClassEx(&wcex);
+
+		m_hinst = hinst;
 
 		m_hwnd = CreateWindowEx(
 			dwExStyle, ClassName(), lpWindowName, dwStyle, x, y,
@@ -93,6 +96,7 @@ protected:
 	virtual LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) = 0;
 
 	HWND m_hwnd;
+	HINSTANCE m_hinst;
 };
 
 #endif
