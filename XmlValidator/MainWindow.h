@@ -15,14 +15,14 @@
 
 
 #include "basewin.h"
-#include "dialog.h"
+#include <commdlg.h>
+#include "application.h"
+
 //#include "file.h"
 #include "xml_validater.h"
-//#include "document.h"
 #include "sci_editor.h"
 #include "xml.h"
-//#include "SlimXml.h"
-#include <commdlg.h>
+
 
 namespace Matrix
 {
@@ -44,13 +44,20 @@ namespace Matrix
 		/// <summary>
 		/// 初始化窗体
 		/// </summary>
-		void InitWindow()
+		int InitWindow()
 		{
 			LoadComponent();
 			HMENU menu;
 			menu = GetMenu(m_hwnd);
 			CheckMenuItem(menu, IDM_WRAP, MF_CHECKED);
 			CheckMenuItem(menu, IDM_AUTOVALIDATE, m_auto_validate ? MF_CHECKED : MF_UNCHECKED);
+
+			bool init_success = true;
+			//init_success= InitializeFramework(m_hwnd);
+			if (!init_success)
+			{
+				return -1;
+			}
 		}
 
 		/// <summary>
@@ -122,7 +129,7 @@ namespace Matrix
 			//GetSaveFileName
 			return 0;
 		}
-
+		
 		//有问题
 		int Search(wchar_t * text)
 		{
@@ -174,6 +181,15 @@ namespace Matrix
 			return 0;
 		}
 
+		void RemoveBorder()
+		{
+			//SetWindowLong(m_hwnd, GWL_STYLE, GetWindowLong(m_hwnd, GWL_STYLE) & ~WS_CAPTION &~WS_BORDER);
+			//SetWindowLong(m_hwnd, GWL_STYLE, GetWindowLong(m_hwnd, GWL_STYLE) | (WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_POPUP));
+
+			SetWindowLong(m_hwnd, GWL_STYLE, GetWindowLong(m_hwnd, GWL_STYLE) &	(~(WS_CAPTION | WS_BORDER | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX)));
+			SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_DRAWFRAME);
+		}
+
 		/// <summary>
 		/// 简单校验XML文件一致性错误
 		/// </summary>
@@ -194,13 +210,6 @@ namespace Matrix
 					document = Matrix::TextEncoder::Utf8ToUnicode(content);
 				}
 			}
-
-			//SetWindowLong(m_hwnd, GWL_STYLE, GetWindowLong(m_hwnd, GWL_STYLE) & ~WS_CAPTION &~WS_BORDER);
-			//SetWindowLong(m_hwnd, GWL_STYLE, GetWindowLong(m_hwnd, GWL_STYLE) | (WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_POPUP));
-
-			//SetWindowLong(m_hwnd, GWL_STYLE, GetWindowLong(m_hwnd, GWL_STYLE) &	(~(WS_CAPTION | WS_BORDER | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX)));
-
-			//SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_DRAWFRAME);
 
 			//Matrix::XmlDocument xml;
 			//wchar_t * wdocument = const_cast<wchar_t *>(document);
@@ -352,6 +361,7 @@ LRESULT Matrix::MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lPara
 		break;
 
 	case WM_DESTROY:
+		DestroyFramework();
 		PostQuitMessage(0);
 		break;
 

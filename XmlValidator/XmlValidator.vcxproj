@@ -82,10 +82,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="application.h" />
     <ClInclude Include="basewin.h" />
+    <ClInclude Include="command_handler.h" />
     <ClInclude Include="common.h" />
-    <ClInclude Include="dialog.h" />
-    <ClInclude Include="document.h" />
+    <ClInclude Include="ribbon_framework.h" />
     <ClInclude Include="xml.h" />
     <ClInclude Include="text_encoder.h" />
     <ClInclude Include="file.h" />
@@ -96,6 +97,9 @@
     <ClInclude Include="xml_validater.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="application.cpp" />
+    <ClCompile Include="command_handler.cpp" />
+    <ClCompile Include="ribbon_framework.cpp" />
     <ClCompile Include="winmain.cpp" />
   </ItemGroup>
   <ItemGroup>

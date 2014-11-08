@@ -13,18 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Ribbon">
+      <UniqueIdentifier>{dd63398f-8d7b-4eb8-8ee7-08857caa06ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Matrix">
+      <UniqueIdentifier>{f671e3b6-a947-4de6-bbcc-feb16c0b2c23}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="mysql_helper.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="file.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="document.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="basewin.h">
@@ -36,20 +33,32 @@
     <ClInclude Include="mainwindow.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="dialog.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="sci_editor.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="text_encoder.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="xml_validater.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="xml.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="application.h">
+      <Filter>Ribbon</Filter>
+    </ClInclude>
+    <ClInclude Include="command_handler.h">
+      <Filter>Ribbon</Filter>
+    </ClInclude>
+    <ClInclude Include="ribbon_framework.h">
+      <Filter>Ribbon</Filter>
+    </ClInclude>
+    <ClInclude Include="xml_validater.h">
+      <Filter>Matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="text_encoder.h">
+      <Filter>Matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="mysql_helper.h">
+      <Filter>Matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="file.h">
+      <Filter>Matrix</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -60,6 +69,15 @@
   <ItemGroup>
     <ClCompile Include="winmain.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="application.cpp">
+      <Filter>Ribbon</Filter>
+    </ClCompile>
+    <ClCompile Include="command_handler.cpp">
+      <Filter>Ribbon</Filter>
+    </ClCompile>
+    <ClCompile Include="ribbon_framework.cpp">
+      <Filter>Ribbon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
