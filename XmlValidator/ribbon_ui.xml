@@ -15,12 +15,138 @@
       </Command.LabelTitle>
     </Command>
 
-    <Command Name="New" Symbol="IDC_NEW">
+    <Command Name="grpFile" Symbol="cmdGrpFile">
+      <Command.LabelTitle>
+        <String>File</String>
+      </Command.LabelTitle>
+    </Command>
+
+    <Command Name="grpCommon" Symbol="cmdGrpCommon">
+      <Command.LabelTitle>
+        <String>Common</String>
+      </Command.LabelTitle>
+    </Command>
+
+    <Command Name="grpFind" Symbol="cmdGrpFind">
+      <Command.LabelTitle>
+        <String>Find</String>
+      </Command.LabelTitle>
+    </Command>
+
+    <Command Name="grpValidate" Symbol="cmdGrpValidate">
+      <Command.LabelTitle>
+        <String>Validate</String>
+      </Command.LabelTitle>
+    </Command>
+
+    <Command Name="grpSettings" Symbol="cmdGrpSettings">
+      <Command.LabelTitle>
+        <String>Settings</String>
+      </Command.LabelTitle>
+    </Command>
+
+    <Command Name="grpAbout" Symbol="cmdGrpAbout">
+      <Command.LabelTitle>
+        <String>About</String>
+      </Command.LabelTitle>
+    </Command>
+
+    <Command Name="New" Symbol="IDR_NEW">
       <Command.LabelTitle>
         <String>New</String>
       </Command.LabelTitle>
       <Command.LabelDescription>
         <String>Create a new file.</String>
+      </Command.LabelDescription>
+    </Command>
+
+    <Command Name="Open" Symbol="IDR_OPEN">
+      <Command.LabelTitle>
+        <String>Open</String>
+      </Command.LabelTitle>
+      <Command.LabelDescription>
+        <String>Open a file.</String>
+      </Command.LabelDescription>
+    </Command>
+
+    <Command Name="Save" Symbol="IDR_SAVE">
+      <Command.LabelTitle>
+        <String>Save</String>
+      </Command.LabelTitle>
+      <Command.LabelDescription>
+        <String>Save the current file.</String>
+      </Command.LabelDescription>
+    </Command>
+
+    <Command Name="SaveAs" Symbol="IDR_SAVEAS">
+      <Command.LabelTitle>
+        <String>SaveAs</String>
+      </Command.LabelTitle>
+      <Command.LabelDescription>
+        <String>Save the current file as a new file.</String>
+      </Command.LabelDescription>
+    </Command>
+
+    <Command Name="Print" Symbol="IDR_PRINT">
+      <Command.LabelTitle>
+        <String>Print</String>
+      </Command.LabelTitle>
+      <Command.LabelDescription>
+        <String>Print file.</String>
+      </Command.LabelDescription>
+    </Command>
+
+    <Command Name="Find" Symbol="IDR_FIND">
+      <Command.LabelTitle>
+        <String>Find</String>
+      </Command.LabelTitle>
+      <Command.LabelDescription>
+        <String>Find a string in current file.</String>
+      </Command.LabelDescription>
+    </Command>
+
+    <Command Name="Replace" Symbol="IDR_REPLACE">
+      <Command.LabelTitle>
+        <String>Replace</String>
+      </Command.LabelTitle>
+      <Command.LabelDescription>
+        <String>Replace a string with another in current file.</String>
+      </Command.LabelDescription>
+    </Command>
+
+    <Command Name="Wrap" Symbol="IDR_WRAP">
+      <Command.LabelTitle>
+        <String>Auto Wrap</String>
+      </Command.LabelTitle>
+      <Command.LabelDescription>
+        <String>Wrap automaticly, or not.</String>
+      </Command.LabelDescription>
+    </Command>
+
+    <Command Name="Validate" Symbol="IDR_VALIDATE">
+      <Command.LabelTitle>
+        <String>Validate</String>
+      </Command.LabelTitle>
+      <Command.LabelDescription>
+        <String>Validate xml file.</String>
+      </Command.LabelDescription>
+    </Command>
+
+    <Command Name="AutoValidate" Symbol="IDR_AUTOVALIDATE">
+      <Command.LabelTitle>
+        <String>AutoValidate</String>
+      </Command.LabelTitle>
+      <Command.LabelDescription>
+        <String>Validate automaticly, or not.</String>
+      </Command.LabelDescription>
+    </Command>
+
+    <Command Name="About" Symbol="IDR_ABOUT">
+      <Command.LabelTitle>
+        <String>About</String>
+      </Command.LabelTitle>
+      <Command.LabelDescription>
+        <String>About the program.</String>
       </Command.LabelDescription>
     </Command>
 
@@ -47,6 +173,9 @@
             <Button CommandName="SaveAs" />
           </MenuGroup>
           <MenuGroup >
+            <Button CommandName="Print" />
+          </MenuGroup>
+          <MenuGroup >
             <Button CommandName="Exit" />
           </MenuGroup>
         </ApplicationMenu>
@@ -55,21 +184,35 @@
       <Ribbon.Tabs>
 
         <Tab CommandName="tabHome">
-          <Group CommandName="tabCommon" SizeDefinition="ThreeButtons">
-            <Button CommandName="InsertPicture"/>
-            <Button CommandName="Hyperlink"/>
-            <ToggleButton CommandName="cmdToggleButton1" />
+          <Group CommandName="grpFile" SizeDefinition="FourButtons">
+            <Button CommandName="New" />
+            <Button CommandName="Open" />
+            <Button CommandName="Save" />
+            <Button CommandName="SaveAs" />
           </Group>
-          <Group>
-            <Button />
+          <Group CommandName="grpFind" SizeDefinition="TwoButtons">
+            <Button CommandName="Find" />
+            <Button CommandName="Replace" />
+          </Group>
+          <Group CommandName="grpValidate" SizeDefinition="OneButton">
+            <Button CommandName="Validate" />
+          </Group>
+          <Group CommandName="grpSettings">
+            <CheckBox CommandName="Wrap" />
+            <CheckBox CommandName="AutoValidate" />
           </Group>
         </Tab>
         
-        <Tab CommandName="More">
+        <Tab CommandName="tabMore">
           <Group>
             <Button CommandName="cmdExit1" />
+            <CheckBox />
             <Button CommandName="cmdExit2" />
             <ComboBox />
+          </Group>
+
+          <Group>
+            <Button CommandName="About" />
           </Group>
         </Tab>
         

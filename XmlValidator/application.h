@@ -50,13 +50,19 @@ public:
 
     STDMETHOD(OnDestroyUICommand)(UINT32 commandId, 
         UI_COMMANDTYPE typeID,
-        IUICommandHandler* commandHandler);
+		IUICommandHandler* commandHandler);
+
+	static inline UINT RibbonHeight()
+	{
+		return m_ribbon_height;
+	}
 
 private:
     CApplication() 
         : m_cRef(1)
         , m_pCommandHandler(NULL)
     {
+		m_ribbon_height = 0;
     }
 
     ~CApplication() 
@@ -70,4 +76,5 @@ private:
 
     LONG m_cRef;                            // Reference count.
     IUICommandHandler * m_pCommandHandler;  // Generic Command Handler
+	static UINT m_ribbon_height;
 };

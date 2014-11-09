@@ -9,11 +9,15 @@
 *
 */
 
+#ifndef _SCI_EDITOR_
+#define _SCI_EDITOR_
+
 
 #include "common.h"
 #include <scintilla.h> 
 #include <scilexer.h> 
 #include "file.h"
+#include "xml_validater.h"
 
 namespace Matrix
 {
@@ -45,6 +49,8 @@ namespace Matrix
 	const COLORREF selection_wight = fore_white;
 	const COLORREF comment_green = RGB(0x57, 0xA6, 0x4A);		// 注释	
 
+	class SciEditor;
+
 	class SciEditor
 	{
 	public:
@@ -56,7 +62,9 @@ namespace Matrix
 			m_file_pos(Matrix::FilePos::HEAD),
 			m_vscroll_pos(0),
 			m_vscroll_size(0)
-		{}
+		{
+		}
+		
 
 		void Create(HWND hwndParent)
 		{
@@ -208,10 +216,134 @@ namespace Matrix
 			
 		}
 
-		void SetPos(RECT rect)
+		void SetPos(RECT rect, int menu_height = 0)
 		{
-			SetWindowPos(m_hwnd, HWND_TOP, 0, 160,
-				rect.right - rect.left - 11, rect.bottom - rect.top - 50 - 110, SWP_SHOWWINDOW);
+			SetWindowPos(m_hwnd, HWND_TOP, 0, menu_height,
+				rect.right - rect.left - 11, rect.bottom - rect.top - menu_height, SWP_SHOWWINDOW);
+		}
+
+
+		int New()
+		{
+			if (NULL != m_filename)
+			{
+				delete m_filename;
+				m_filename = NULL;
+			}
+			SendEditor(SCI_SETTEXT, NULL, (sptr_t)"");
+			return 0;
+		}
+
+		/// <summary>
+		/// 使用打开对话框打开文件
+		/// </summary>
+		int OpenFileDlg(HWND win,bool auto_validate=false)
+		{
+			OPENFILENAME ofn;      // 公共对话框结构。     
+			wchar_t filename[MAX_PATH]; // 保存获取文件名称的缓冲区。               
+			// 初始化选择文件对话框。
+			ZeroMemory(&ofn, sizeof(OPENFILENAME));
+			ZeroMemory(filename, MAX_PATH);
+			ofn.lStructSize = sizeof(OPENFILENAME);
+			ofn.hwndOwner = m_hwnd;
+			ofn.lpstrFile = filename;
+			ofn.nMaxFile = sizeof(filename);
+			ofn.lpstrFilter = L"All(*.*)\0*.*\0Xml(*.xml)\0*.xml\0Header(*.h)\0*.h\0Text(*.txt)\0*.TXT\0\0";
+			ofn.nFilterIndex = 1;
+			ofn.lpstrFileTitle = NULL;
+			ofn.nMaxFileTitle = 0;
+			ofn.lpstrInitialDir = NULL;
+			ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+			//ofn.lpTemplateName =  MAKEINTRESOURCE(ID_TEMP_DIALOG);    
+			// 显示打开选择文件对话框。     
+
+			if (GetOpenFileName(&ofn))
+			{
+				LoadFile(win,filename, auto_validate);
+			}
+			//GetSaveFileName
+			return 0;
+		}
+
+
+
+		int LoadFile(HWND win, LPCWSTR filename, bool auto_validate=false)
+		{
+			LoadFromFile(filename);
+
+			SetWindowText(win, std::wstring(filename).append(L" - Matrix").c_str());
+
+			if (auto_validate)
+			{
+				//ValidateXml();
+			}
+			return 0;
+		}
+
+		//有问题
+		int Search(wchar_t * text)
+		{
+			/*FINDREPLACE fr;
+			text = new wchar_t[100];
+			ZeroMemory(text, 200);
+			fr.lpstrFindWhat = text;
+			fr.lStructSize = sizeof(FINDREPLACE);
+			fr.hwndOwner = m_hwnd;
+			FindText(&fr);*/
+			return 0;
+		}
+
+		/// <summary>
+		/// 简单校验XML文件一致性错误
+		/// </summary>
+		int ValidateXml(LPCWSTR document = NULL)
+		{
+			char *content = NULL;
+			if (NULL == document)
+			{
+				int nlen = SendEditor(SCI_GETLENGTH);
+				content = new char[nlen + 1];
+				SendEditor(SCI_GETTEXT, nlen, (sptr_t)content);
+				if (NULL == *content)
+				{
+					return -1;
+				}
+				else
+				{
+					document = Matrix::TextEncoder::Utf8ToUnicode(content);
+				}
+			}
+
+			//Matrix::XmlDocument xml;
+			//wchar_t * wdocument = const_cast<wchar_t *>(document);
+			//xml.LoadFromFile(m_editor.FileName());
+			//xml.parse(wdocument, wcslen(document));
+			//MessageBox(NULL,xml.Name(), L"", MB_OK);
+
+			Matrix::XMLValidater tXml;
+			Matrix::XmlValidateError tError;
+			tXml.ValidateXml(std::wstring(document), tError);
+
+			TCHAR err[BUFSIZ];
+			wsprintf(err, L"第%d行%d列%s与第%d行%d列%s不匹配",
+				tError.Open.Line, tError.Open.Row, tError.OpenName.c_str(),
+				tError.Close.Line, tError.Close.Row, tError.CloseName.c_str());
+
+			if (tError.Count == -1)
+			{
+				MessageBox(m_hwnd, L"Xml语法错误", L"Error", MB_ICONERROR | MB_OK);
+			}
+			else if (tError.Count > 0)
+			{
+				MessageBox(m_hwnd, err, L"Error", MB_ICONERROR | MB_OK);
+				SendEditor(SCI_GOTOLINE, 0);
+				SetFocus();
+			}
+			else
+			{
+				MessageBox(m_hwnd, L"未见错误", L"Info", MB_ICONINFORMATION | MB_OK);
+			}
+			return 0;
 		}
 
 		int LoadFromFile(const wchar_t *filename)
@@ -361,6 +493,7 @@ namespace Matrix
 		Matrix::FilePos m_file_pos;
 		int m_vscroll_size;
 		int m_vscroll_pos;
-
 	};
 }
+
+#endif

@@ -10,6 +10,9 @@
 IUIFramework *g_pFramework = NULL;  // Reference to the Ribbon framework.
 IUIApplication *g_pApplication = NULL;  // Reference to the Application object.
 
+Matrix::SciEditor * MainFrame::Editor;
+HWND MainFrame::Win;
+
 //
 //  FUNCTION: InitializeFramework(HWND)
 //
@@ -24,7 +27,7 @@ IUIApplication *g_pApplication = NULL;  // Reference to the Application object.
 //      3) Loading the binary markup compiled by UICC.exe.
 //
 //
-bool InitializeFramework(HWND hWnd)
+bool MainFrame::InitializeFramework(HWND hWnd, Matrix::SciEditor * editor)
 {
     // Here we instantiate the Ribbon framework object.
     HRESULT hr = CoCreateInstance(CLSID_UIRibbonFramework, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&g_pFramework));
@@ -56,6 +59,9 @@ bool InitializeFramework(HWND hWnd)
         return false;
     }
 
+	Win = hWnd;
+	Editor = editor;
+
     return true;
 }
 
@@ -65,7 +71,7 @@ bool InitializeFramework(HWND hWnd)
 //  PURPOSE:  Tears down the Ribbon framework.
 //
 //
-void DestroyFramework()
+void MainFrame::DestroyFramework()
 {
     if (g_pFramework)
     {
@@ -79,4 +85,11 @@ void DestroyFramework()
         g_pApplication->Release();
         g_pApplication = NULL;
     }
+}
+
+void MainFrame::UpdateLayout()
+{
+	RECT rect;
+	GetClientRect(Win,&rect);
+	Editor->SetPos(rect, CApplication::RibbonHeight());
 }

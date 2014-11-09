@@ -25,7 +25,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
 	Matrix::MainWindow win;
 
-	if (!win.Create(L"Matrix", WS_OVERLAPPEDWINDOW,hInstance))
+	if (!win.Create(L"Matrix", WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN, hInstance))
 	{
 		return 0;
 	}

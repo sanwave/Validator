@@ -60,6 +60,9 @@
     <ClInclude Include="file.h">
       <Filter>Matrix</Filter>
     </ClInclude>
+    <ClInclude Include="menu.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MainWindow.rc">

@@ -17,6 +17,7 @@
 #include "basewin.h"
 #include <commdlg.h>
 #include "application.h"
+#include "menu.h"
 
 //#include "file.h"
 #include "xml_validater.h"
@@ -26,13 +27,19 @@
 
 namespace Matrix
 {
-
 	class MainWindow : public BaseWindow<MainWindow>
 	{
 	public:
 
-		MainWindow() : m_auto_validate(false)
-		{}
+		MainWindow()
+		{
+			m_this = this;
+		}
+		
+		SciEditor * Editor()
+		{
+			return &m_editor;
+		}
 
 		PCWSTR  ClassName() const { return L"Main Window"; }
 
@@ -47,7 +54,7 @@ namespace Matrix
 		int InitWindow()
 		{			
 			//InitMenu();
-			bool init_success = InitializeFramework(m_hwnd);
+			bool init_success = MainFrame::InitializeFramework(m_hwnd,&m_editor);
 			if (!init_success)
 			{
 				return -1;
@@ -71,7 +78,7 @@ namespace Matrix
 			SetMenu(m_hwnd, menu);
 			//GetMenu(m_hwnd);
 			CheckMenuItem(menu, IDM_WRAP, MF_CHECKED);
-			CheckMenuItem(menu, IDM_AUTOVALIDATE, m_auto_validate ? MF_CHECKED : MF_UNCHECKED);
+			CheckMenuItem(menu, IDM_AUTOVALIDATE, m_menu.AutoValidate() ? MF_CHECKED : MF_UNCHECKED);
 			return 0;
 		}
 
@@ -80,7 +87,7 @@ namespace Matrix
 		/// </summary>
 		void AdaptSize(RECT &rect)
 		{
-			m_editor.SetPos(rect);
+			m_editor.SetPos(rect, 160);
 		}
 
 		/// <summary>
@@ -96,55 +103,11 @@ namespace Matrix
 				for (UINT i = 0; i < fileNum; i++)
 				{
 					::DragQueryFile(hDropInfo, i, fileName, MAX_PATH);
-					LoadFile(fileName);
+					m_editor.LoadFile(m_hwnd,fileName);
 				}
 				::DragFinish(hDropInfo);
 				delete fileName;
 			}
-			return 0;
-		}
-
-		/// <summary>
-		/// 使用打开对话框打开文件
-		/// </summary>
-		int OpenFileDlg()
-		{
-			OPENFILENAME ofn;      // 公共对话框结构。     
-			wchar_t filename[MAX_PATH]; // 保存获取文件名称的缓冲区。               
-			// 初始化选择文件对话框。
-			ZeroMemory(&ofn, sizeof(OPENFILENAME));
-			ZeroMemory(filename, MAX_PATH);
-			ofn.lStructSize = sizeof(OPENFILENAME);
-			ofn.hwndOwner = m_hwnd;
-			ofn.lpstrFile = filename;
-			ofn.nMaxFile = sizeof(filename);
-			ofn.lpstrFilter = L"All(*.*)\0*.*\0Xml(*.xml)\0*.xml\0Header(*.h)\0*.h\0Text(*.txt)\0*.TXT\0\0";
-			ofn.nFilterIndex = 1;
-			ofn.lpstrFileTitle = NULL;
-			ofn.nMaxFileTitle = 0;
-			ofn.lpstrInitialDir = NULL;
-			ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
-			//ofn.lpTemplateName =  MAKEINTRESOURCE(ID_TEMP_DIALOG);    
-			// 显示打开选择文件对话框。     
-
-			if (GetOpenFileName(&ofn))
-			{
-				LoadFile(filename);
-			}
-			//GetSaveFileName
-			return 0;
-		}
-		
-		//有问题
-		int Search(wchar_t * text)
-		{
-			/*FINDREPLACE fr;
-			text = new wchar_t[100];
-			ZeroMemory(text, 200);
-			fr.lpstrFindWhat = text;
-			fr.lStructSize = sizeof(FINDREPLACE);
-			fr.hwndOwner = m_hwnd;
-			FindText(&fr);*/
 			return 0;
 		}
 
@@ -171,20 +134,7 @@ namespace Matrix
 			::DrawText(m_hdc, text, -1, &rect, DT_NOCLIP | DT_WORDBREAK | DT_EDITCONTROL);
 			SelectObject(m_hdc, hFontOld);
 			ReleaseDC(m_hwnd, m_hdc);
-		}
-
-		int LoadFile(LPCWSTR filename)
-		{
-			m_editor.LoadFromFile(filename);
-
-			SetWindowText(m_hwnd, std::wstring(filename).append(L" - Matrix").c_str());
-
-			if (m_auto_validate)
-			{
-				//ValidateXml();
-			}
-			return 0;
-		}
+		}		
 
 		void RemoveBorder()
 		{
@@ -193,61 +143,8 @@ namespace Matrix
 
 			SetWindowLong(m_hwnd, GWL_STYLE, GetWindowLong(m_hwnd, GWL_STYLE) &	(~(WS_CAPTION | WS_BORDER | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX)));
 			SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_DRAWFRAME);
-		}
-
-		/// <summary>
-		/// 简单校验XML文件一致性错误
-		/// </summary>
-		int ValidateXml(LPCWSTR document = NULL)
-		{
-			char *content = NULL;
-			if (NULL == document)
-			{
-				int nlen = m_editor.SendEditor(SCI_GETLENGTH);
-				content = new char[nlen + 1];
-				m_editor.SendEditor(SCI_GETTEXT, nlen, (sptr_t)content);
-				if (NULL == *content)
-				{
-					return -1;
-				}
-				else
-				{
-					document = Matrix::TextEncoder::Utf8ToUnicode(content);
-				}
-			}
-
-			//Matrix::XmlDocument xml;
-			//wchar_t * wdocument = const_cast<wchar_t *>(document);
-			//xml.LoadFromFile(m_editor.FileName());
-			//xml.parse(wdocument, wcslen(document));
-			//MessageBox(NULL,xml.Name(), L"", MB_OK);
-
-			Matrix::XMLValidater tXml;
-			Matrix::XmlValidateError tError;
-			tXml.ValidateXml(std::wstring(document), tError);
-
-			TCHAR err[BUFSIZ];
-			wsprintf(err, L"第%d行%d列%s与第%d行%d列%s不匹配",
-				tError.Open.Line, tError.Open.Row, tError.OpenName.c_str(),
-				tError.Close.Line, tError.Close.Row, tError.CloseName.c_str());
-
-			if (tError.Count == -1)
-			{
-				MessageBox(m_hwnd, L"Xml语法错误", L"Error", MB_ICONERROR | MB_OK);
-			}
-			else if (tError.Count > 0)
-			{
-				MessageBox(m_hwnd, err, L"Error", MB_ICONERROR | MB_OK);
-				m_editor.SendEditor(SCI_GOTOLINE, 0);
-				m_editor.SetFocus();
-			}
-			else
-			{
-				MessageBox(m_hwnd, L"未见错误", L"Info", MB_ICONINFORMATION | MB_OK);
-			}
-			return 0;
-		}
-
+		}		
+				
 
 	private:
 		//m_ps与m_hdc为Paint中临时变量，放在类中仅仅为了性能考虑
@@ -255,26 +152,28 @@ namespace Matrix
 		HDC m_hdc;
 
 		Matrix::SciEditor m_editor;
-		bool m_auto_validate;
+		Matrix::Menu m_menu;
+
+		public:
+			static MainWindow * m_this;
 	};
+
+	MainWindow * MainWindow::m_this;
 }
 
 	/// <summary>
 	/// Windows消息处理
 	/// </summary>
 LRESULT Matrix::MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-	UINT wmId = 0, wmEvent = 0;
-	HMENU h_menu = GetMenu(m_hwnd);
+{	
 	SCNotification *notify = NULL;
-	bool checked = true;
 
 	switch (uMsg)
 	{
 
 	case WM_CREATE:
 		InitWindow();
-		//DragAcceptFiles(m_hwnd, TRUE);
+		DragAcceptFiles(m_hwnd, TRUE);
 		break;
 
 	case WM_SHOWWINDOW:
@@ -298,50 +197,8 @@ LRESULT Matrix::MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lPara
 		break;
 
 	case WM_COMMAND:
-		wmId = LOWORD(wParam);
-		wmEvent = HIWORD(wParam);
-		// 分析菜单选择: 
-		switch (wmId)
+		if (0 == m_menu.HandleMessage(m_hwnd, &m_editor, wParam, lParam))
 		{
-		case IDM_ABOUT:
-			//DialogBox(nullptr, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-			break;
-
-		case IDM_OPEN:
-			OpenFileDlg();
-			break;
-
-		case IDM_SAVE:
-			m_editor.Save();
-			break;
-
-		case IDM_PRINT:
-			break;
-
-		case IDM_EXIT:
-			DestroyWindow(m_hwnd);
-			break;
-
-		case IDM_FIND:
-			Search(NULL);
-			break;
-
-		case IDM_WRAP:
-			checked = MF_CHECKED == GetMenuState(h_menu, IDM_WRAP, MF_BYCOMMAND);
-			m_editor.SetWrap(!checked);
-			CheckMenuItem(h_menu, IDM_WRAP, (!checked ? MF_CHECKED : MF_UNCHECKED));
-			break;
-
-		case IDM_VALIDATE:
-			ValidateXml(NULL);
-			break;
-
-		case IDM_AUTOVALIDATE:
-			m_auto_validate = MF_CHECKED != GetMenuState(h_menu, IDM_AUTOVALIDATE, MF_BYCOMMAND);
-			CheckMenuItem(h_menu, IDM_AUTOVALIDATE, m_auto_validate ? MF_CHECKED : MF_UNCHECKED);
-			break;
-
-		default:
 			return DefWindowProc(m_hwnd, uMsg, wParam, lParam);
 		}
 		break;
@@ -366,7 +223,7 @@ LRESULT Matrix::MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lPara
 		break;
 
 	case WM_DESTROY:
-		DestroyFramework();
+		MainFrame::DestroyFramework();
 		PostQuitMessage(0);
 		break;
 

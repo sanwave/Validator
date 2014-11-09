@@ -17,6 +17,9 @@
 #include "ribbon_framework.h"
 #include "ribbon_ui.h"
 
+#include "sci_editor.h"
+
+
 // This is a generic command handler used by every command in this sample.
 
 //

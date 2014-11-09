@@ -109,17 +109,63 @@ STDMETHODIMP CCommandHandler::Execute(
     const PROPVARIANT* ppropvarValue,
     IUISimplePropertySet* pCommandExecutionProperties)
 {
-
-	if (nCmdID == IDR_EXIT)
-	{
-		MessageBox(NULL, L"Clicked on My Button!", L"My Button Execute", MB_OK);
-	}
-
     UNREFERENCED_PARAMETER(pCommandExecutionProperties);
     UNREFERENCED_PARAMETER(ppropvarValue);
     UNREFERENCED_PARAMETER(key);
     UNREFERENCED_PARAMETER(verb);
     UNREFERENCED_PARAMETER(nCmdID);
+
+	
+	bool checked = true;
+	switch (nCmdID)
+	{
+
+	case IDR_NEW:
+		MainFrame::Editor->New();
+		break;
+
+	case IDR_OPEN:
+		MainFrame::Editor->OpenFileDlg(MainFrame::Win);
+		break;
+
+	case IDR_SAVE:
+		MainFrame::Editor->Save();
+		break;
+
+	case IDR_PRINT:
+		break;
+
+	case IDR_FIND:
+		MainFrame::Editor->Search(NULL);
+		break;
+
+	case IDR_WRAP:
+		//checked = MF_CHECKED == GetMenuState(h_menu, IDR_WRAP, MF_BYCOMMAND);
+		//editor->SetWrap(!checked);
+		//CheckMenuItem(h_menu, IDR_WRAP, (!checked ? MF_CHECKED : MF_UNCHECKED));
+		break;
+
+	case IDR_VALIDATE:
+		MainFrame::Editor->ValidateXml(NULL);
+		break;
+
+	case IDR_AUTOVALIDATE:
+		//m_auto_validate = MF_CHECKED != GetMenuState(h_menu, IDR_AUTOVALIDATE, MF_BYCOMMAND);
+		//CheckMenuItem(h_menu, IDM_AUTOVALIDATE, m_auto_validate ? MF_CHECKED : MF_UNCHECKED);
+		break;
+		
+	case IDR_EXIT:
+		MainFrame::DestroyFramework();
+		PostQuitMessage(0);
+		break;
+
+	case IDR_ABOUT:
+		//DialogBox(nullptr, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+		break;
+
+	default:
+		break;
+	}
 
     return S_OK;
 }
