@@ -19,26 +19,15 @@
 #include "application.h"
 #include "menu.h"
 
-//#include "file.h"
-#include "xml_validater.h"
-#include "sci_editor.h"
-#include "xml.h"
-
 
 namespace Matrix
 {
 	class MainWindow : public BaseWindow<MainWindow>
 	{
 	public:
+		MainWindow() :m_use_ribbon(false)
+		{
 
-		MainWindow()
-		{
-			m_this = this;
-		}
-		
-		SciEditor * Editor()
-		{
-			return &m_editor;
 		}
 
 		PCWSTR  ClassName() const { return L"Main Window"; }
@@ -52,14 +41,23 @@ namespace Matrix
 		/// 初始化窗体
 		/// </summary>
 		int InitWindow()
-		{			
-			//InitMenu();
-			bool init_success = MainFrame::InitializeFramework(m_hwnd,&m_editor);
-			if (!init_success)
+		{
+			//m_use_ribbon = true;
+
+			if (true == m_use_ribbon)
 			{
-				return -1;
-			}			
-			LoadComponent();			
+				bool init_success = MainFrame::InitializeFramework(m_hwnd, &m_editor);
+				if (!init_success)
+				{
+					return -1;
+				}
+			}
+			else
+			{
+				m_menu.Init(m_hwnd, m_hinst);
+			}
+						
+			LoadComponent();
 			return 0;
 		}
 
@@ -72,22 +70,20 @@ namespace Matrix
 			m_editor.Init();
 		}
 
-		int InitMenu()
-		{
-			HMENU menu = LoadMenu(m_hinst, MAKEINTRESOURCE(IDR_MENU));
-			SetMenu(m_hwnd, menu);
-			//GetMenu(m_hwnd);
-			CheckMenuItem(menu, IDM_WRAP, MF_CHECKED);
-			CheckMenuItem(menu, IDM_AUTOVALIDATE, m_menu.AutoValidate() ? MF_CHECKED : MF_UNCHECKED);
-			return 0;
-		}
-
 		/// <summary>
 		/// 自适应父窗体大小
 		/// </summary>
 		void AdaptSize(RECT &rect)
 		{
-			m_editor.SetPos(rect, 160);
+			if (m_use_ribbon)
+			{
+				MainFrame::UpdateLayout();
+			}
+			else
+			{
+				rect.bottom -= 45;
+				m_editor.SetPos(rect);
+			}			
 		}
 
 		/// <summary>
@@ -140,11 +136,9 @@ namespace Matrix
 		{
 			//SetWindowLong(m_hwnd, GWL_STYLE, GetWindowLong(m_hwnd, GWL_STYLE) & ~WS_CAPTION &~WS_BORDER);
 			//SetWindowLong(m_hwnd, GWL_STYLE, GetWindowLong(m_hwnd, GWL_STYLE) | (WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_POPUP));
-
 			SetWindowLong(m_hwnd, GWL_STYLE, GetWindowLong(m_hwnd, GWL_STYLE) &	(~(WS_CAPTION | WS_BORDER | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX)));
 			SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_DRAWFRAME);
-		}		
-				
+		}				
 
 	private:
 		//m_ps与m_hdc为Paint中临时变量，放在类中仅仅为了性能考虑
@@ -154,11 +148,9 @@ namespace Matrix
 		Matrix::SciEditor m_editor;
 		Matrix::Menu m_menu;
 
-		public:
-			static MainWindow * m_this;
-	};
+		bool m_use_ribbon;
 
-	MainWindow * MainWindow::m_this;
+	};
 }
 
 	/// <summary>
@@ -192,7 +184,7 @@ LRESULT Matrix::MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lPara
 
 	case WM_PAINT:
 		m_hdc = BeginPaint(m_hwnd, &m_ps);
-		//FillRect(m_hdc, &m_ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
+		FillRect(m_hdc, &m_ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
 		EndPaint(m_hwnd, &m_ps);
 		break;
 
@@ -223,7 +215,10 @@ LRESULT Matrix::MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lPara
 		break;
 
 	case WM_DESTROY:
-		MainFrame::DestroyFramework();
+		if (m_use_ribbon)
+		{
+			MainFrame::DestroyFramework();
+		}
 		PostQuitMessage(0);
 		break;
 

@@ -15,6 +15,12 @@
       </Command.LabelTitle>
     </Command>
 
+    <Command Name="tabMinimize" Symbol="IDR_MINIMIZE">
+      <Command.LabelTitle>
+        <String>Show</String>
+      </Command.LabelTitle>
+    </Command>
+    
     <Command Name="grpFile" Symbol="cmdGrpFile">
       <Command.LabelTitle>
         <String>File</String>
@@ -55,6 +61,9 @@
       <Command.LabelTitle>
         <String>New</String>
       </Command.LabelTitle>
+      <Command.TooltipTitle>
+        <String>New (Ctrl+N)</String>
+      </Command.TooltipTitle>
       <Command.LabelDescription>
         <String>Create a new file.</String>
       </Command.LabelDescription>
@@ -114,6 +123,12 @@
       </Command.LabelDescription>
     </Command>
 
+    <Command Name="SwitchBackColor" Symbol="IDR_SWITCH_BACKCOLOR">
+      <Command.LabelTitle>
+        <String>Change BgColor</String>
+      </Command.LabelTitle>
+    </Command>
+
     <Command Name="Wrap" Symbol="IDR_WRAP">
       <Command.LabelTitle>
         <String>Auto Wrap</String>
@@ -134,7 +149,7 @@
 
     <Command Name="AutoValidate" Symbol="IDR_AUTOVALIDATE">
       <Command.LabelTitle>
-        <String>AutoValidate</String>
+        <String>Auto Validate</String>
       </Command.LabelTitle>
       <Command.LabelDescription>
         <String>Validate automaticly, or not.</String>
@@ -178,8 +193,25 @@
           <MenuGroup >
             <Button CommandName="Exit" />
           </MenuGroup>
+          <MenuGroup >
+            <Button CommandName="About" />
+          </MenuGroup>
         </ApplicationMenu>
       </Ribbon.ApplicationMenu >
+
+      <Ribbon.SizeDefinitions>
+        <SizeDefinition Name="CustomTemplate">
+          <GroupSizeDefinition Size="Large">
+            <ControlSizeDefinition ImageSize="Large" IsLabelVisible="true" />
+          </GroupSizeDefinition>
+          <GroupSizeDefinition Size="Medium">
+            <ControlSizeDefinition ImageSize="Small" IsLabelVisible="false" />
+          </GroupSizeDefinition>
+          <GroupSizeDefinition Size="Small">
+            <ControlSizeDefinition ImageSize="Small" IsLabelVisible="false" />
+          </GroupSizeDefinition>
+        </SizeDefinition>
+      </Ribbon.SizeDefinitions>
 
       <Ribbon.Tabs>
 
@@ -194,27 +226,26 @@
             <Button CommandName="Find" />
             <Button CommandName="Replace" />
           </Group>
-          <Group CommandName="grpValidate" SizeDefinition="OneButton">
+          <Group CommandName="grpValidate" SizeDefinition="OneButton" >
             <Button CommandName="Validate" />
           </Group>
-          <Group CommandName="grpSettings">
+          <Group CommandName="grpSettings" >
+            <Button CommandName="SwitchBackColor" />
             <CheckBox CommandName="Wrap" />
             <CheckBox CommandName="AutoValidate" />
           </Group>
         </Tab>
         
         <Tab CommandName="tabMore">
-          <Group>
-            <Button CommandName="cmdExit1" />
-            <CheckBox />
-            <Button CommandName="cmdExit2" />
-            <ComboBox />
-          </Group>
-
-          <Group>
+          <Group CommandName="grpAbout" SizeDefinition="OneButton">
             <Button CommandName="About" />
           </Group>
-        </Tab>
+
+          <Group CommandName="grpTest">
+            <Spinner CommandName="Spinner" />
+            <ComboBox CommandName="ComboBox" />
+          </Group>
+        </Tab>      
         
       </Ribbon.Tabs>
     </Ribbon>

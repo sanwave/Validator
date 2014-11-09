@@ -221,65 +221,7 @@ namespace Matrix
 			SetWindowPos(m_hwnd, HWND_TOP, 0, menu_height,
 				rect.right - rect.left - 11, rect.bottom - rect.top - menu_height, SWP_SHOWWINDOW);
 		}
-
-
-		int New()
-		{
-			if (NULL != m_filename)
-			{
-				delete m_filename;
-				m_filename = NULL;
-			}
-			SendEditor(SCI_SETTEXT, NULL, (sptr_t)"");
-			return 0;
-		}
-
-		/// <summary>
-		/// 使用打开对话框打开文件
-		/// </summary>
-		int OpenFileDlg(HWND win,bool auto_validate=false)
-		{
-			OPENFILENAME ofn;      // 公共对话框结构。     
-			wchar_t filename[MAX_PATH]; // 保存获取文件名称的缓冲区。               
-			// 初始化选择文件对话框。
-			ZeroMemory(&ofn, sizeof(OPENFILENAME));
-			ZeroMemory(filename, MAX_PATH);
-			ofn.lStructSize = sizeof(OPENFILENAME);
-			ofn.hwndOwner = m_hwnd;
-			ofn.lpstrFile = filename;
-			ofn.nMaxFile = sizeof(filename);
-			ofn.lpstrFilter = L"All(*.*)\0*.*\0Xml(*.xml)\0*.xml\0Header(*.h)\0*.h\0Text(*.txt)\0*.TXT\0\0";
-			ofn.nFilterIndex = 1;
-			ofn.lpstrFileTitle = NULL;
-			ofn.nMaxFileTitle = 0;
-			ofn.lpstrInitialDir = NULL;
-			ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
-			//ofn.lpTemplateName =  MAKEINTRESOURCE(ID_TEMP_DIALOG);    
-			// 显示打开选择文件对话框。     
-
-			if (GetOpenFileName(&ofn))
-			{
-				LoadFile(win,filename, auto_validate);
-			}
-			//GetSaveFileName
-			return 0;
-		}
-
-
-
-		int LoadFile(HWND win, LPCWSTR filename, bool auto_validate=false)
-		{
-			LoadFromFile(filename);
-
-			SetWindowText(win, std::wstring(filename).append(L" - Matrix").c_str());
-
-			if (auto_validate)
-			{
-				//ValidateXml();
-			}
-			return 0;
-		}
-
+		
 		//有问题
 		int Search(wchar_t * text)
 		{
@@ -345,37 +287,6 @@ namespace Matrix
 			}
 			return 0;
 		}
-
-		int LoadFromFile(const wchar_t *filename)
-		{
-			m_current_page = 0;
-
-			size_t ulen = wcslen(filename);
-			m_filename = new wchar_t[ulen + 1];
-			lstrcpynW(m_filename, filename, ulen + 1);
-
-			if (wcsstr(m_filename, L".xml"))
-			{
-				SetTextStyle(SCLEX_XML);
-			}
-			else if (wcsstr(m_filename, L".cpp") || wcsstr(m_filename, L".h"))
-			{
-				SetTextStyle(SCLEX_CPP);
-			}
-			else
-			{
-				SetTextStyle(0);
-			}
-
-			const char * text = Matrix::File(filename).Utf8Text(m_current_page);
-			m_file_pos = Matrix::FilePos::HEAD;
-			SendEditor(SCI_SETTEXT, NULL, (sptr_t)text);
-			
-			delete text;
-			text = NULL;
-			GetScrollSize();
-			return m_current_page;
-		}
 		
 		int NextPage()
 		{
@@ -405,14 +316,100 @@ namespace Matrix
 			}
 		}
 
+		int New()
+		{
+			if (NULL != m_filename)
+			{
+				delete m_filename;
+				m_filename = NULL;
+			}
+			SendEditor(SCI_SETTEXT, NULL, (sptr_t)"");
+			return 0;
+		}
+
+		/// <summary>
+		/// 使用打开对话框打开文件
+		/// </summary>
+		int OpenFileDlg(HWND win, bool auto_validate = false)
+		{
+			OPENFILENAME ofn;      // 公共对话框结构。     
+			wchar_t filename[MAX_PATH]; // 保存获取文件名称的缓冲区。               
+			// 初始化选择文件对话框。
+			ZeroMemory(&ofn, sizeof(OPENFILENAME));
+			ZeroMemory(filename, MAX_PATH);
+			ofn.lStructSize = sizeof(OPENFILENAME);
+			ofn.hwndOwner = m_hwnd;
+			ofn.lpstrFile = filename;
+			ofn.nMaxFile = sizeof(filename);
+			ofn.lpstrFilter = L"All(*.*)\0*.*\0Xml(*.xml)\0*.xml\0Header(*.h)\0*.h\0Text(*.txt)\0*.TXT\0\0";
+			ofn.nFilterIndex = 1;
+			ofn.lpstrFileTitle = NULL;
+			ofn.nMaxFileTitle = 0;
+			ofn.lpstrInitialDir = NULL;
+			ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+			//ofn.lpTemplateName =  MAKEINTRESOURCE(ID_TEMP_DIALOG);    
+			// 显示打开选择文件对话框。     
+
+			if (GetOpenFileName(&ofn))
+			{
+				LoadFile(win, filename, auto_validate);
+			}
+			//GetSaveFileName
+			return 0;
+		}
+
+		int LoadFile(HWND win, LPCWSTR filename, bool auto_validate = false)
+		{
+			LoadFromFile(filename);
+
+			SetWindowText(win, std::wstring(filename).append(L" - Matrix").c_str());
+
+			if (auto_validate)
+			{
+				//ValidateXml();
+			}
+			return 0;
+		}
+
+		int LoadFromFile(const wchar_t *filename)
+		{
+			m_current_page = 0;
+
+			size_t ulen = wcslen(filename);
+			m_filename = new wchar_t[ulen + 1];
+			lstrcpynW(m_filename, filename, ulen + 1);
+
+			if (wcsstr(m_filename, L".xml"))
+			{
+				SetTextStyle(SCLEX_XML);
+			}
+			else if (wcsstr(m_filename, L".cpp") || wcsstr(m_filename, L".h"))
+			{
+				SetTextStyle(SCLEX_CPP);
+			}
+			else
+			{
+				SetTextStyle(0);
+			}
+
+			const char * text = Matrix::File(filename).Utf8Text(m_current_page);
+			m_file_pos = Matrix::FilePos::HEAD;
+			SendEditor(SCI_SETTEXT, NULL, (sptr_t)text);
+
+			delete text;
+			text = NULL;
+			GetScrollSize();
+			return m_current_page;
+		}
+
 		int Save()
 		{
 			int nlen = SendEditor(SCI_GETLENGTH);
 			char * content = new char[nlen + 1];
-			SendEditor(SCI_GETTEXT, nlen, (sptr_t)content);
+			SendEditor(SCI_GETTEXT, nlen + 1, (sptr_t)content);
 			if (NULL == m_filename)
 			{
-				return -2;
+				return SaveAs();
 			}
 			else if (NULL == *content)
 			{
@@ -420,8 +417,69 @@ namespace Matrix
 			}
 			else
 			{
-				Matrix::File(m_filename).WriteText(content, nlen, true);
+				int res = Matrix::File(m_filename).OverWrite(content, nlen);
 			}
+			return 0;
+		}
+
+		int SaveAs()
+		{
+			OPENFILENAME ofn;      // 公共对话框结构。     
+			wchar_t filename[MAX_PATH]; // 保存获取文件名称的缓冲区。               
+			// 初始化选择文件对话框。
+			ZeroMemory(&ofn, sizeof(OPENFILENAME));
+			ZeroMemory(filename, MAX_PATH);
+			ofn.lStructSize = sizeof(OPENFILENAME);
+			ofn.hwndOwner = m_hwnd;
+			ofn.lpstrFile = filename;
+			ofn.nMaxFile = sizeof(filename);
+			ofn.lpstrFilter = L"All(*.*)\0*.*\0Xml(*.xml)\0*.xml\0Header(*.h)\0*.h\0Text(*.txt)\0*.TXT\0\0";
+			ofn.nFilterIndex = 1;
+			ofn.lpstrFileTitle = NULL;
+			ofn.nMaxFileTitle = 0;
+			ofn.lpstrInitialDir = NULL;
+			ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+			//ofn.lpTemplateName =  MAKEINTRESOURCE(ID_TEMP_DIALOG);    
+			// 显示打开选择文件对话框。     
+
+			if (GetSaveFileName(&ofn))
+			{				
+				size_t ulen = wcslen(ofn.lpstrFile);
+				wchar_t * filename = new wchar_t[ulen + 1];
+				lstrcpynW(filename, ofn.lpstrFile, ulen + 1);
+
+				int nlen = SendEditor(SCI_GETLENGTH);
+				char * content = new char[nlen + 1];
+				SendEditor(SCI_GETTEXT, nlen+1, (sptr_t)content);
+				bool is_saved = false;
+				if (0 == Matrix::File(filename).WriteText(content, nlen, false))
+				{
+					if (IDYES == MessageBoxW(m_hwnd, L"该文件已存在，要覆盖吗？", L"Warning", MB_YESNO))
+					{
+						Matrix::File(filename).OverWrite(content, nlen);
+						is_saved = true;
+					}
+				}
+				else
+				{
+					is_saved = true;
+				}
+
+				if (is_saved)
+				{
+					if (NULL != m_filename)
+					{
+						delete m_filename;
+					}
+					m_filename = filename;
+				}
+				else
+				{
+					delete filename;
+					filename = NULL;
+				}
+			}
+			//GetSaveFileName
 			return 0;
 		}
 

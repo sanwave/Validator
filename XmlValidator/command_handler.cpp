@@ -132,6 +132,10 @@ STDMETHODIMP CCommandHandler::Execute(
 		MainFrame::Editor->Save();
 		break;
 
+	case IDR_SAVEAS:
+		MainFrame::Editor->SaveAs();
+		break;
+
 	case IDR_PRINT:
 		break;
 
@@ -162,6 +166,69 @@ STDMETHODIMP CCommandHandler::Execute(
 	case IDR_ABOUT:
 		//DialogBox(nullptr, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
 		break;
+
+	/*case IDR_MINIMIZE:
+		if (g_pFramework)
+		{
+			IPropertyStore *pPropertyStore = NULL;
+			/*HRESULT hr = g_pApplication->QueryInterface(__uuidof(IPropertyStore), (void**)&pPropertyStore);
+			if (SUCCEEDED(hr))
+			{
+				if (ppropvarValue != NULL)
+				{
+					// Is the ToggleButton state on or off?
+					BOOL fToggled;
+					hr = UIPropertyToBoolean(*key, *ppropvarValue, &fToggled);
+
+					if (SUCCEEDED(hr))
+					{
+						// Set the ribbon display state based on the toggle state.
+						PROPVARIANT propvar;
+						PropVariantInit(&propvar);
+						UIInitPropertyFromBoolean(UI_PKEY_Minimized,
+							fToggled,
+							&propvar);
+						hr = pPropertyStore->SetValue(UI_PKEY_Minimized,
+							propvar);
+						pPropertyStore->Commit();
+					}
+					pPropertyStore->Release();
+				}
+			}
+		}
+		break;*/
+
+	case IDR_SWITCH_BACKCOLOR:
+		if (g_pFramework)
+		{
+			IPropertyStore *pPropertyStore = NULL;
+			HRESULT hr = g_pApplication->QueryInterface(__uuidof(IPropertyStore), (void**)&pPropertyStore);
+			if (SUCCEEDED(hr))
+			{
+				PROPVARIANT propvarBackground;
+				PROPVARIANT propvarHighlight;
+				PROPVARIANT propvarText;
+
+				// UI_HSBCOLOR is a type defined in UIRibbon.h that is composed of 
+				// three component values: hue, saturation and brightness, respectively.
+				UI_HSBCOLOR BackgroundColor = UI_HSB(0x14, 0x38, 0x54);
+				UI_HSBCOLOR HighlightColor = UI_HSB(0x00, 0x36, 0x87);
+				UI_HSBCOLOR TextColor = UI_HSB(0x2B, 0xD6, 0x00);
+
+				InitPropVariantFromUInt32(BackgroundColor, &propvarBackground);
+				InitPropVariantFromUInt32(HighlightColor, &propvarHighlight);
+				InitPropVariantFromUInt32(TextColor, &propvarText);
+
+				pPropertyStore->SetValue(UI_PKEY_GlobalBackgroundColor, propvarBackground);
+				pPropertyStore->SetValue(UI_PKEY_GlobalTextColor, propvarText);
+
+				pPropertyStore->Commit();
+				pPropertyStore->Release();
+			}
+		}
+		break;
+
+
 
 	default:
 		break;

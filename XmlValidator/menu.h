@@ -39,6 +39,16 @@ namespace Matrix
 			return m_auto_validate;
 		}
 
+		int Init(HWND hwnd, HINSTANCE hinst)
+		{
+			HMENU menu = LoadMenu(hinst, MAKEINTRESOURCE(IDR_MENU));
+			SetMenu(hwnd, menu);
+			//GetMenu(m_hwnd);
+			CheckMenuItem(menu, IDM_WRAP, MF_CHECKED);
+			CheckMenuItem(menu, IDM_AUTOVALIDATE, m_auto_validate ? MF_CHECKED : MF_UNCHECKED);
+			return 0;
+		}
+
 		int HandleMessage(HWND hwnd, SciEditor *editor, WPARAM wParam, LPARAM lParam)
 		{
 			HMENU h_menu = GetMenu(hwnd);
@@ -53,12 +63,20 @@ namespace Matrix
 				//DialogBox(nullptr, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
 				break;
 
+			case IDM_NEW:
+				editor->New();
+				break;
+
 			case IDM_OPEN:
 				editor->OpenFileDlg(hwnd,m_auto_validate);
 				break;
 
 			case IDM_SAVE:
 				editor->Save();
+				break;
+
+			case IDM_SAVEAS:
+				editor->SaveAs();
 				break;
 
 			case IDM_PRINT:
