@@ -28,7 +28,7 @@
 #include "file.h"
 /*
 #ifdef UNICODE
-#define Char wchar_t
+#define Char char
 //#define String std::wstring
 #else
 #define Char char
@@ -71,12 +71,12 @@ namespace Matrix
 			}
 		}
 
-		const wchar_t* Name() const
+		const char* Name() const
 		{
 			return m_name;
 		}
 
-		void SetName(const wchar_t* name)
+		void SetName(const char* name)
 		{
 			if ( NULL != m_name)
 			{
@@ -84,9 +84,9 @@ namespace Matrix
 			}
 			if (NULL != name)
 			{
-				size_t ulen = wcslen(name);
-				m_name = new wchar_t[ulen + 1];
-				WSTRCOPYN(m_name, name, ulen+1);
+				size_t ulen = strlen(name);
+				m_name = new char[ulen + 1];
+				strncpy(m_name, name, ulen+1);
 			}
 			else
 			{
@@ -94,12 +94,12 @@ namespace Matrix
 			}
 		}
 
-		const wchar_t*	String() const
+		const char*	String() const
 		{
 			return m_value;
 		}
 
-		void SetString(const wchar_t* value)
+		void SetString(const char* value)
 		{
 			if (NULL != m_value)
 			{
@@ -107,9 +107,9 @@ namespace Matrix
 			}
 			if (NULL != value)
 			{
-				size_t ulen = wcslen(value);
-				m_value = new wchar_t[ulen + 1];
-				WSTRCOPYN(m_value, value, ulen);
+				size_t ulen = strlen(value);
+				m_value = new char[ulen + 1];
+				strncpy(m_value, value, ulen);
 			}
 			else
 			{
@@ -122,10 +122,10 @@ namespace Matrix
 			SetString(value.c_str());
 		}
 
-		void AssignString(wchar_t * &str, wchar_t * buffer, size_t length, bool transferCharacter)
+		void AssignString(char * &str, char * buffer, size_t length, bool transferCharacter)
 		{
-			const wchar_t * found = NULL;
-			if (!transferCharacter || (found = wmemchr(buffer, L'&', length)) == NULL)
+			const char * found = NULL;
+			if (!transferCharacter || (found = (char *)memchr(buffer, '&', length)) == NULL)
 			{
 				if (NULL != str)
 				{
@@ -133,9 +133,9 @@ namespace Matrix
 				}
 				if (NULL != buffer)
 				{
-					int ulen = wcslen(buffer);
-					str = new wchar_t[ulen + 1];
-					WSTRCOPYN(str, buffer, ulen + 1);
+					int ulen = strlen(buffer);
+					str = new char[ulen + 1];
+					strncpy(str, buffer, ulen + 1);
 				}
 				else
 				{
@@ -143,57 +143,57 @@ namespace Matrix
 				}
 				return;
 			}
-			std::wstring temp;
-			for (; NULL != found; found = wmemchr(buffer, L'&', length))
+			std::string temp;
+			for (; NULL != found; found = (char *)memchr(buffer, '&', length))
 			{
 				temp.append(buffer, found - buffer);
 				length -= (found - buffer + 1);
-				buffer = const_cast<wchar_t *>(found + 1);
+				buffer = const_cast<char *>(found + 1);
 				if (length >= 5)
 				{
-					if (wcsncmp(buffer, L"quot", 4) == 0)
+					if (strncmp(buffer, "quot", 4) == 0)
 					{
 						buffer += 4;
 						length -= 4;
-						temp.append(1, L'\"');
+						temp.append(1, '\"');
 						continue;
 					}
-					if (wcsncmp(found + 1, L"apos", 4) == 0)
+					if (strncmp(found + 1, "apos", 4) == 0)
 					{
 						buffer += 4;
 						length -= 4;
-						temp.append(1, L'\'');
+						temp.append(1, '\'');
 						continue;
 					}
 				}
 				if (length >= 4)
 				{
-					if (wcsncmp(buffer, L"amp", 3) == 0)
+					if (strncmp(buffer, "amp", 3) == 0)
 					{
 						buffer += 3;
 						length -= 3;
-						temp.append(1, L'&');
+						temp.append(1, '&');
 						continue;
 					}
 				}
 				if (length >= 3)
 				{
-					if (wcsncmp(buffer, L"lt", 2) == 0)
+					if (strncmp(buffer, "lt", 2) == 0)
 					{
 						buffer += 2;
 						length -= 2;
-						temp.append(1, L'<');
+						temp.append(1, '<');
 						continue;
 					}
-					else if (wcsncmp(buffer, L"gt", 2) == 0)
+					else if (strncmp(buffer, "gt", 2) == 0)
 					{
 						buffer += 2;
 						length -= 2;
-						temp.append(1, L'>');
+						temp.append(1, '>');
 						continue;
 					}
 				}
-				temp.append(1, L'&');
+				temp.append(1, '&');
 			}
 			temp.append(buffer, length);
 			if (NULL != str)
@@ -203,8 +203,8 @@ namespace Matrix
 			if (!temp.empty())
 			{
 				int ulen = temp.length();
-				str = new wchar_t[ulen + 1];
-				WSTRCOPYN(str, temp.c_str(), ulen + 1);
+				str = new char[ulen + 1];
+				strncpy(str, temp.c_str(), ulen + 1);
 			}
 			else
 			{
@@ -213,8 +213,8 @@ namespace Matrix
 		}
 
 	protected:
-		wchar_t*	m_name;
-		wchar_t*	m_value;
+		char*	m_name;
+		char*	m_value;
 	};
 
 	enum NodeType
@@ -292,13 +292,13 @@ namespace Matrix
 			return m_children.size();
 		}
 		
-		size_t ChildCount(const wchar_t * name) const
+		size_t ChildCount(const char * name) const
 		{
 			size_t count = 0;
 			for (NodeIterator iter = m_children.begin(); iter != m_children.end(); ++iter)
 			{
 				XmlNode* child = *iter;
-				if (wcscmp(child->m_name, name) == 0)
+				if (strcmp(child->m_name, name) == 0)
 				{
 					++count;
 				}
@@ -329,7 +329,7 @@ namespace Matrix
 			m_children.clear();
 		}
 
-		XmlNode* AddChild(const wchar_t * name = NULL, NodeType type = ELEMENT)
+		XmlNode* AddChild(const char * name = NULL, NodeType type = ELEMENT)
 		{
 			if (type != COMMENT && type != ELEMENT)
 			{
@@ -349,12 +349,12 @@ namespace Matrix
 			return !m_attributes.empty();
 		}
 
-		XmlAttribute* Attribute(const wchar_t* name) const
+		XmlAttribute* Attribute(const char* name) const
 		{
 			for (AttributeList::const_iterator iter = m_attributes.begin(); iter != m_attributes.end(); ++iter)
 			{
 				XmlAttribute* attribute = *iter;
-				if (wcscmp(attribute->Name(), name) == 0)
+				if (strcmp(attribute->Name(), name) == 0)
 				{
 					return attribute;
 				}
@@ -408,7 +408,7 @@ namespace Matrix
 			m_attributes.clear();
 		}
 
-		XmlAttribute* AddAttribute(const wchar_t * name = NULL, const wchar_t * value = NULL)
+		XmlAttribute* AddAttribute(const char * name = NULL, const char * value = NULL)
 		{
 			XmlAttribute* attribute = new XmlAttribute;
 			if (NULL != name)
@@ -435,47 +435,46 @@ namespace Matrix
 	public:
 		XmlDocument()
 			: XmlNode(DOCUMENT, NULL)
-			, m_buffer(NULL)
 		{
 		}
 
 		~XmlDocument()
 		{
-			if (m_buffer != NULL)
-			{
-				delete[] m_buffer;
-			}
 		}
 
-		bool LoadFromFile(const wchar_t* filename)
+		bool LoadFromFile(const char* filename)
 		{
 			Matrix::File file(filename);
 			size_t file_len = 0;
-			const wchar_t * text = file.Text(0, &file_len);
+			const char * text = file.Utf8Text(0, &file_len);
 
-			return Parse(const_cast<wchar_t *>(text), file_len);
+			bool res = Parse(const_cast<char *>(text), file_len);
+			if (NULL != text)
+			{
+				delete text;
+			}
 		}
 
-		bool Parse(wchar_t* input, size_t size)
+		bool Parse(char* input, size_t size)
 		{
-			wchar_t * cur = input;
-			wchar_t * end = input + size;
+			char * cur = input;
+			char * end = input + size;
 
-			wchar_t * label = NULL;
+			char * label = NULL;
 			size_t label_size = 0;
 			int depth = 0;
 			XmlNode* currentNode = this;
 
 			while (cur < end)
 			{
-				wchar_t * last_pos = cur;
+				char * last_pos = cur;
 				if (!FindLabel(cur, end - cur, label, label_size))
 				{
 					break;
 				}
 				switch (*label)
 				{
-				case L'/':	//node ending
+				case '/':	//node ending
 					if (depth < 1)
 					{
 						return false;
@@ -488,10 +487,10 @@ namespace Matrix
 					--depth;
 					break;
 
-				case L'?':	//xml define node, ignore
+				case '?':	//xml define node, ignore
 					break;
 
-				case L'!':	//comment node
+				case '!':	//comment node
 				{
 					//ignore !-- and --
 					if (label_size < 5)
@@ -529,9 +528,9 @@ namespace Matrix
 
 	private:
 
-		bool FindLabel(wchar_t* &begin, size_t size, wchar_t* &label, size_t &labelSize)
+		bool FindLabel(char* &begin, size_t size, char* &label, size_t &labelSize)
 		{
-			label = (wchar_t*)wmemchr(begin, L'<', size);
+			label = (char*)memchr(begin, '<', size);
 			if (NULL == label)
 			{
 				return false;
@@ -541,21 +540,21 @@ namespace Matrix
 
 			//comment is special, won't end without "-->"
 			if (size > 6 //Strlen(T("!---->"))
-				&& label[0] == L'!'
-				&& label[1] == L'-'
-				&& label[2] == L'-')
+				&& label[0] == '!'
+				&& label[1] == '-'
+				&& label[2] == '-')
 			{
 				//buffer is not NULL-terminated, so we can't use strstr, shit! is there a "safe" version of strstr?
-				wchar_t* cur = label + 3;	//skip !--
+				char* cur = label + 3;	//skip !--
 				size -= 5; //(Strlen(T("!---->")) - 1);
 				while (true)
 				{
-					wchar_t* end = (wchar_t*)wmemchr(cur, L'-', size);
+					char* end = (char*)memchr(cur, '-', size);
 					if (NULL == end)
 					{
 						return false;
 					}
-					if (*(end + 1) == L'-' && *(end + 2) == L'>')
+					if (*(end + 1) == '-' && *(end + 2) == '>')
 					{
 						//get it
 						labelSize = end - label + 2;
@@ -566,7 +565,7 @@ namespace Matrix
 					cur = end + 1;
 				}
 			}
-			begin = (wchar_t*)wmemchr(label, L'>', size);
+			begin = (char*)memchr(label, '>', size);
 			if (NULL == begin)
 			{
 				return false;
@@ -580,31 +579,31 @@ namespace Matrix
 			return true;
 		}
 
-		bool ParseLabel(XmlNode* node, wchar_t* label, size_t labelSize)
+		bool ParseLabel(XmlNode* node, char* label, size_t labelSize)
 		{
-			wchar_t* cur = label;
-			while (*cur != L' ' && *cur != L'/' && *cur != L'>')
+			char* cur = label;
+			while (*cur != ' ' && *cur != '/' && *cur != '>')
 			{
 				++cur;
 			}
-			wchar_t next = *cur;
+			char next = *cur;
 			node->AssignString(node->m_name, label, cur - label, true);
-			if (next != L' ')
+			if (next != ' ')
 			{
-				return next == L'/';
+				return next == '/';
 			}
 			//get attributes
-			wchar_t* end = label + labelSize;
+			char* end = label + labelSize;
 			++cur;
 			while (cur < end)
 			{
-				while (*cur == L' ')
+				while (*cur == ' ')
 				{
 					++cur;
 				}
 				//attribute name
-				wchar_t* attrName = cur;
-				while (*cur != L' ' && *cur != L'=' && *cur != L'/' && *cur != L'>')
+				char* attrName = cur;
+				while (*cur != ' ' && *cur != '=' && *cur != '/' && *cur != '>')
 				{
 					++cur;
 				}
@@ -612,13 +611,13 @@ namespace Matrix
 				size_t attr_name_size = cur - attrName;
 
 				//attribute value
-				cur = (wchar_t*)wmemchr(cur, L'"', end - cur);
+				cur = (char*)memchr(cur, '"', end - cur);
 				if (NULL == cur)
 				{
 					break;
 				}
-				wchar_t* attrValue = ++cur;
-				cur = (wchar_t*)wmemchr(cur, L'"', end - cur);
+				char* attrValue = ++cur;
+				cur = (char*)memchr(cur, '"', end - cur);
 				if (NULL == cur)
 				{
 					return false;
@@ -629,11 +628,9 @@ namespace Matrix
 				attribute->AssignString(attribute->m_value, attrValue, attr_value_size, true);
 				++cur;
 			}
-			return next == L'/';
+			return next == '/';
 		}
 
-	private:
-		char*	m_buffer;
 	};
 
 }

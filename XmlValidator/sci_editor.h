@@ -18,6 +18,7 @@
 #include <scilexer.h> 
 #include "file.h"
 #include "xml_validater.h"
+#include "xml.h"
 
 namespace Matrix
 {
@@ -257,14 +258,23 @@ namespace Matrix
 			}
 
 			//Matrix::XmlDocument xml;
-			//wchar_t * wdocument = const_cast<wchar_t *>(document);
-			//xml.LoadFromFile(m_editor.FileName());
-			//xml.parse(wdocument, wcslen(document));
+			//xml.Parse(content, strlen(content));
+			if (NULL != content)
+			{
+				delete content;
+				content = NULL;
+			}
 			//MessageBox(NULL,xml.Name(), L"", MB_OK);
 
 			Matrix::XMLValidater tXml;
 			Matrix::XmlValidateError tError;
 			tXml.ValidateXml(std::wstring(document), tError);
+
+			if (NULL != document)
+			{
+				delete document;
+				document = NULL;
+			}
 
 			TCHAR err[BUFSIZ];
 			wsprintf(err, L"第%d行%d列%s与第%d行%d列%s不匹配",

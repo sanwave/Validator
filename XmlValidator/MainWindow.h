@@ -99,7 +99,7 @@ namespace Matrix
 				for (UINT i = 0; i < fileNum; i++)
 				{
 					::DragQueryFile(hDropInfo, i, fileName, MAX_PATH);
-					m_editor.LoadFile(m_hwnd,fileName);
+					m_editor.LoadFile(m_hwnd,fileName,false);
 				}
 				::DragFinish(hDropInfo);
 				delete fileName;
