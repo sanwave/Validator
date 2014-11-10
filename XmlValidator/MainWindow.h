@@ -42,7 +42,7 @@ namespace Matrix
 		/// </summary>
 		int InitWindow()
 		{
-			//m_use_ribbon = true;
+			m_use_ribbon = true;
 
 			if (true == m_use_ribbon)
 			{

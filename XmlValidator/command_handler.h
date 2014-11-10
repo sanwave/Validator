@@ -13,6 +13,7 @@
 #pragma once
 
 #include <uiribbon.h>
+#include <UIRibbonPropertyHelpers.h>
 
 #include "ribbon_framework.h"
 #include "ribbon_ui.h"

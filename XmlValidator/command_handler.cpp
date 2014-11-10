@@ -93,6 +93,44 @@ STDMETHODIMP CCommandHandler::UpdateProperty(
     UNREFERENCED_PARAMETER(ppropvarCurrentValue);
     UNREFERENCED_PARAMETER(ppropvarNewValue);
 
+
+
+	HRESULT hr = E_FAIL;
+
+	if (key == UI_PKEY_Label)
+	{
+		// update the Label of the toggle button
+		if (nCmdID == IDR_WRAP)
+		{
+			BOOL boolValue;
+			PROPVARIANT var;
+
+			// get boolean value from toggle button
+			hr = g_pFramework->GetUICommandProperty(IDR_WRAP, UI_PKEY_BooleanValue, &var);
+			if (FAILED(hr))
+			{
+				return hr;
+			}
+
+			hr = PropVariantToBoolean(var, &boolValue);
+			if (FAILED(hr))
+			{
+				return hr;
+			}
+
+			if (boolValue)
+			{
+				hr = UIInitPropertyFromString(UI_PKEY_Label, L"Checkbox Disabled", ppropvarNewValue);
+				MessageBox(NULL, L"Checked", L"", NULL);
+			}
+			else
+			{
+				hr = UIInitPropertyFromString(UI_PKEY_Label, L"Checkbox Enabled", ppropvarNewValue);
+				MessageBox(NULL, L"Not checked", L"", NULL);
+			}
+		}
+	}
+
     return E_NOTIMPL;
 }
 
@@ -144,6 +182,7 @@ STDMETHODIMP CCommandHandler::Execute(
 		break;
 
 	case IDR_WRAP:
+		g_pFramework->InvalidateUICommand(IDR_WRAP, UI_INVALIDATIONS_PROPERTY, &UI_PKEY_Label);
 		//checked = MF_CHECKED == GetMenuState(h_menu, IDR_WRAP, MF_BYCOMMAND);
 		//editor->SetWrap(!checked);
 		//CheckMenuItem(h_menu, IDR_WRAP, (!checked ? MF_CHECKED : MF_UNCHECKED));
