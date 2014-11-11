@@ -1,9 +1,4 @@
-// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
-// ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
-// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-// PARTICULAR PURPOSE.
-//
-// Copyright (c) Microsoft Corporation. All rights reserved.
+
 
 #include "ribbon_framework.h"
 
@@ -13,20 +8,7 @@ IUIApplication *g_pApplication = NULL;  // Reference to the Application object.
 Matrix::SciEditor * MainFrame::Editor;
 HWND MainFrame::Win;
 
-//
-//  FUNCTION: InitializeFramework(HWND)
-//
-//  PURPOSE:  Initialize the Ribbon framework and bind a Ribbon to the application.
-//
-//  COMMENTS:
-//
-//    To get a Ribbon to display, the Ribbon framework must be initialized. 
-//    This involves three important steps:
-//      1) Instantiating the Ribbon framework object (CLSID_UIRibbonFramework).
-//      2) Passing the host HWND and IUIApplication object to the framework.
-//      3) Loading the binary markup compiled by UICC.exe.
-//
-//
+
 bool MainFrame::InitializeFramework(HWND hWnd, Matrix::SciEditor * editor)
 {
     // Here we instantiate the Ribbon framework object.
@@ -36,8 +18,6 @@ bool MainFrame::InitializeFramework(HWND hWnd, Matrix::SciEditor * editor)
         return false;
     }   
 
-    // Next, we create the application object (IUIApplication) and call the framework Initialize method, 
-    // passing the application object and the host HWND that the Ribbon will attach itself to.
     hr = CApplication::CreateInstance(&g_pApplication);
     if (FAILED(hr))
     {
@@ -50,9 +30,6 @@ bool MainFrame::InitializeFramework(HWND hWnd, Matrix::SciEditor * editor)
         return false;
     }
 
-    // Finally, we load the binary markup.  This will initiate callbacks to the IUIApplication object 
-    // that was provided to the framework earlier, allowing command handlers to be bound to individual
-    // commands.
     hr = g_pFramework->LoadUI(GetModuleHandle(NULL), L"RIBBON_UI_RIBBON");
     if (FAILED(hr))
     {
@@ -65,12 +42,7 @@ bool MainFrame::InitializeFramework(HWND hWnd, Matrix::SciEditor * editor)
     return true;
 }
 
-//
-//  FUNCTION: DestroyFramework()
-//
-//  PURPOSE:  Tears down the Ribbon framework.
-//
-//
+
 void MainFrame::DestroyFramework()
 {
     if (g_pFramework)

@@ -7,7 +7,7 @@
 *
 *	Created by Bonbon	2014.11.05
 *
-*	Updated by Bonbon	2014.11.06
+*	Updated by Bonbon	2014.11.11
 *
 */
 
@@ -26,18 +26,9 @@
 #endif
 
 #include "file.h"
-/*
-#ifdef UNICODE
-#define Char char
-//#define String std::wstring
-#else
-#define Char char
-#define String std::string
-#endif*/
 
 namespace Matrix
 {
-
 	class XmlAttribute;
 	class XmlNode;
 

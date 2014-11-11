@@ -1,9 +1,3 @@
-// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
-// ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
-// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-// PARTICULAR PURPOSE.
-//
-// Copyright (c) Microsoft Corporation. All rights reserved.
 
 #include "application.h"
 
@@ -67,20 +61,7 @@ STDMETHODIMP CApplication::QueryInterface(REFIID iid, void** ppv)
     return S_OK;
 }
 
-//
-//  FUNCTION: OnCreateUICommand(UINT, UI_COMMANDTYPE, IUICommandHandler)
-//
-//  PURPOSE: Called by the Ribbon framework for each command specified in markup, to allow
-//           the host application to bind a command handler to that command.
-//
-//  COMMENTS:
-//
-//    In this SimpleRibbon sample, the same command handler is returned for all commands
-//    specified in the SimpleRibbon.xml file.
-//    
-//    To view the OnCreateUICommand callbacks, uncomment the _cwprintf call.
-//
-//
+
 STDMETHODIMP CApplication::OnCreateUICommand(
     UINT nCmdID,
     UI_COMMANDTYPE typeID,
@@ -101,12 +82,7 @@ STDMETHODIMP CApplication::OnCreateUICommand(
     return m_pCommandHandler->QueryInterface(IID_PPV_ARGS(ppCommandHandler));
 }
 
-//
-//  FUNCTION: OnViewChanged(UINT, UI_VIEWTYPE, IUnknown*, UI_VIEWVERB, INT)
-//
-//  PURPOSE: Called when the state of a View (Ribbon is a view) changes, for example, created, destroyed, or resized.
-//
-//
+
 STDMETHODIMP CApplication::OnViewChanged(
     UINT viewId,
     UI_VIEWTYPE typeId,
@@ -156,11 +132,7 @@ STDMETHODIMP CApplication::OnViewChanged(
     return hr;
 }
 
-//
-//  FUNCTION: OnDestroyUICommand(UINT, UI_COMMANDTYPE, IUICommandHandler*)
-//
-//  PURPOSE: Called by the Ribbon framework for each command at the time of ribbon destruction.
-//
+
 STDMETHODIMP CApplication::OnDestroyUICommand(
     UINT32 nCmdID,
     UI_COMMANDTYPE typeID,

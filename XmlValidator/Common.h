@@ -17,6 +17,7 @@
 #include <fstream>
 #include <string>
 #include <list>
+#include <stack>
 
 #include <assert.h>
 

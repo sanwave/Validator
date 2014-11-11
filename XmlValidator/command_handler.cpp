@@ -1,9 +1,4 @@
-// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
-// ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
-// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-// PARTICULAR PURPOSE.
-//
-// Copyright (c) Microsoft Corporation. All rights reserved.
+
 
 #include "command_handler.h"
 
@@ -70,12 +65,7 @@ STDMETHODIMP CCommandHandler::QueryInterface(REFIID iid, void** ppv)
     return S_OK;
 }
 
-//
-//  FUNCTION: Execute()
-//
-//  PURPOSE: Called by the Ribbon framework when a command is executed by the user.  For example, when
-//           a button is pressed.
-//
+
 STDMETHODIMP CCommandHandler::Execute(
     UINT nCmdID,
     UI_EXECUTIONVERB verb,
@@ -215,18 +205,7 @@ STDMETHODIMP CCommandHandler::Execute(
     return S_OK;
 }
 
-//
-//  FUNCTION: UpdateProperty()
-//
-//  PURPOSE: Called by the Ribbon framework when a command property (PKEY) needs to be updated.
-//
-//  COMMENTS:
-//
-//    This function is used to provide new command property values, such as labels, icons, or
-//    tooltip information, when requested by the Ribbon framework.  
-//    
-//    In this SimpleRibbon sample, the method is not implemented.  
-//
+
 STDMETHODIMP CCommandHandler::UpdateProperty(
 	UINT nCmdID,
 	__in REFPROPERTYKEY key,
@@ -248,7 +227,6 @@ STDMETHODIMP CCommandHandler::UpdateProperty(
 		case IDR_WRAP:
 			if (MainFrame::Editor != NULL)
 			{
-				//var.boolVal = !(MainFrame::Editor->LineWrap());
 				hr = g_pFramework->GetUICommandProperty(IDR_WRAP, UI_PKEY_BooleanValue, &var);
 				if (FAILED(hr))
 				{
@@ -261,7 +239,6 @@ STDMETHODIMP CCommandHandler::UpdateProperty(
 		case IDR_AUTOVALIDATE:
 			if (MainFrame::Editor != NULL)
 			{
-				//var.boolVal = !(MainFrame::Editor->AutoValidate());
 				hr = g_pFramework->GetUICommandProperty(IDR_AUTOVALIDATE, UI_PKEY_BooleanValue, &var);
 				if (FAILED(hr))
 				{

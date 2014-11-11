@@ -38,13 +38,19 @@ namespace Matrix
 		LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 		/// <summary>
+		/// 载入所需组件
+		/// </summary>
+		void LoadComponent()
+		{
+			m_editor.Create(m_hwnd);			
+		}
+
+		/// <summary>
 		/// 初始化窗体
 		/// </summary>
 		int InitWindow()
 		{
 			m_use_ribbon = true;
-
-			LoadComponent();
 
 			if (true == m_use_ribbon)
 			{
@@ -57,20 +63,13 @@ namespace Matrix
 			else
 			{
 				m_menu.Init(m_hwnd, m_hinst);
-			}		
-			
+			}
+
+			DragAcceptFiles(m_hwnd, TRUE);			
+			m_editor.Init();
 			return 0;
 		}
-
-		/// <summary>
-		/// 载入所需组件
-		/// </summary>
-		void LoadComponent()
-		{
-			m_editor.Create(m_hwnd);
-			m_editor.Init();
-		}
-
+		
 		/// <summary>
 		/// 自适应父窗体大小
 		/// </summary>
@@ -163,10 +162,9 @@ LRESULT Matrix::MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lPara
 
 	switch (uMsg)
 	{
-
 	case WM_CREATE:
-		InitWindow();
-		DragAcceptFiles(m_hwnd, TRUE);
+		LoadComponent();
+		InitWindow();		
 		break;
 
 	case WM_SHOWWINDOW:
@@ -198,20 +196,9 @@ LRESULT Matrix::MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lPara
 
 	case WM_NOTIFY:	
 		notify = (SCNotification*)lParam;
-		//if (notify->nmhdr.hwndFrom == &m_editor)
-		//{
-			m_editor.HandleMsg(notify, wParam);
-		//}
-		break;
-
-	case WM_VSCROLL:
-		switch (LOWORD(wParam))
+		if (notify->nmhdr.hwndFrom == &m_editor)
 		{
-		case SB_BOTTOM:
-			break;
-
-		default:
-			break;
+			m_editor.HandleMsg(notify, wParam);
 		}
 		break;
 

@@ -13,39 +13,72 @@
 #ifndef _XML_VALIDATER_H_
 #define _XML_VALIDATER_H_
 
-#include "common.h"
+#ifndef MATRIX
+#include <iostream>
+#include <string>
 #include <stack>
+#else
+#include "common.h"
+#endif
 
 namespace Matrix
 {
-	class XmlValidaterNode
+	class XmlValidateNode
 	{
 	public:
+		XmlValidateNode()
+			:m_name(NULL)
+			, m_value(NULL)
+		{}
 		int Index()
 		{
 			return m_index;
 		}
 
-		std::wstring Name()
+		char * Name()
 		{
 			return m_name;
 		}
 
-		XmlValidaterNode(int index, std::wstring name)
+		XmlValidateNode(int index, char * name) :m_name(NULL), m_value(NULL)
 		{
 			m_index = index;
-			m_name = name;
+			if (NULL != m_name)
+			{
+				delete m_name;
+				m_name = NULL;
+			}
+			if (NULL != name)
+			{
+				int len = strlen(name);
+				m_name = new char[len + 1];
+				strncpy(m_name, name, len);
+				m_name[len] = 0;
+			}
+			else
+			{
+				m_name = NULL;
+			}
 		}
 
-		int Close(std::wstring name)
+		~XmlValidateNode()
 		{
-			return m_name == name ? 1 : -1;
+			if (NULL != m_name)
+			{
+				delete m_name;
+				m_name = NULL;
+			}
+		}
+
+		int Close(const char * name)
+		{
+			return strcmp(m_name, name) == 0 ? 1 : -1;
 		}
 
 	private:
 		int m_index;
-		std::wstring m_name;
-		std::wstring m_value;
+		char * m_name;
+		char * m_value;
 	};
 
 	class Position
@@ -55,22 +88,82 @@ namespace Matrix
 		int Row;
 		int Index;
 		Position() :Line(1), Row(1), Index(0)
-		{
-		}
+		{}
 	};
 
 	class XmlValidateError
 	{
 	public:
 		Position Open, Close;
-		std::wstring OpenName, CloseName;
+		char * m_openname, *m_closename;
 		int Count;
-		XmlValidateError()
+		XmlValidateError() :m_openname(NULL), m_closename(NULL)
 		{
 			Open = Position();
 			Close = Position();
 			Count = 0;
-			OpenName = CloseName = L"";
+		}
+
+		~XmlValidateError()
+		{
+			if (NULL != m_openname)
+			{
+				delete m_openname;
+				m_openname = NULL;
+			}
+			if (NULL != m_closename)
+			{
+				delete m_closename;
+				m_closename = NULL;
+			}
+		}
+
+		char * OpenName()
+		{
+			return m_openname;
+		}
+
+		char * CloseName()
+		{
+			return m_closename;
+		}
+
+		void SetOpenName(char * name)
+		{
+			if (NULL != m_openname)
+			{
+				delete m_openname;
+			}
+			if (NULL != name)
+			{
+				int len = strlen(name);
+				m_openname = new char[len + 1];
+				strncpy(m_openname, name, len);
+				m_openname[len] = 0;
+			}
+			else
+			{
+				m_openname = NULL;
+			}
+		}
+
+		void SetCloseName(char * name)
+		{
+			if (NULL != m_closename)
+			{
+				delete m_closename;
+			}
+			if (NULL != name)
+			{
+				int len = strlen(name);
+				m_closename = new char[len + 1];
+				strncpy(m_closename, name, len);
+				m_closename[len] = 0;
+			}
+			else
+			{
+				m_closename = NULL;
+			}
 		}
 	};
 
@@ -85,26 +178,25 @@ namespace Matrix
 		/// <param name="content">指定Xml文本</param>
 		/// <param name="error">错误详细消息</param>
 		/// <returns>表示一致性错误数目，-1表示有语法错误</returns>
-		int ValidateXml(const std::wstring& content, XmlValidateError& error)
+		int ValidateXml(const char * content, XmlValidateError& error)
 		{
-			std::stack<XmlValidaterNode> nodes = std::stack<XmlValidaterNode>();
-			std::wstring text = content;
-			//error = XmlValidateError();
+			std::stack<XmlValidateNode> nodes = std::stack<XmlValidateNode>();
+			char * text = const_cast<char*>(content);
 
 			//index为追踪错误节点开始标识在全文中的位置，index2为错误节点结束标识在全文中的位置
-			int index4Open = 0, index4Close = 0;			
+			int index4Open = 0, index4Close = 0;
 
 			//xml文件头开始的标志
-			int iHeadPrefix = text.find(L"<?");
+			int iHeadPrefix = strstr(text, "<?") - text;
 
 			//下一个节点开始标识'<'在文中出现的位置
-			int iPrefix = text.find(L"<");
+			int iPrefix = strchr(text, '<') - text;
 
 			//下一个节点结束标识"</"在文中出现的位置
-			int iClosePrefix = text.find(L"</");
+			int iClosePrefix = strstr(text, "</") - text;
 
 			//节点名字尾部的标识
-			int iSuffix = text.find('>');
+			int iSuffix = strchr(text, '>') - text;
 
 			while (iPrefix >= 0)
 			{
@@ -118,20 +210,20 @@ namespace Matrix
 					//xml文件头校验
 					iHeadPrefix = -1;
 				}
-				else if (text.at(iSuffix - 1) == '/')
+				else if (*(text + iSuffix - 1) == '/')
 				{
 					;//<****/>节点直接结束，不予处理
 				}
-				else if (text.substr(iPrefix, 4) == L"<!--")
+				else if (0 == (strncmp(text + iPrefix, "<!--", 4)))
 				{
 					//#跳过注释
-					iSuffix = text.find(L"-->") + 2;
+					iSuffix = strstr(text, "-->") - text + 2;
 				}
 				//若为节点开始标识，将节点名压栈
 				else if (iPrefix != iClosePrefix)
 				{
-					std::wstring strNodeName = GetNodeName(text.substr(iPrefix + 1, iSuffix - iPrefix - 1));
-					nodes.push(XmlValidaterNode(index4Open + iPrefix + 1, strNodeName));
+					char * node_name = substr(text, iPrefix + 1, iSuffix - iPrefix - 1);
+					nodes.push(XmlValidateNode(index4Open + iPrefix + 1, node_name));
 				}
 				//若为节点结束标识，将其与出栈的节点名对比
 				else
@@ -140,11 +232,11 @@ namespace Matrix
 					{
 						return error.Count = -1;
 					}
-					XmlValidaterNode node = nodes.top();
+					XmlValidateNode node = nodes.top();
 					nodes.pop();
 
-					std::wstring strNodeCloseName = text.substr(iPrefix + 2, iSuffix - iPrefix - 2);
-					if (node.Name() != strNodeCloseName)
+					char * close_name = substr(text, iPrefix + 2, iSuffix - iPrefix - 2);
+					if (0 == strcmp(node.Name(), close_name))
 					{
 						//追踪出错节点结束标识的位置
 						index4Close += iPrefix + 2;
@@ -154,19 +246,19 @@ namespace Matrix
 						{
 							GetPosition(content, node.Index(), error.Open);
 							GetPosition(content, index4Close, error.Close);
-							error.OpenName = node.Name();
-							error.CloseName = strNodeCloseName;
+							error.SetOpenName(node.Name());
+							error.SetCloseName(close_name);
 						}
 					}
 				}
-				text = text.substr(iSuffix);
+				text = substr(text, iSuffix);
 
 				index4Open += iSuffix;
 				index4Close = index4Open;
 
-				iPrefix = text.find(L"<");
-				iClosePrefix = text.find(L"</");
-				iSuffix = text.substr(1).find('>') + 1;
+				iPrefix = strchr(text, '<') - text;
+				iClosePrefix = strstr(text, "</") - text;
+				iSuffix = strchr(substr(text, 1), '>') - substr(text, 1) + 1;
 			}
 			return error.Count;
 		}
@@ -188,22 +280,34 @@ namespace Matrix
 			}
 		}
 
+		char * substr(const char * src, size_t off, size_t len = 0)
+		{
+			if (0 == len)
+			{
+				len = strlen(src) - off;
+			}
+			char * str = new char[len + 1];
+			strncpy(str, src + off, len);
+			str[len] = 0;
+			return str;
+		}
+
 		/// <summary>
 		/// 获取指定字符串索引的行列值
 		/// </summary>
-		void GetPosition(const std::wstring& content, int index, Position& position)
+		void GetPosition(const char * content, int index, Position& position)
 		{
 			position = Position();
-			std::wstring text = content.substr(0, index);
-			int i = text.find('\n');
+			char * text = substr(content, 0, index);
+			int i = strchr(text, '\n') - text;
 			while (i >= 0)
 			{
 				++position.Line;
-				text = text.substr(i + 1);
-				i = text.find(L"\n");
+				text = substr(text, i + 1);
+				i = strchr(text, '\n') - text;
 			}
 
-			position.Row += text.length();
+			position.Row += strlen(text);
 			position.Index = index;
 		}
 	};

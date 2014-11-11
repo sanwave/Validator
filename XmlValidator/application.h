@@ -1,9 +1,3 @@
-// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
-// ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
-// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-// PARTICULAR PURPOSE.
-//
-// Copyright (c) Microsoft Corporation. All rights reserved.
 
 #pragma once
 
@@ -12,18 +6,7 @@
 
 #include "command_handler.h"
 
-//
-//  CLASS: CApplication : IUIApplication
-//
-//  PURPOSE: Implements interface IUIApplication that defines methods
-//           required to manage Framework events.
-//
-//  COMMENTS:
-//
-//    CApplication implements the IUIApplication interface which is required for any ribbon application.
-//    IUIApplication contains callbacks made by the ribbon framework to the application
-//    during various updates like command creation/destruction and view state changes.
-//
+
 class CApplication
     : public IUIApplication // Applications must implement IUIApplication.
 {

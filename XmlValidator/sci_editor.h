@@ -7,6 +7,8 @@
 *
 *	Created by Bonbon	2014.10.26
 *
+*	Updated by Bonbon	2014.11.11
+*
 */
 
 #ifndef _SCI_EDITOR_
@@ -495,7 +497,7 @@ namespace Matrix
 
 			Matrix::XMLValidater tXml;
 			Matrix::XmlValidateError tError;
-			tXml.ValidateXml(std::wstring(document), tError);
+			tXml.ValidateXml(content, tError);
 
 			if (NULL != document)
 			{
@@ -503,10 +505,10 @@ namespace Matrix
 				document = NULL;
 			}
 
-			TCHAR err[BUFSIZ];
-			wsprintf(err, L"第%d行%d列%s与第%d行%d列%s不匹配",
-				tError.Open.Line, tError.Open.Row, tError.OpenName.c_str(),
-				tError.Close.Line, tError.Close.Row, tError.CloseName.c_str());
+			CHAR err[BUFSIZ];
+			sprintf(err, "第%d行%d列%s与第%d行%d列%s不匹配",
+				tError.Open.Line, tError.Open.Row, tError.OpenName(),
+				tError.Close.Line, tError.Close.Row, tError.CloseName());
 
 			if (tError.Count == -1)
 			{
@@ -514,7 +516,7 @@ namespace Matrix
 			}
 			else if (tError.Count > 0)
 			{
-				MessageBox(m_hwnd, err, L"Error", MB_ICONERROR | MB_OK);
+				MessageBoxA(m_hwnd, err, "Error", MB_ICONERROR | MB_OK);
 				SendEditor(SCI_GOTOLINE, 0);
 				SetFocus();
 			}
