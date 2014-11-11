@@ -71,70 +71,6 @@ STDMETHODIMP CCommandHandler::QueryInterface(REFIID iid, void** ppv)
 }
 
 //
-//  FUNCTION: UpdateProperty()
-//
-//  PURPOSE: Called by the Ribbon framework when a command property (PKEY) needs to be updated.
-//
-//  COMMENTS:
-//
-//    This function is used to provide new command property values, such as labels, icons, or
-//    tooltip information, when requested by the Ribbon framework.  
-//    
-//    In this SimpleRibbon sample, the method is not implemented.  
-//
-STDMETHODIMP CCommandHandler::UpdateProperty(
-    UINT nCmdID,
-    REFPROPERTYKEY key,
-    const PROPVARIANT* ppropvarCurrentValue,
-    PROPVARIANT* ppropvarNewValue)
-{
-    UNREFERENCED_PARAMETER(nCmdID);
-    UNREFERENCED_PARAMETER(key);
-    UNREFERENCED_PARAMETER(ppropvarCurrentValue);
-    UNREFERENCED_PARAMETER(ppropvarNewValue);
-
-
-
-	HRESULT hr = E_FAIL;
-
-	if (key == UI_PKEY_Label)
-	{
-		// update the Label of the toggle button
-		if (nCmdID == IDR_WRAP)
-		{
-			BOOL boolValue;
-			PROPVARIANT var;
-
-			// get boolean value from toggle button
-			hr = g_pFramework->GetUICommandProperty(IDR_WRAP, UI_PKEY_BooleanValue, &var);
-			if (FAILED(hr))
-			{
-				return hr;
-			}
-
-			hr = PropVariantToBoolean(var, &boolValue);
-			if (FAILED(hr))
-			{
-				return hr;
-			}
-
-			if (boolValue)
-			{
-				hr = UIInitPropertyFromString(UI_PKEY_Label, L"Checkbox Disabled", ppropvarNewValue);
-				MessageBox(NULL, L"Checked", L"", NULL);
-			}
-			else
-			{
-				hr = UIInitPropertyFromString(UI_PKEY_Label, L"Checkbox Enabled", ppropvarNewValue);
-				MessageBox(NULL, L"Not checked", L"", NULL);
-			}
-		}
-	}
-
-    return E_NOTIMPL;
-}
-
-//
 //  FUNCTION: Execute()
 //
 //  PURPOSE: Called by the Ribbon framework when a command is executed by the user.  For example, when
@@ -153,8 +89,8 @@ STDMETHODIMP CCommandHandler::Execute(
     UNREFERENCED_PARAMETER(verb);
     UNREFERENCED_PARAMETER(nCmdID);
 
-	
-	bool checked = true;
+	HRESULT hr;
+
 	switch (nCmdID)
 	{
 
@@ -182,10 +118,11 @@ STDMETHODIMP CCommandHandler::Execute(
 		break;
 
 	case IDR_WRAP:
-		g_pFramework->InvalidateUICommand(IDR_WRAP, UI_INVALIDATIONS_PROPERTY, &UI_PKEY_Label);
-		//checked = MF_CHECKED == GetMenuState(h_menu, IDR_WRAP, MF_BYCOMMAND);
-		//editor->SetWrap(!checked);
-		//CheckMenuItem(h_menu, IDR_WRAP, (!checked ? MF_CHECKED : MF_UNCHECKED));
+		hr = g_pFramework->InvalidateUICommand(IDR_WRAP, UI_INVALIDATIONS_PROPERTY, &UI_PKEY_BooleanValue);
+		if (FAILED(hr))
+		{
+			return hr;
+		}
 		break;
 
 	case IDR_VALIDATE:
@@ -193,13 +130,15 @@ STDMETHODIMP CCommandHandler::Execute(
 		break;
 
 	case IDR_AUTOVALIDATE:
-		//m_auto_validate = MF_CHECKED != GetMenuState(h_menu, IDR_AUTOVALIDATE, MF_BYCOMMAND);
-		//CheckMenuItem(h_menu, IDM_AUTOVALIDATE, m_auto_validate ? MF_CHECKED : MF_UNCHECKED);
+		hr = g_pFramework->InvalidateUICommand(IDR_AUTOVALIDATE, UI_INVALIDATIONS_PROPERTY, &UI_PKEY_BooleanValue);
+		if (FAILED(hr))
+		{
+			return hr;
+		}
 		break;
 		
 	case IDR_EXIT:
-		MainFrame::DestroyFramework();
-		PostQuitMessage(0);
+		PostMessage(MainFrame::Win, WM_CLOSE, NULL, NULL);
 		break;
 
 	case IDR_ABOUT:
@@ -274,4 +213,68 @@ STDMETHODIMP CCommandHandler::Execute(
 	}
 
     return S_OK;
+}
+
+//
+//  FUNCTION: UpdateProperty()
+//
+//  PURPOSE: Called by the Ribbon framework when a command property (PKEY) needs to be updated.
+//
+//  COMMENTS:
+//
+//    This function is used to provide new command property values, such as labels, icons, or
+//    tooltip information, when requested by the Ribbon framework.  
+//    
+//    In this SimpleRibbon sample, the method is not implemented.  
+//
+STDMETHODIMP CCommandHandler::UpdateProperty(
+	UINT nCmdID,
+	__in REFPROPERTYKEY key,
+	__in_opt const PROPVARIANT* ppropvarCurrentValue,
+	__out PROPVARIANT* ppropvarNewValue)
+{
+	UNREFERENCED_PARAMETER(nCmdID);
+	UNREFERENCED_PARAMETER(key);
+	UNREFERENCED_PARAMETER(ppropvarCurrentValue);
+	UNREFERENCED_PARAMETER(ppropvarNewValue);
+
+	HRESULT hr = E_FAIL;
+	PROPVARIANT var;
+
+	if (key == UI_PKEY_BooleanValue)
+	{		
+		switch (nCmdID)
+		{
+		case IDR_WRAP:
+			if (MainFrame::Editor != NULL)
+			{
+				//var.boolVal = !(MainFrame::Editor->LineWrap());
+				hr = g_pFramework->GetUICommandProperty(IDR_WRAP, UI_PKEY_BooleanValue, &var);
+				if (FAILED(hr))
+				{
+					return hr;
+				}
+				MainFrame::Editor->SetWrap(var.boolVal);
+			}
+			break;
+
+		case IDR_AUTOVALIDATE:
+			if (MainFrame::Editor != NULL)
+			{
+				//var.boolVal = !(MainFrame::Editor->AutoValidate());
+				hr = g_pFramework->GetUICommandProperty(IDR_AUTOVALIDATE, UI_PKEY_BooleanValue, &var);
+				if (FAILED(hr))
+				{
+					return hr;
+				}
+				MainFrame::Editor->SetAutoValidate(var.boolVal);
+			}
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	return E_NOTIMPL;
 }

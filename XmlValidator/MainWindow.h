@@ -44,6 +44,8 @@ namespace Matrix
 		{
 			m_use_ribbon = true;
 
+			LoadComponent();
+
 			if (true == m_use_ribbon)
 			{
 				bool init_success = MainFrame::InitializeFramework(m_hwnd, &m_editor);
@@ -55,9 +57,8 @@ namespace Matrix
 			else
 			{
 				m_menu.Init(m_hwnd, m_hinst);
-			}
-						
-			LoadComponent();
+			}		
+			
 			return 0;
 		}
 
@@ -99,7 +100,7 @@ namespace Matrix
 				for (UINT i = 0; i < fileNum; i++)
 				{
 					::DragQueryFile(hDropInfo, i, fileName, MAX_PATH);
-					m_editor.LoadFile(m_hwnd,fileName,false);
+					m_editor.LoadFile(m_hwnd,fileName);
 				}
 				::DragFinish(hDropInfo);
 				delete fileName;

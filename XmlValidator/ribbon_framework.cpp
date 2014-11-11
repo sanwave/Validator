@@ -56,7 +56,7 @@ bool MainFrame::InitializeFramework(HWND hWnd, Matrix::SciEditor * editor)
     hr = g_pFramework->LoadUI(GetModuleHandle(NULL), L"RIBBON_UI_RIBBON");
     if (FAILED(hr))
     {
-        return false;
+        return E_FAIL;
     }
 
 	Win = hWnd;

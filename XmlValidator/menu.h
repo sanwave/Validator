@@ -31,13 +31,8 @@ namespace Matrix
 	class Menu
 	{
 	public:
-		Menu() : m_auto_validate(false)
+		Menu()
 		{}
-
-		bool AutoValidate()
-		{
-			return m_auto_validate;
-		}
 
 		int Init(HWND hwnd, HINSTANCE hinst)
 		{
@@ -45,7 +40,7 @@ namespace Matrix
 			SetMenu(hwnd, menu);
 			//GetMenu(m_hwnd);
 			CheckMenuItem(menu, IDM_WRAP, MF_CHECKED);
-			CheckMenuItem(menu, IDM_AUTOVALIDATE, m_auto_validate ? MF_CHECKED : MF_UNCHECKED);
+			CheckMenuItem(menu, IDM_AUTOVALIDATE, MainFrame::Editor->AutoValidate() ? MF_CHECKED : MF_UNCHECKED);
 			return 0;
 		}
 
@@ -68,7 +63,7 @@ namespace Matrix
 				break;
 
 			case IDM_OPEN:
-				editor->OpenFileDlg(hwnd,m_auto_validate);
+				editor->OpenFileDlg(hwnd);
 				break;
 
 			case IDM_SAVE:
@@ -92,8 +87,8 @@ namespace Matrix
 
 			case IDM_WRAP:
 				checked = MF_CHECKED == GetMenuState(h_menu, IDM_WRAP, MF_BYCOMMAND);
-				editor->SetWrap(!checked);
 				CheckMenuItem(h_menu, IDM_WRAP, (!checked ? MF_CHECKED : MF_UNCHECKED));
+				editor->SetWrap(!checked);				
 				break;
 
 			case IDM_VALIDATE:
@@ -101,18 +96,16 @@ namespace Matrix
 				break;
 
 			case IDM_AUTOVALIDATE:
-				m_auto_validate = MF_CHECKED != GetMenuState(h_menu, IDM_AUTOVALIDATE, MF_BYCOMMAND);
-				CheckMenuItem(h_menu, IDM_AUTOVALIDATE, m_auto_validate ? MF_CHECKED : MF_UNCHECKED);
+				checked = MF_CHECKED == GetMenuState(h_menu, IDM_AUTOVALIDATE, MF_BYCOMMAND);
+				CheckMenuItem(h_menu, IDM_AUTOVALIDATE, !checked ? MF_CHECKED : MF_UNCHECKED);
+				editor->SetAutoValidate(!checked);
 				break;
 
 			default:
 				return 0;
 			}
 			return 1;
-		}
-
-	private:
-		bool m_auto_validate;
+		}		
 		
 	};
 }
