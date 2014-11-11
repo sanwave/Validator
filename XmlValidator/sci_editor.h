@@ -488,11 +488,7 @@ namespace Matrix
 
 			//Matrix::XmlDocument xml;
 			//xml.Parse(content, strlen(content));
-			if (NULL != content)
-			{
-				delete content;
-				content = NULL;
-			}
+			
 			//MessageBox(NULL,xml.Name(), L"", MB_OK);
 
 			Matrix::XMLValidater tXml;
@@ -503,6 +499,12 @@ namespace Matrix
 			{
 				delete document;
 				document = NULL;
+			}
+
+			if (NULL != content)
+			{
+				delete content;
+				content = NULL;
 			}
 
 			CHAR err[BUFSIZ];
