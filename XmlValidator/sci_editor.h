@@ -475,7 +475,7 @@ namespace Matrix
 			{
 				int nlen = SendEditor(SCI_GETLENGTH);
 				content = new char[nlen + 1];
-				SendEditor(SCI_GETTEXT, nlen, (sptr_t)content);
+				SendEditor(SCI_GETTEXT, nlen+1, (sptr_t)content);
 				if (NULL == *content)
 				{
 					return -1;
