@@ -333,6 +333,8 @@ namespace Matrix
 			m_filename = new wchar_t[ulen + 1];
 			lstrcpynW(m_filename, filename, ulen + 1);
 
+			_wcslwr_s(m_filename, ulen + 1);
+
 			if (wcsstr(m_filename, L".xml"))
 			{
 				SetTextStyle(SCLEX_XML);
@@ -490,11 +492,11 @@ namespace Matrix
 				tError.Open.Line, tError.Open.Row, tError.OpenName(),
 				tError.Close.Line, tError.Close.Row, tError.CloseName());
 
-			if (tError.Count == -1)
+			if (tError.Count() == -1)
 			{
 				MessageBox(m_hwnd, L"XmlÓï·¨´íÎó", L"Error", MB_ICONERROR | MB_OK);
 			}
-			else if (tError.Count > 0)
+			else if (tError.Count() > 0)
 			{
 				MessageBoxA(m_hwnd, err, "Error", MB_ICONERROR | MB_OK);
 				SendEditor(SCI_GOTOLINE, 0);

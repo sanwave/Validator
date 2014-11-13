@@ -38,9 +38,8 @@ namespace Matrix
 		{
 			HMENU menu = LoadMenu(hinst, MAKEINTRESOURCE(IDR_MENU));
 			SetMenu(hwnd, menu);
-			//GetMenu(m_hwnd);
 			CheckMenuItem(menu, IDM_WRAP, MF_CHECKED);
-			CheckMenuItem(menu, IDM_AUTOVALIDATE, MainFrame::Editor->AutoValidate() ? MF_CHECKED : MF_UNCHECKED);
+			CheckMenuItem(menu, IDM_AUTOVALIDATE, MF_UNCHECKED);
 			return 0;
 		}
 

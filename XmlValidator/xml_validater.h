@@ -41,10 +41,13 @@ namespace Matrix
             SetName(name);
 		}
 
-        XmlValidateNode(XmlValidateNode& src)
+        XmlValidateNode(const XmlValidateNode& src)
+			:m_name(NULL)
+			, m_value(NULL)
         {
             m_index = src.Index();
             SetName(src.Name());
+			SetValue(src.Value());
         }
 
 		~XmlValidateNode()
@@ -61,7 +64,7 @@ namespace Matrix
 			}
 		}
 
-		int Index()
+		int Index() const
 		{
 			return m_index;
 		}
@@ -71,7 +74,7 @@ namespace Matrix
             m_index = value;
         }
 
-		const char * Name()
+		const char * Name() const
 		{
 			return m_name;
 		}
@@ -86,7 +89,7 @@ namespace Matrix
             if (NULL != name)
             {
                 int len = strlen(name);
-                m_name = new char[len * 2 + 1];
+                m_name = new char[len + 1];
                 strncpy(m_name, name, len + 1);
             }
             else
@@ -95,10 +98,33 @@ namespace Matrix
             }
         }
 
+		const char * Value() const
+		{
+			return m_value;
+		}
+
+		void SetValue(const char * value)
+		{
+			if (NULL != m_value)
+			{
+				delete m_value;
+				m_value = NULL;
+			}
+			if (NULL != value)
+			{
+				int len = strlen(value);
+				m_value = new char[len * 2 + 1];
+				strncpy(m_value, value, len + 1);
+			}
+			else
+			{
+				m_value = NULL;
+			}
+		}
+
 		int Close(const char * name)
 		{
-			return std::string(m_name) == std::string(name) ? 1 : -1;
-			//return strcmp(m_name, name) == 0 ? 1 : -1;
+			return strcmp(m_name, name) == 0 ? 1 : -1;
 		}
 
 	private:
@@ -113,7 +139,10 @@ namespace Matrix
 		int Line;
 		int Row;
 		int Index;
-		Position() :Line(1), Row(1), Index(0)
+		Position() 
+			:Line(1)
+			, Row(1)
+			, Index(0)
 		{}
 	};
 
@@ -121,15 +150,25 @@ namespace Matrix
 	{
 	public:
 		Position Open, Close;
-		char * m_openname, *m_closename;
-		int Count;
+		
 		XmlValidateError() 
 			:m_openname(NULL)
 			, m_closename(NULL)
 		{
 			Open = Position();
 			Close = Position();
-			Count = 0;
+			m_count = 0;
+		}
+
+		XmlValidateError(const XmlValidateError& src)
+			:m_openname(NULL)
+			, m_closename(NULL)
+		{
+			Open = src.Open;
+			Close = src.Close;
+			m_count = src.Count();
+			SetOpenName(src.OpenName());
+			SetCloseName(src.CloseName());
 		}
 
 		~XmlValidateError()
@@ -146,12 +185,22 @@ namespace Matrix
 			}
 		}
 
-		char * OpenName()
+		int Count() const
+		{
+			return m_count;
+		}
+
+		void SetCount(int value)
+		{
+			m_count = value;
+		}
+
+		char * OpenName() const
 		{
 			return m_openname;
 		}
 
-		char * CloseName()
+		char * CloseName() const
 		{
 			return m_closename;
 		}
@@ -191,6 +240,10 @@ namespace Matrix
 				m_closename = NULL;
 			}
 		}
+
+	private:
+		char * m_openname, *m_closename;
+		int m_count;
 	};
 
 	class XMLValidater
@@ -206,51 +259,52 @@ namespace Matrix
 		/// <returns>表示一致性错误数目，-1表示有语法错误</returns>
 		int ValidateXml(const char * content, XmlValidateError& error)
 		{
-			std::stack<XmlValidateNode*> nodes = std::stack<XmlValidateNode*>();
+			std::stack<XmlValidateNode> nodes = std::stack<XmlValidateNode>();
 			char * text = const_cast<char*>(content);
 
 			//index为追踪错误节点开始标识在全文中的位置，index2为错误节点结束标识在全文中的位置
 			off_t index4Open = 0, index4Close = 0;
 
 			//xml文件头开始的标志
-			off_t iHeadPrefix = strstr(text, "<?")-text;
+			off_t head_prefix = strstr(text, "<?") - text;
 
 			//下一个节点开始标识'<'在文中出现的位置
-			off_t iPrefix = strchr(text, '<') - text;
+			off_t prefix = strchr(text, '<') - text;
 
 			//下一个节点结束标识"</"在文中出现的位置
-			off_t iClosePrefix = strstr(text, "</")-text;
+			off_t close_prefix = strstr(text, "</") - text;
 
 			//节点名字尾部的标识
-			off_t iSuffix = strchr(text, '>') - text;
+			off_t suffix = strchr(text, '>') - text;
 
-			while (iPrefix >= 0)
+			while (prefix >= 0)
 			{
-				if (iSuffix - iPrefix - 2 < 0)
+				if (suffix - prefix - 2 < 0)
 				{
 					//语法错误
-					return error.Count = -1;
+					error.SetCount(-1);
+					return -1;
 				}
-				else if (iPrefix == iHeadPrefix)
+				else if (prefix == head_prefix)
 				{
 					//xml文件头校验
-					iHeadPrefix = NULL;
+					head_prefix = NULL;
 				}
-				else if (*(text + iSuffix - 1) == '/')
+				else if (*(text + suffix - 1) == '/')
 				{
 					;//<****/>节点直接结束，不予处理
 				}
-				else if (0 == (strncmp(text + iPrefix, "<!--", 4)))
+				else if (0 == (strncmp(text + prefix, "<!--", 4)))
 				{
 					//#跳过注释
-					iSuffix = strstr(text, "-->") - text + 2;
+					suffix = strstr(text, "-->") - text + 2;
 				}
 				//若为节点开始标识，将节点名压栈
-				else if (iPrefix != iClosePrefix)
+				else if (prefix != close_prefix)
 				{
-					const char * node_label = substr(text, iPrefix + 1, iSuffix - iPrefix - 1);
+					const char * node_label = Substr(text, prefix + 1, suffix - prefix - 1);
 					const char * node_name = GetNodeName(node_label);
-                    XmlValidateNode *node = new XmlValidateNode(index4Open + iPrefix + 1, node_name);
+					XmlValidateNode node = XmlValidateNode(index4Open + prefix + 1, node_name);					
 					nodes.push(node);
 					if (NULL != node_label)
 					{
@@ -268,31 +322,32 @@ namespace Matrix
 				{
 					if (nodes.empty())
 					{
-						return error.Count = -1;
+						error.SetCount(-1);
+						return -1;
 					}
-                    XmlValidateNode *node = nodes.top();
-                    nodes.pop();
+					XmlValidateNode node = nodes.top();
+					nodes.pop();
 
-					const char * close_label = substr(text, iPrefix + 2, iSuffix - iPrefix - 2);
+					const char * close_label = Substr(text, prefix + 2, suffix - prefix - 2);
 					const char * close_name = GetNodeName(close_label);
-					if (0!=std::string(node->Name()).compare(close_name))
+					if (0 != strcmp(node.Name(), close_name))
 					{
 						//追踪出错节点结束标识的位置
-						index4Close += iPrefix + 2;
+						index4Close += prefix + 2;
 						//只记录第一处错误的位置
-						error.Count += 1;
-						if (1 == error.Count)
+						error.SetCount(error.Count() + 1);
+						if (1 == error.Count())
 						{
-							GetPosition(content, node->Index(), error.Open);
+							GetPosition(content, node.Index(), error.Open);
 							GetPosition(content, index4Close, error.Close);
-							error.SetOpenName(node->Name());
+							error.SetOpenName(node.Name());
 							error.SetCloseName(close_name);
 						}
 					}
 
 					if (NULL != close_label)
 					{
-						delete close_label;						
+						delete close_label;
 						close_label = NULL;
 					}
 					if (close_label != close_name)
@@ -300,22 +355,17 @@ namespace Matrix
 						delete close_name;
 						close_name = NULL;
 					}
-                    if (NULL != node)
-                    {
-                        delete node;
-                        node = NULL;
-                    }
 				}
-				text += iSuffix;
+				text += suffix;
 
-				index4Open += iSuffix;
+				index4Open += suffix;
 				index4Close = index4Open;
 
-				iPrefix = strchr(text, '<') - text;
-				iClosePrefix = strstr(text, "</") - text;
-				iSuffix = strchr(text+ 1, '>') - text;
+				prefix = strchr(text, '<') - text;
+				close_prefix = strstr(text, "</") - text;
+				suffix = strchr(text + 1, '>') - text;
 			}
-			return error.Count;
+			return error.Count();
 		}
 
 	private:
@@ -327,7 +377,7 @@ namespace Matrix
 			int i = strchr(node, ' ') - node;
 			if (i > 0)
 			{
-				return substr(node, 0, i);
+				return Substr(node, 0, i);
 			}
 			else
 			{
@@ -338,7 +388,7 @@ namespace Matrix
 			}
 		}
 
-		char * substr(const char * src, off_t off, size_t len)
+		char * Substr(const char * src, off_t off, size_t len)
 		{
 			char * str = new char[len + 1];
 			strncpy(str, src + off, len);
@@ -351,8 +401,7 @@ namespace Matrix
 		/// </summary>
 		void GetPosition(const char * content, int index, Position& position)
 		{
-			position = Position();
-			char * subcontent = substr(content, 0, index);
+			char * subcontent = Substr(content, 0, index);
             char * text = subcontent;
             char * line_wrap = strchr(text, '\n');
             while (NULL != line_wrap)
