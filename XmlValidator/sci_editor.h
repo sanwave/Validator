@@ -468,40 +468,18 @@ namespace Matrix
 		/// <summary>
 		/// 简单校验XML文件一致性错误
 		/// </summary>
-		int ValidateXml(LPCWSTR document = NULL)
+		int ValidateXml()
 		{
 			char *content = NULL;
-			if (NULL == document)
-			{
-				int nlen = SendEditor(SCI_GETLENGTH);
-				content = new char[nlen + 1];
-				SendEditor(SCI_GETTEXT, nlen+1, (sptr_t)content);
-				if (NULL == *content)
-				{
-					return -1;
-				}
-				else
-				{
-					document = Matrix::TextEncoder::Utf8ToUnicode(content);
-				}
-			}
-
-			//Matrix::XmlDocument xml;
-			//xml.Parse(content, strlen(content));
-			
-			//MessageBox(NULL,xml.Name(), L"", MB_OK);
+            int nlen = SendEditor(SCI_GETLENGTH);
+            content = new char[nlen + 1];
+            SendEditor(SCI_GETTEXT, nlen + 1, (sptr_t)content);
 
 			Matrix::XMLValidater tXml;
 			Matrix::XmlValidateError tError;
 			tXml.ValidateXml(content, tError);
-
-			if (NULL != document)
-			{
-				delete document;
-				document = NULL;
-			}
-
-			if (NULL != content)
+            
+            if (NULL != content)
 			{
 				delete content;
 				content = NULL;

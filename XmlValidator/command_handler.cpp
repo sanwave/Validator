@@ -116,7 +116,7 @@ STDMETHODIMP CCommandHandler::Execute(
 		break;
 
 	case IDR_VALIDATE:
-		MainFrame::Editor->ValidateXml(NULL);
+		MainFrame::Editor->ValidateXml();
 		break;
 
 	case IDR_AUTOVALIDATE:

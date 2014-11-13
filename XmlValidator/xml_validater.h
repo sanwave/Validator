@@ -7,6 +7,8 @@
 *
 *	Created by Bonbon	2014.09.25
 *
+*	Updated by Bonbon	2014.11.13
+*
 */
 
 
@@ -36,28 +38,20 @@ namespace Matrix
 			, m_value(NULL)
 		{
 			m_index = index;
-			if (NULL != m_name)
-			{
-				delete m_name;
-				m_name = NULL;
-			}
-			if (NULL != name)
-			{
-				int len = strlen(name);
-				m_name = new char[len*2 + 1];
-				strncpy(m_name, name, len + 1);
-			}
-			else
-			{
-				m_name = NULL;
-			}
+            SetName(name);
 		}
+
+        XmlValidateNode(XmlValidateNode& src)
+        {
+            m_index = src.Index();
+            SetName(src.Name());
+        }
 
 		~XmlValidateNode()
 		{
 			if (NULL != m_name)
 			{
-				//delete m_name;
+				delete m_name;
 				m_name = NULL;
 			}
 			if (NULL != m_value)
@@ -72,10 +66,34 @@ namespace Matrix
 			return m_index;
 		}
 
-		std::string Name()
+        int SetIndex(int value)
+        {
+            m_index = value;
+        }
+
+		const char * Name()
 		{
-			return std::string(m_name);
+			return m_name;
 		}
+
+        void SetName(const char * name)
+        {
+            if (NULL != m_name)
+            {
+                delete m_name;
+                m_name = NULL;
+            }
+            if (NULL != name)
+            {
+                int len = strlen(name);
+                m_name = new char[len * 2 + 1];
+                strncpy(m_name, name, len + 1);
+            }
+            else
+            {
+                m_name = NULL;
+            }
+        }
 
 		int Close(const char * name)
 		{
@@ -188,7 +206,7 @@ namespace Matrix
 		/// <returns>表示一致性错误数目，-1表示有语法错误</returns>
 		int ValidateXml(const char * content, XmlValidateError& error)
 		{
-			std::stack<XmlValidateNode> nodes = std::stack<XmlValidateNode>();
+			std::stack<XmlValidateNode*> nodes = std::stack<XmlValidateNode*>();
 			char * text = const_cast<char*>(content);
 
 			//index为追踪错误节点开始标识在全文中的位置，index2为错误节点结束标识在全文中的位置
@@ -232,7 +250,7 @@ namespace Matrix
 				{
 					const char * node_label = substr(text, iPrefix + 1, iSuffix - iPrefix - 1);
 					const char * node_name = GetNodeName(node_label);
-					XmlValidateNode node(index4Open + iPrefix + 1, node_name);
+                    XmlValidateNode *node = new XmlValidateNode(index4Open + iPrefix + 1, node_name);
 					nodes.push(node);
 					if (NULL != node_label)
 					{
@@ -252,12 +270,12 @@ namespace Matrix
 					{
 						return error.Count = -1;
 					}
-					XmlValidateNode node = nodes.top();
-					
+                    XmlValidateNode *node = nodes.top();
+                    nodes.pop();
 
 					const char * close_label = substr(text, iPrefix + 2, iSuffix - iPrefix - 2);
 					const char * close_name = GetNodeName(close_label);
-					if (0!=node.Name().compare(close_name))
+					if (0!=std::string(node->Name()).compare(close_name))
 					{
 						//追踪出错节点结束标识的位置
 						index4Close += iPrefix + 2;
@@ -265,9 +283,9 @@ namespace Matrix
 						error.Count += 1;
 						if (1 == error.Count)
 						{
-							GetPosition(content, node.Index(), error.Open);
+							GetPosition(content, node->Index(), error.Open);
 							GetPosition(content, index4Close, error.Close);
-							error.SetOpenName(node.Name().c_str());
+							error.SetOpenName(node->Name());
 							error.SetCloseName(close_name);
 						}
 					}
@@ -282,8 +300,11 @@ namespace Matrix
 						delete close_name;
 						close_name = NULL;
 					}
-
-					nodes.pop();
+                    if (NULL != node)
+                    {
+                        delete node;
+                        node = NULL;
+                    }
 				}
 				text += iSuffix;
 
@@ -321,7 +342,7 @@ namespace Matrix
 		{
 			char * str = new char[len + 1];
 			strncpy(str, src + off, len);
-			str[len] = 0;
+			str[len] = '\0';
 			return str;
 		}
 
@@ -331,22 +352,23 @@ namespace Matrix
 		void GetPosition(const char * content, int index, Position& position)
 		{
 			position = Position();
-			char * text = substr(content, 0, index);
-			int i = strchr(text, '\n') - text;
-			while (i >= 0)
-			{
-				++position.Line;
-				text += i + 1;
-				i = strchr(text, '\n') - text;
-			}
+			char * subcontent = substr(content, 0, index);
+            char * text = subcontent;
+            char * line_wrap = strchr(text, '\n');
+            while (NULL != line_wrap)
+            {
+                ++position.Line;
+                text = line_wrap + 1;
+                line_wrap = strchr(text, '\n');
+            }
 
-			position.Row += strlen(text);
+            position.Row += strlen(text);
 			position.Index = index;
 
-			if (NULL != text)
+            if (NULL != subcontent)
 			{
-				delete text;
-				text = NULL;
+                delete subcontent;
+                subcontent = NULL;
 			}
 		}
 	};

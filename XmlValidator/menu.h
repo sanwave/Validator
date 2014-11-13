@@ -92,7 +92,7 @@ namespace Matrix
 				break;
 
 			case IDM_VALIDATE:
-				editor->ValidateXml(NULL);
+				editor->ValidateXml();
 				break;
 
 			case IDM_AUTOVALIDATE:
