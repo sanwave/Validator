@@ -164,7 +164,7 @@ STDMETHODIMP CCommandHandler::Execute(
 				}
 			}
 		}
-		break;*/
+		break;
 
 	case IDR_SWITCH_BACKCOLOR:
 		if (g_pFramework)
@@ -194,9 +194,7 @@ STDMETHODIMP CCommandHandler::Execute(
 				pPropertyStore->Release();
 			}
 		}
-		break;
-
-
+		break;*/
 
 	default:
 		break;
