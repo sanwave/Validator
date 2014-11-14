@@ -5,7 +5,7 @@
 IUIFramework *g_pFramework = NULL;  // Reference to the Ribbon framework.
 IUIApplication *g_pApplication = NULL;  // Reference to the Application object.
 
-Matrix::SciEditor * MainFrame::Editor;
+//Matrix::SciEditor * MainFrame::Editor;
 HWND MainFrame::Win;
 
 
@@ -37,7 +37,7 @@ bool MainFrame::InitializeFramework(HWND hWnd, Matrix::SciEditor * editor)
     }
 
 	Win = hWnd;
-	Editor = editor;
+	//Editor = editor;
 
     return true;
 }
@@ -63,5 +63,5 @@ void MainFrame::UpdateLayout()
 {
 	RECT rect;
 	GetClientRect(Win,&rect);
-	Editor->SetPos(rect, CApplication::RibbonHeight());
+    Matrix::SciEditor::m_this->SetPos(rect, CApplication::RibbonHeight());
 }

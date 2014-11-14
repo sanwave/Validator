@@ -56,6 +56,8 @@ namespace Matrix
 		static const COLORREF comment_green = RGB(0x57, 0xA6, 0x4A);		// ×¢ÊÍ	
 	};
 
+    class SciEditor;
+
 	class SciEditor
 	{
 	public:
@@ -69,6 +71,10 @@ namespace Matrix
 			m_vscroll_pos(0),
 			m_vscroll_size(0)
 		{
+            if (NULL == m_this)
+            {
+                m_this = this;
+            }
 		}
 
 		~SciEditor()
@@ -79,6 +85,16 @@ namespace Matrix
 				m_filename = NULL;
 			}
 		}
+
+        /*static SciEditor * CurrentInstance()
+        {
+            return m_this;
+        }
+
+        static void SetCurrentInstance(SciEditor * value)
+        {
+            m_this = value;
+        }*/
 
 		bool AutoValidate()
 		{
@@ -560,6 +576,8 @@ namespace Matrix
 				break;
 			}
 		}
+
+        static SciEditor * m_this;
 
 	private:
 		HWND m_hwnd;

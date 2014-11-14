@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include <UIRibbon.h>
-#include <UIRibbonPropertyHelpers.h>
+#include <UiRibbon.h>
+#include <UiRibbonPropertyHelpers.h>
 
 #include "ribbon_framework.h"
 #include "ribbon_ui.h"

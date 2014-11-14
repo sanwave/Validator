@@ -1,8 +1,7 @@
 
 #pragma once
 
-#include <windows.h>
-#include <UIRibbon.h>
+#include <UiRibbon.h>
 
 #include "application.h"
 #include "sci_editor.h"
@@ -17,7 +16,7 @@ public:
 	static void DestroyFramework();
 	static void UpdateLayout();
 
-	static Matrix::SciEditor * Editor;
+	//static Matrix::SciEditor * Editor;
 	static HWND Win;
 };
 

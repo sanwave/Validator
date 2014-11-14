@@ -85,26 +85,26 @@ STDMETHODIMP CCommandHandler::Execute(
 	{
 
 	case IDR_NEW:
-		MainFrame::Editor->New();
+        Matrix::SciEditor::m_this->New();
 		break;
 
 	case IDR_OPEN:
-		MainFrame::Editor->OpenFileDlg(MainFrame::Win);
+        Matrix::SciEditor::m_this->OpenFileDlg(MainFrame::Win);
 		break;
 
 	case IDR_SAVE:
-		MainFrame::Editor->Save();
+        Matrix::SciEditor::m_this->Save();
 		break;
 
 	case IDR_SAVEAS:
-		MainFrame::Editor->SaveAs();
+        Matrix::SciEditor::m_this->SaveAs();
 		break;
 
 	case IDR_PRINT:
 		break;
 
 	case IDR_FIND:
-		MainFrame::Editor->Search(NULL);
+        Matrix::SciEditor::m_this->Search(NULL);
 		break;
 
 	case IDR_WRAP:
@@ -116,7 +116,7 @@ STDMETHODIMP CCommandHandler::Execute(
 		break;
 
 	case IDR_VALIDATE:
-		MainFrame::Editor->ValidateXml();
+        Matrix::SciEditor::m_this->ValidateXml();
 		break;
 
 	case IDR_AUTOVALIDATE:
@@ -203,6 +203,7 @@ STDMETHODIMP CCommandHandler::Execute(
     return S_OK;
 }
 
+Matrix::SciEditor * Matrix::SciEditor::m_this = NULL;
 
 STDMETHODIMP CCommandHandler::UpdateProperty(
 	UINT nCmdID,
@@ -223,26 +224,26 @@ STDMETHODIMP CCommandHandler::UpdateProperty(
 		switch (nCmdID)
 		{
 		case IDR_WRAP:
-			if (MainFrame::Editor != NULL)
+            if (NULL != Matrix::SciEditor::m_this)
 			{
 				hr = g_pFramework->GetUICommandProperty(IDR_WRAP, UI_PKEY_BooleanValue, &var);
 				if (FAILED(hr))
 				{
 					return hr;
 				}
-				MainFrame::Editor->SetWrap(var.boolVal);
+                Matrix::SciEditor::m_this->SetWrap(var.boolVal);
 			}
 			break;
 
 		case IDR_AUTOVALIDATE:
-			if (MainFrame::Editor != NULL)
+            if (NULL != Matrix::SciEditor::m_this)
 			{
 				hr = g_pFramework->GetUICommandProperty(IDR_AUTOVALIDATE, UI_PKEY_BooleanValue, &var);
 				if (FAILED(hr))
 				{
 					return hr;
 				}
-				MainFrame::Editor->SetAutoValidate(var.boolVal);
+                Matrix::SciEditor::m_this->SetAutoValidate(var.boolVal);
 			}
 			break;
 

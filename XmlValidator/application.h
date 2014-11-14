@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include <uiribbon.h>
-#include <uiribbonPropertyhelpers.h>
+#include <UiRibbon.h>
+#include <UiRibbonPropertyHelpers.h>
 
 #include "command_handler.h"
 
