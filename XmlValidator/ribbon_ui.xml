@@ -179,6 +179,14 @@
   <Application.Views>
     <Ribbon>
       
+      <Ribbon.QuickAccessToolbar>
+        <QuickAccessToolbar CommandName="barQuick" CustomizeCommandName="QuickBar">
+          <QuickAccessToolbar.ApplicationDefaults>
+            <ToggleButton CommandName="cmdMinimize" ApplicationDefaults.IsChecked="false"/>
+          </QuickAccessToolbar.ApplicationDefaults>
+        </QuickAccessToolbar>
+      </Ribbon.QuickAccessToolbar>
+      
       <Ribbon.ApplicationMenu >
         <ApplicationMenu CommandName="FileMenu" >
           <MenuGroup Class="MajorItems" >
@@ -241,10 +249,10 @@
             <Button CommandName="About" />
           </Group>
 
-          <Group CommandName="grpTest">
+          <!--<Group CommandName="grpTest">
             <Spinner CommandName="Spinner" />
             <ComboBox CommandName="ComboBox" />
-          </Group>
+          </Group>-->
         </Tab>      
         
       </Ribbon.Tabs>

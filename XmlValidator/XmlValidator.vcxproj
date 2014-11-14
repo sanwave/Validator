@@ -54,6 +54,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;MATRIX</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)$(Configuration)\;D:\Onedrive\Program\Libraries\MySQL\include.5.6.20.x86;D:\Onedrive\Program\scintilla++\scintilla\include;E:\Program\Libraries\scintilla\include;E:\Program\Libraries\mysql-5.6.21-win32\include;%(AdditionalIncludeDirectories);$(SolutionDir)$(Configuration)\</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -102,6 +103,7 @@
     <ClCompile Include="application.cpp" />
     <ClCompile Include="command_handler.cpp" />
     <ClCompile Include="ribbon_framework.cpp" />
+    <ClCompile Include="sci_editor.cpp" />
     <ClCompile Include="winmain.cpp" />
   </ItemGroup>
   <ItemGroup>

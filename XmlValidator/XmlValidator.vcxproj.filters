@@ -82,6 +82,9 @@
     <ClCompile Include="ribbon_framework.cpp">
       <Filter>Ribbon</Filter>
     </ClCompile>
+    <ClCompile Include="sci_editor.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="twitter.ico">

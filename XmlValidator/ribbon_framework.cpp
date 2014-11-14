@@ -33,7 +33,7 @@ bool MainFrame::InitializeFramework(HWND hWnd, Matrix::SciEditor * editor)
     hr = g_pFramework->LoadUI(GetModuleHandle(NULL), L"RIBBON_UI_RIBBON");
     if (FAILED(hr))
     {
-        return E_FAIL;
+        return false;
     }
 
 	Win = hWnd;
@@ -63,5 +63,5 @@ void MainFrame::UpdateLayout()
 {
 	RECT rect;
 	GetClientRect(Win,&rect);
-    Matrix::SciEditor::m_this->SetPos(rect, CApplication::RibbonHeight());
+    Matrix::SciEditor::CurrentPtr()->SetPos(rect, CApplication::RibbonHeight());
 }

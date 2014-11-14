@@ -7,8 +7,6 @@
 #include "ribbon_framework.h"
 #include "ribbon_ui.h"
 
-#include "sci_editor.h"
-
 
 class CCommandHandler
     : public IUICommandHandler // Command handlers must implement IUICommandHandler.

@@ -15,7 +15,7 @@
 
 
 #include "basewin.h"
-#include <commdlg.h>
+#include "sci_editor.h"
 #include "application.h"
 #include "menu.h"
 

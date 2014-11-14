@@ -79,32 +79,32 @@ STDMETHODIMP CCommandHandler::Execute(
     UNREFERENCED_PARAMETER(verb);
     UNREFERENCED_PARAMETER(nCmdID);
 
-	HRESULT hr;
+	HRESULT hr = E_FAIL;
 
 	switch (nCmdID)
 	{
 
 	case IDR_NEW:
-        Matrix::SciEditor::m_this->New();
+        Matrix::SciEditor::CurrentPtr()->New();
 		break;
 
 	case IDR_OPEN:
-        Matrix::SciEditor::m_this->OpenFileDlg(MainFrame::Win);
+        Matrix::SciEditor::CurrentPtr()->OpenFileDlg(MainFrame::Win);
 		break;
 
 	case IDR_SAVE:
-        Matrix::SciEditor::m_this->Save();
+        Matrix::SciEditor::CurrentPtr()->Save();
 		break;
 
 	case IDR_SAVEAS:
-        Matrix::SciEditor::m_this->SaveAs();
+        Matrix::SciEditor::CurrentPtr()->SaveAs();
 		break;
 
 	case IDR_PRINT:
 		break;
 
 	case IDR_FIND:
-        Matrix::SciEditor::m_this->Search(NULL);
+        Matrix::SciEditor::CurrentPtr()->Search(NULL);
 		break;
 
 	case IDR_WRAP:
@@ -116,7 +116,7 @@ STDMETHODIMP CCommandHandler::Execute(
 		break;
 
 	case IDR_VALIDATE:
-        Matrix::SciEditor::m_this->ValidateXml();
+        Matrix::SciEditor::CurrentPtr()->ValidateXml();
 		break;
 
 	case IDR_AUTOVALIDATE:
@@ -203,7 +203,6 @@ STDMETHODIMP CCommandHandler::Execute(
     return S_OK;
 }
 
-Matrix::SciEditor * Matrix::SciEditor::m_this = NULL;
 
 STDMETHODIMP CCommandHandler::UpdateProperty(
 	UINT nCmdID,
@@ -224,26 +223,26 @@ STDMETHODIMP CCommandHandler::UpdateProperty(
 		switch (nCmdID)
 		{
 		case IDR_WRAP:
-            if (NULL != Matrix::SciEditor::m_this)
+            if (NULL != Matrix::SciEditor::CurrentPtr())
 			{
 				hr = g_pFramework->GetUICommandProperty(IDR_WRAP, UI_PKEY_BooleanValue, &var);
 				if (FAILED(hr))
 				{
 					return hr;
 				}
-                Matrix::SciEditor::m_this->SetWrap(var.boolVal);
+                Matrix::SciEditor::CurrentPtr()->SetWrap(var.boolVal);
 			}
 			break;
 
 		case IDR_AUTOVALIDATE:
-            if (NULL != Matrix::SciEditor::m_this)
+            if (NULL != Matrix::SciEditor::CurrentPtr())
 			{
 				hr = g_pFramework->GetUICommandProperty(IDR_AUTOVALIDATE, UI_PKEY_BooleanValue, &var);
 				if (FAILED(hr))
 				{
 					return hr;
 				}
-                Matrix::SciEditor::m_this->SetAutoValidate(var.boolVal);
+                Matrix::SciEditor::CurrentPtr()->SetAutoValidate(var.boolVal);
 			}
 			break;
 

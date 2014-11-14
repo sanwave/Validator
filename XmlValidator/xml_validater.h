@@ -252,54 +252,54 @@ namespace Matrix
 		XMLValidater(){}
 
 		/// <summary>
-		/// ç®€å•æ ¡éªŒXMLä¸€è‡´æ€§ï¼Œéƒ¨åˆ†è¯­æ³•é”™è¯¯è¿”å›-1
+		/// ¼òµ¥Ğ£ÑéXMLÒ»ÖÂĞÔ£¬²¿·ÖÓï·¨´íÎó·µ»Ø-1
 		/// </summary>
-		/// <param name="content">æŒ‡å®šXmlæ–‡æœ¬</param>
-		/// <param name="error">é”™è¯¯è¯¦ç»†æ¶ˆæ¯</param>
-		/// <returns>è¡¨ç¤ºä¸€è‡´æ€§é”™è¯¯æ•°ç›®ï¼Œ-1è¡¨ç¤ºæœ‰è¯­æ³•é”™è¯¯</returns>
+		/// <param name="content">Ö¸¶¨XmlÎÄ±¾</param>
+		/// <param name="error">´íÎóÏêÏ¸ÏûÏ¢</param>
+		/// <returns>±íÊ¾Ò»ÖÂĞÔ´íÎóÊıÄ¿£¬-1±íÊ¾ÓĞÓï·¨´íÎó</returns>
 		int ValidateXml(const char * content, XmlValidateError& error)
 		{
 			std::stack<XmlValidateNode> nodes = std::stack<XmlValidateNode>();
 			char * text = const_cast<char*>(content);
 
-			//indexä¸ºè¿½è¸ªé”™è¯¯èŠ‚ç‚¹å¼€å§‹æ ‡è¯†åœ¨å…¨æ–‡ä¸­çš„ä½ç½®ï¼Œindex2ä¸ºé”™è¯¯èŠ‚ç‚¹ç»“æŸæ ‡è¯†åœ¨å…¨æ–‡ä¸­çš„ä½ç½®
+			//indexÎª×·×Ù´íÎó½Úµã¿ªÊ¼±êÊ¶ÔÚÈ«ÎÄÖĞµÄÎ»ÖÃ£¬index2Îª´íÎó½Úµã½áÊø±êÊ¶ÔÚÈ«ÎÄÖĞµÄÎ»ÖÃ
 			off_t index4Open = 0, index4Close = 0;
 
-			//xmlæ–‡ä»¶å¤´å¼€å§‹çš„æ ‡å¿—
+			//xmlÎÄ¼şÍ·¿ªÊ¼µÄ±êÖ¾
 			off_t head_prefix = strstr(text, "<?") - text;
 
-			//ä¸‹ä¸€ä¸ªèŠ‚ç‚¹å¼€å§‹æ ‡è¯†'<'åœ¨æ–‡ä¸­å‡ºç°çš„ä½ç½®
+			//ÏÂÒ»¸ö½Úµã¿ªÊ¼±êÊ¶'<'ÔÚÎÄÖĞ³öÏÖµÄÎ»ÖÃ
 			off_t prefix = strchr(text, '<') - text;
 
-			//ä¸‹ä¸€ä¸ªèŠ‚ç‚¹ç»“æŸæ ‡è¯†"</"åœ¨æ–‡ä¸­å‡ºç°çš„ä½ç½®
+			//ÏÂÒ»¸ö½Úµã½áÊø±êÊ¶"</"ÔÚÎÄÖĞ³öÏÖµÄÎ»ÖÃ
 			off_t close_prefix = strstr(text, "</") - text;
 
-			//èŠ‚ç‚¹åå­—å°¾éƒ¨çš„æ ‡è¯†
+			//½ÚµãÃû×ÖÎ²²¿µÄ±êÊ¶
 			off_t suffix = strchr(text, '>') - text;
 
 			while (prefix >= 0)
 			{
 				if (suffix - prefix - 2 < 0)
 				{
-					//è¯­æ³•é”™è¯¯
+					//Óï·¨´íÎó
 					error.SetCount(-1);
 					return -1;
 				}
 				else if (prefix == head_prefix)
 				{
-					//xmlæ–‡ä»¶å¤´æ ¡éªŒ
+					//xmlÎÄ¼şÍ·Ğ£Ñé
 					head_prefix = NULL;
 				}
 				else if (*(text + suffix - 1) == '/')
 				{
-					;//<****/>èŠ‚ç‚¹ç›´æ¥ç»“æŸï¼Œä¸äºˆå¤„ç†
+					;//<****/>½ÚµãÖ±½Ó½áÊø£¬²»Óè´¦Àí
 				}
 				else if (0 == (strncmp(text + prefix, "<!--", 4)))
 				{
-					//#è·³è¿‡æ³¨é‡Š
+					//#Ìø¹ı×¢ÊÍ
 					suffix = strstr(text, "-->") - text + 2;
 				}
-				//è‹¥ä¸ºèŠ‚ç‚¹å¼€å§‹æ ‡è¯†ï¼Œå°†èŠ‚ç‚¹åå‹æ ˆ
+				//ÈôÎª½Úµã¿ªÊ¼±êÊ¶£¬½«½ÚµãÃûÑ¹Õ»
 				else if (prefix != close_prefix)
 				{
 					const char * node_label = Substr(text, prefix + 1, suffix - prefix - 1);
@@ -317,7 +317,7 @@ namespace Matrix
 						node_name = NULL;
 					}
 				}
-				//è‹¥ä¸ºèŠ‚ç‚¹ç»“æŸæ ‡è¯†ï¼Œå°†å…¶ä¸å‡ºæ ˆçš„èŠ‚ç‚¹åå¯¹æ¯”
+				//ÈôÎª½Úµã½áÊø±êÊ¶£¬½«ÆäÓë³öÕ»µÄ½ÚµãÃû¶Ô±È
 				else
 				{
 					if (nodes.empty())
@@ -332,9 +332,9 @@ namespace Matrix
 					const char * close_name = GetNodeName(close_label);
 					if (0 != strcmp(node.Name(), close_name))
 					{
-						//è¿½è¸ªå‡ºé”™èŠ‚ç‚¹ç»“æŸæ ‡è¯†çš„ä½ç½®
+						//×·×Ù³ö´í½Úµã½áÊø±êÊ¶µÄÎ»ÖÃ
 						index4Close += prefix + 2;
-						//åªè®°å½•ç¬¬ä¸€å¤„é”™è¯¯çš„ä½ç½®
+						//Ö»¼ÇÂ¼µÚÒ»´¦´íÎóµÄÎ»ÖÃ
 						error.SetCount(error.Count() + 1);
 						if (1 == error.Count())
 						{
@@ -370,7 +370,7 @@ namespace Matrix
 
 	private:
 		/// <summary>
-		/// è·å–æŒ‡å®šèŠ‚ç‚¹å
+		/// »ñÈ¡Ö¸¶¨½ÚµãÃû
 		/// </summary>
 		const char * GetNodeName(const char * node)
 		{
@@ -397,7 +397,7 @@ namespace Matrix
 		}
 
 		/// <summary>
-		/// è·å–æŒ‡å®šå­—ç¬¦ä¸²ç´¢å¼•çš„è¡Œåˆ—å€¼
+		/// »ñÈ¡Ö¸¶¨×Ö·û´®Ë÷ÒıµÄĞĞÁĞÖµ
 		/// </summary>
 		void GetPosition(const char * content, int index, Position& position)
 		{

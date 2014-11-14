@@ -277,7 +277,7 @@ namespace Matrix
 			file.seekg(0, std::ios::end);
 			size_t size = static_cast<size_t>(file.tellg());
 
-			if (off >= size)
+			if (off - size >= 0)
 			{
 				file.close();
 				return NULL;

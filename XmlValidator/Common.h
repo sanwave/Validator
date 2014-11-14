@@ -21,11 +21,12 @@
 
 #include <assert.h>
 
-#define WIN32_LEAN_AND_MEAN             //  Д╩▌ Windows Е╓╢Ф√┤Д╩╤Д╦╜Ф▌▓И≥╓Ф·│Е╟▒Д╫©Г■╗Г └Д©║Ф│╞
+#define WIN32_LEAN_AND_MEAN             //  ╢с Windows м╥нд╪ЧжпееЁЩ╪╚иый╧сц╣дпео╒
 
 #ifdef WIN32
 #include <windows.h>
 #include <shellapi.h>
+#include <commdlg.h>
 #endif
 
 

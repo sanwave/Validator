@@ -22,7 +22,6 @@
 #include "common.h"
 #endif
 
-#include "sci_editor.h"
 
 namespace Matrix
 {
@@ -40,6 +39,8 @@ namespace Matrix
 			SetMenu(hwnd, menu);
 			CheckMenuItem(menu, IDM_WRAP, MF_CHECKED);
 			CheckMenuItem(menu, IDM_AUTOVALIDATE, MF_UNCHECKED);
+			EnableMenuItem(menu, IDM_PRINT, MF_GRAYED);
+			EnableMenuItem(menu, IDM_REPLACE, MF_GRAYED);
 			return 0;
 		}
 
