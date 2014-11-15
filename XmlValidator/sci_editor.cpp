@@ -13,7 +13,9 @@ namespace Matrix
 		m_filename(NULL),
 		m_file_pos(Matrix::FilePos::HEAD),
 		m_vscroll_pos(0),
-		m_vscroll_size(0)
+		m_vscroll_size(0),
+		m_read_all(true),
+		m_black_theme(false)
 	{
 		if (NULL == m_this)
 		{
@@ -63,8 +65,9 @@ namespace Matrix
 		SendEditor(SCI_SETCODEPAGE, SC_CP_UTF8);
 		SendEditor(SCI_STYLECLEARALL);
 		SetLineNumber();
-		SetWrap(true);
+		SetWrap(m_line_wrap);
 		SetTextStyle(0);
+		SetBlackTheme(m_black_theme);
 	}
 
 	void SciEditor::SetLineNumber()
@@ -94,12 +97,6 @@ namespace Matrix
 
 		if (SCLEX_XML == style)
 		{
-			SendEditor(SCI_STYLESETFORE, STYLE_DEFAULT, Color::back_black);
-			SendEditor(SCI_STYLESETBACK, STYLE_DEFAULT, Color::white);
-			SendEditor(SCI_STYLECLEARALL);
-			SendEditor(SCI_SETSELBACK, true, Color::selection_wight);
-			SendEditor(SCI_SETCARETFORE, Color::caret_black);	//光标
-
 			SendEditor(SCI_SETLEXER, SCLEX_HTML);
 			SendEditor(SCI_STYLESETFORE, SCE_H_XMLSTART, Color::red);
 			SendEditor(SCI_STYLESETBACK, SCE_H_XMLSTART, Color::yellow);
@@ -123,27 +120,14 @@ namespace Matrix
 			SendEditor(SCI_STYLESETFORE, SCE_H_SINGLESTRING, Color::xml_string_blue);
 
 			SendEditor(SCI_STYLESETFORE, SCE_H_COMMENT, Color::comment_green);
-
-			SendEditor(SCI_SETCARETLINEVISIBLE, TRUE);
-			SendEditor(SCI_SETCARETLINEBACK, Color::current_line_yellow);
 		}
 		else if (SCLEX_CPP == style)
 		{
-			SendEditor(SCI_STYLESETFORE, STYLE_DEFAULT, Color::fore_white);
-			SendEditor(SCI_STYLESETBACK, STYLE_DEFAULT, Color::back_black);
-			SendEditor(SCI_STYLECLEARALL);
-
-			SendEditor(SCI_STYLESETFORE, STYLE_LINENUMBER, Color::line_number_blue);
-			SendEditor(SCI_STYLESETBACK, STYLE_LINENUMBER, Color::line_number_black);
-			SendEditor(SCI_SETCARETFORE, Color::caret_white);	//光标
-
 			//试图同步高亮，失败
 			//int pos = SendEditor(SCI_GETCURRENTPOS, 0, 0);
 			//SendEditor(SCI_STYLESETBACK, STYLE_BRACELIGHT, red);
 			//SendEditor(SCI_BRACEHIGHLIGHT, 20, 10);
 			//SendEditor(SCI_SETHIGHLIGHTGUIDE, 20);
-
-			SendEditor(SCI_SETSELBACK, true, Color::selection_blue);
 
 			SendEditor(SCI_SETLEXER, SCLEX_CPP);
 			SendEditor(SCI_SETKEYWORDS, 0, (sptr_t)cpp_keywords);//设置关键字 
@@ -162,7 +146,38 @@ namespace Matrix
 			SendEditor(SCI_STYLESETFORE, SCE_C_COMMENT, Color::comment_green);//块注释 
 			SendEditor(SCI_STYLESETFORE, SCE_C_COMMENTLINE, Color::comment_green);//行注释 
 			SendEditor(SCI_STYLESETFORE, SCE_C_COMMENTDOC, Color::comment_green);//文档注释（/**开头） 
+		}
+	}
 
+	void SciEditor::SetPos(RECT rect, int menu_height)
+	{
+		SetWindowPos(m_hwnd, HWND_TOP, 0, menu_height,
+			rect.right - rect.left - 11, rect.bottom - rect.top - menu_height, SWP_SHOWWINDOW);
+	}
+
+	void SciEditor::SetReadAll(bool value)
+	{
+		m_read_all = value;
+		if (NULL != m_filename)
+		{
+			LoadFromFile(m_filename);
+		}
+	}
+
+	void SciEditor::SetBlackTheme(bool value)
+	{
+		m_black_theme = value;
+		if (m_black_theme)
+		{
+			SendEditor(SCI_STYLESETFORE, STYLE_DEFAULT, Color::fore_white);
+			SendEditor(SCI_STYLESETBACK, STYLE_DEFAULT, Color::back_black);
+			SendEditor(SCI_STYLECLEARALL);
+
+			SendEditor(SCI_STYLESETFORE, STYLE_LINENUMBER, Color::line_number_blue);
+			SendEditor(SCI_STYLESETBACK, STYLE_LINENUMBER, Color::line_number_black);
+
+			SendEditor(SCI_SETCARETFORE, Color::caret_white);	//光标
+			SendEditor(SCI_SETSELBACK, true, Color::selection_blue);
 			SendEditor(SCI_SETCARETLINEVISIBLE, TRUE);
 			SendEditor(SCI_SETCARETLINEBACK, Color::current_line_black);
 		}
@@ -171,20 +186,12 @@ namespace Matrix
 			SendEditor(SCI_STYLESETFORE, STYLE_DEFAULT, Color::back_black);
 			SendEditor(SCI_STYLESETBACK, STYLE_DEFAULT, Color::white);
 			SendEditor(SCI_STYLECLEARALL);
+
 			SendEditor(SCI_SETCARETFORE, Color::caret_black);	//光标
 			SendEditor(SCI_SETSELBACK, true, Color::selection_wight);
-			SendEditor(SCI_STYLESETSIZE, STYLE_DEFAULT, 14);
-
 			SendEditor(SCI_SETCARETLINEVISIBLE, TRUE);
 			SendEditor(SCI_SETCARETLINEBACK, Color::current_line_yellow);
 		}
-
-	}
-
-	void SciEditor::SetPos(RECT rect, int menu_height)
-	{
-		SetWindowPos(m_hwnd, HWND_TOP, 0, menu_height,
-			rect.right - rect.left - 11, rect.bottom - rect.top - menu_height, SWP_SHOWWINDOW);
 	}
 
 	int SciEditor::Search(wchar_t * text)
@@ -253,7 +260,12 @@ namespace Matrix
 
 	int SciEditor::LoadFromFile(const wchar_t *filename)
 	{
-		m_current_page = 0;
+		if (NULL == filename)
+		{
+			return -2;
+		}
+
+		m_current_page = (m_read_all == false) ? 0 : -1;
 
 		size_t ulen = wcslen(filename);
 		m_filename = new wchar_t[ulen + 1];

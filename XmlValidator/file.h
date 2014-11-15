@@ -37,6 +37,11 @@ namespace Matrix
 		END
 	};
 
+	enum ReadSize
+	{
+		FILEAll = -1,
+		FILEPAGE
+	};
 
 	class File
 	{
@@ -225,7 +230,7 @@ namespace Matrix
 
 		static const wchar_t * ReadAsText(const wchar_t *filename, int page = 0)
 		{
-			const char * text = ReadBlock(filename, FPAGESIZ * page);
+			const char * text = ReadBlock(filename, FPAGESIZ * page, FPAGESIZ);
 			if (NULL == text)
 			{
 				return NULL;
@@ -246,7 +251,7 @@ namespace Matrix
 				return NULL;
 			}
 			const wchar_t * ufilename = Matrix::TextEncoder(filename).Unicode();
-			const char * buffer = ReadBlock(ufilename, FPAGESIZ * page);
+			const char * buffer = ReadBlock(ufilename, FPAGESIZ * page, FPAGESIZ);
 			if (NULL != ufilename)
 			{
 				delete ufilename;
@@ -257,7 +262,7 @@ namespace Matrix
 
 		static const char * ReadAsBinary(const wchar_t * filename, int page = 0)
 		{
-			return ReadBlock(filename, FPAGESIZ * page);
+			return ReadBlock(filename, FPAGESIZ * page, FPAGESIZ);
 		}
 
 		static const char * ReadBlock(const wchar_t * filename, off_t off = 0, size_t read_size = FPAGESIZ)
@@ -277,7 +282,12 @@ namespace Matrix
 			file.seekg(0, std::ios::end);
 			size_t size = static_cast<size_t>(file.tellg());
 
-			if (off - size >= 0)
+			if (off < std::ios::beg)
+			{
+				off = std::ios::beg;
+				read_size = size;
+			}
+			else if (off >= size)
 			{
 				file.close();
 				return NULL;

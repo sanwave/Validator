@@ -81,6 +81,20 @@ namespace Matrix
 			m_auto_validate = (value == 0) ? false : true;
 		}
 
+		inline bool ReadAll() const
+		{
+			return m_read_all;
+		}
+
+		void SetReadAll(bool value);
+
+		inline bool BlackTheme() const
+		{
+			return m_black_theme;
+		}
+
+		inline void SetBlackTheme(bool value);
+
 		inline wchar_t * FileName() const
 		{
 			return m_filename;
@@ -127,6 +141,8 @@ namespace Matrix
 		int m_vscroll_pos;
 		wchar_t * m_filename;
 		int m_current_page;
+		bool m_read_all;
+		bool m_black_theme;
 
 		static SciEditor * m_this;		
 		Matrix::FilePos m_file_pos;		
