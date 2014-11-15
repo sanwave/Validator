@@ -22,6 +22,7 @@
 #include "common.h"
 #endif
 
+#include "dialog.h"
 
 namespace Matrix
 {
@@ -55,7 +56,7 @@ namespace Matrix
 			switch (wmId)
 			{
 			case IDM_ABOUT:
-				//DialogBox(nullptr, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+				DialogBox(NULL, MAKEINTRESOURCE(IDD_ABOUTBOX), hwnd, Dialog::About);
 				break;
 
 			case IDM_NEW:

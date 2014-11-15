@@ -107,38 +107,13 @@ namespace Matrix
 			return 0;
 		}
 
-		/// <summary>
-		/// 在窗口上绘制指定文本
-		/// </summary>
-		void DrawText(LPCWSTR text)
-		{
-			m_hdc = GetDC(m_hwnd);
-			RECT rect;
-
-			HFONT font = CreateFontW(18, 0, 0, 0, 300, false, false, false, DEFAULT_CHARSET,
-				OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, L"Segoe UI");
-
-			HFONT hFontOld = (HFONT)SelectObject(m_hdc, font);
-
-			GetClientRect(m_hwnd, &rect);
-			SetTextColor(m_hdc, 0x00000000);
-			SetBkMode(m_hdc, TRANSPARENT);
-			rect.left = 12;
-			rect.right -= 12;
-			rect.top = 20;
-			FillRect(m_hdc, &rect, (HBRUSH)(COLOR_WINDOW + 1));
-			::DrawText(m_hdc, text, -1, &rect, DT_NOCLIP | DT_WORDBREAK | DT_EDITCONTROL);
-			SelectObject(m_hdc, hFontOld);
-			ReleaseDC(m_hwnd, m_hdc);
-		}		
-
 		void RemoveBorder()
 		{
 			//SetWindowLong(m_hwnd, GWL_STYLE, GetWindowLong(m_hwnd, GWL_STYLE) & ~WS_CAPTION &~WS_BORDER);
 			//SetWindowLong(m_hwnd, GWL_STYLE, GetWindowLong(m_hwnd, GWL_STYLE) | (WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_POPUP));
 			SetWindowLong(m_hwnd, GWL_STYLE, GetWindowLong(m_hwnd, GWL_STYLE) &	(~(WS_CAPTION | WS_BORDER | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX)));
 			SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_DRAWFRAME);
-		}				
+		}
 
 	private:
 		//m_ps与m_hdc为Paint中临时变量，放在类中仅仅为了性能考虑
