@@ -16,10 +16,14 @@
 
 #include "common.h"
 #include <scintilla.h> 
-#include <scilexer.h> 
+#include <scilexer.h>
+#include <ScintillaWidget.h>
 #include "file.h"
 #include "xml_validater.h"
 #include "xml.h"
+
+#include "minus.xpm"
+#include "plus.xpm"
 
 namespace Matrix
 {
@@ -67,50 +71,45 @@ namespace Matrix
         {
             return m_this;
         }
-        inline static void SetCurrentPtr(SciEditor * value)
-        {
-            m_this = value;
-        }
+		static void SetCurrentPtr(SciEditor * value);
+
+		inline HWND Handle()
+		{
+			return m_hwnd;
+		}
 
 		inline bool AutoValidate() const
 		{
 			return m_auto_validate;
 		}
-		inline void SetAutoValidate(short value)
-		{
-			m_auto_validate = (value == 0) ? false : true;
-		}
+		void SetAutoValidate(short value);
 
-		inline bool ReadAll() const
-		{
-			return m_read_all;
-		}
-
-		void SetReadAll(bool value);
-
-		inline bool BlackTheme() const
-		{
-			return m_black_theme;
-		}
-
-		inline void SetBlackTheme(bool value);
-
-		inline wchar_t * FileName() const
-		{
-			return m_filename;
-		}
-		
 		void Create(HWND hwndParent);
 		void Init();
 		void HandleMsg(SCNotification * msg, WPARAM wParam);
 
-		bool LineWrap() const
+		inline bool LineWrap() const
 		{
 			return m_line_wrap;
 		}
 		void SetWrap(short iflag);
+		inline bool ReadAll() const
+		{
+			return m_read_all;
+		}
+		void SetReadAll(bool value);
+		inline bool BlackTheme() const
+		{
+			return m_black_theme;
+		}
+		void SetBlackTheme(bool value);
+		inline wchar_t * FileName() const
+		{
+			return m_filename;
+		}
 		void SetLineNumber();
 		void SetTextStyle(int style);
+		void SetFolder();
 		void SetPos(RECT rect, int menu_height = 0);
 		void SetFocus();
 		void GetScrollSize();
@@ -124,6 +123,10 @@ namespace Matrix
 		int LoadFromFile(const wchar_t *filename);
 		int Save();
 		int SaveAs();
+
+		int Cut();
+		int Copy();
+		int Paste();
 
 		int NextPage();
 		int ValidateXml();

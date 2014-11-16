@@ -84,6 +84,18 @@ namespace Matrix
 				DestroyWindow(hwnd);
 				break;
 
+			case IDM_CUT:
+				editor->Cut();
+				break;
+
+			case IDM_COPY:
+				editor->Copy();
+				break;
+
+			case IDM_PASTE:
+				editor->Paste();
+				break;
+
 			case IDM_FIND:
 				editor->Search(NULL);
 				break;

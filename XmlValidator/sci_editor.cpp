@@ -32,6 +32,16 @@ namespace Matrix
 		}
 	}
 
+	void SciEditor::SetCurrentPtr(SciEditor * value)
+	{
+		m_this = value;
+	}
+
+	void SciEditor::SetAutoValidate(short value)
+	{
+		m_auto_validate = (value == 0) ? false : true;
+	}
+
 	void SciEditor::SetWrap(short iflag)
 	{
 		m_line_wrap = (0 == iflag) ? false : true;
@@ -58,30 +68,60 @@ namespace Matrix
 
 	void SciEditor::Init()
 	{
-		SendEditor(SCI_SETCARETLINEVISIBLE, TRUE);
-		SendEditor(SCI_SETCARETLINEBACK, 0xb0ffff);
-
 		SendEditor(SCI_SETTABWIDTH, 4);
 		SendEditor(SCI_SETCODEPAGE, SC_CP_UTF8);
-		SendEditor(SCI_STYLECLEARALL);
 		SetLineNumber();
-		SetWrap(m_line_wrap);
-		SetTextStyle(0);
+		SetWrap(m_line_wrap);		
 		SetBlackTheme(m_black_theme);
 	}
 
 	void SciEditor::SetLineNumber()
 	{
-		SendEditor(SCI_SETMARGINTYPEN, 2, SC_MARGIN_NUMBER);
-		SendEditor(SCI_SETMARGINWIDTHN, 2, 29);
+		SendEditor(SCI_SETMARGINTYPEN, 0, SC_MARGIN_NUMBER);
+		SendEditor(SCI_SETMARGINWIDTHN, 0, 30);
 	}
 
-	void SciEditor::SetTextStyle(int style)
+	void SciEditor::SetBlackTheme(bool value)
 	{
+		m_black_theme = value;
+		int text_style = 0;
+		text_style = SendEditor(SCI_GETLEXER);
+
 		SendEditor(SCI_STYLESETFONT, STYLE_DEFAULT, (sptr_t)"Microsoft Yahei");
 		SendEditor(SCI_STYLESETFONT, STYLE_DEFAULT, (sptr_t)"Consolas");
 		SendEditor(SCI_STYLESETSIZE, STYLE_DEFAULT, 12);
 
+		if (m_black_theme)
+		{
+			SendEditor(SCI_STYLESETFORE, STYLE_DEFAULT, Color::fore_white);
+			SendEditor(SCI_STYLESETBACK, STYLE_DEFAULT, Color::back_black);
+			SendEditor(SCI_STYLECLEARALL);
+			
+			SendEditor(SCI_STYLESETFORE, STYLE_LINENUMBER, Color::line_number_blue);
+			SendEditor(SCI_STYLESETBACK, STYLE_LINENUMBER, Color::line_number_black);
+			
+			SendEditor(SCI_SETCARETFORE, Color::caret_white);	//光标
+			SendEditor(SCI_SETSELBACK, true, Color::selection_blue);
+			SendEditor(SCI_SETCARETLINEVISIBLE, TRUE);
+			SendEditor(SCI_SETCARETLINEBACK, Color::current_line_black);
+		}
+		else
+		{
+			SendEditor(SCI_STYLESETFORE, STYLE_DEFAULT, Color::back_black);
+			SendEditor(SCI_STYLESETBACK, STYLE_DEFAULT, Color::white);
+			SendEditor(SCI_STYLECLEARALL);
+
+			SendEditor(SCI_SETCARETFORE, Color::caret_black);	//光标
+			SendEditor(SCI_SETSELBACK, true, Color::selection_wight);
+			SendEditor(SCI_SETCARETLINEVISIBLE, TRUE);
+			SendEditor(SCI_SETCARETLINEBACK, Color::current_line_yellow);			
+		}
+
+		SetTextStyle(text_style);
+	}
+
+	void SciEditor::SetTextStyle(int style)
+	{
 		const char* cpp_keywords =
 			"asm auto break case catch class const "
 			"const_cast continue default delete do double "
@@ -95,7 +135,7 @@ namespace Matrix
 		const char* cpp_type_keywords =
 			"bool char float int long short void wchar_t";
 
-		if (SCLEX_XML == style)
+		if (SCLEX_XML == style || SCLEX_HTML == style)
 		{
 			SendEditor(SCI_SETLEXER, SCLEX_HTML);
 			SendEditor(SCI_STYLESETFORE, SCE_H_XMLSTART, Color::red);
@@ -103,8 +143,8 @@ namespace Matrix
 			SendEditor(SCI_STYLESETFORE, SCE_H_XMLEND, Color::red);
 			SendEditor(SCI_STYLESETBACK, SCE_H_XMLEND, Color::yellow);
 
-			SendEditor(SCI_STYLESETFORE, SCE_D_DEFAULT, Color::black);
-			SendEditor(SCI_STYLESETBACK, SCE_D_DEFAULT, Color::white);
+			//SendEditor(SCI_STYLESETFORE, SCE_D_DEFAULT, Color::black);
+			//SendEditor(SCI_STYLESETBACK, SCE_D_DEFAULT, Color::white);
 			SendEditor(SCI_STYLESETBOLD, SCE_D_DEFAULT, true);
 
 			SendEditor(SCI_STYLESETFORE, SCE_D_NUMBER, Color::red);
@@ -133,8 +173,9 @@ namespace Matrix
 			SendEditor(SCI_SETKEYWORDS, 0, (sptr_t)cpp_keywords);//设置关键字 
 			SendEditor(SCI_SETKEYWORDS, 1, (sptr_t)cpp_type_keywords);//设置关键字 
 
-			SendEditor(SCI_STYLESETFORE, SCE_C_DEFAULT, Color::fore_white);
-			SendEditor(SCI_STYLESETBACK, SCE_C_DEFAULT, Color::back_black);
+			//SendEditor(SCI_STYLESETFORE, SCE_C_DEFAULT, Color::fore_white);
+			//SendEditor(SCI_STYLESETBACK, SCE_C_DEFAULT, Color::back_black);
+
 			// 下面设置各种语法元素风格 
 			SendEditor(SCI_STYLESETFORE, SCE_C_WORD, Color::keywords_blude);   //关键字 
 			SendEditor(SCI_STYLESETFORE, SCE_C_WORD2, Color::keywords_blude);   //关键字 
@@ -145,8 +186,45 @@ namespace Matrix
 
 			SendEditor(SCI_STYLESETFORE, SCE_C_COMMENT, Color::comment_green);//块注释 
 			SendEditor(SCI_STYLESETFORE, SCE_C_COMMENTLINE, Color::comment_green);//行注释 
-			SendEditor(SCI_STYLESETFORE, SCE_C_COMMENTDOC, Color::comment_green);//文档注释（/**开头） 
+			SendEditor(SCI_STYLESETFORE, SCE_C_COMMENTDOC, Color::comment_green);//文档注释（/**开头）
 		}
+
+		SetFolder();		
+	}
+
+	void SciEditor::SetFolder()
+	{		
+		SendEditor(SCI_SETPROPERTY, (sptr_t)"fold", (sptr_t)"1");
+		SendEditor(SCI_SETPROPERTY, (WPARAM)"fold.compact", (LPARAM)"0");
+		SendEditor(SCI_SETPROPERTY, (WPARAM)"fold.html", (LPARAM)"1");
+		SendEditor(SCI_SETPROPERTY, (WPARAM)"fold.html.preprocessor", (LPARAM)"1");
+
+		
+		SendEditor(SCI_SETMARGINTYPEN, 2, SC_MARGIN_SYMBOL);//页边类型 
+		SendEditor(SCI_SETMARGINMASKN, 2, SC_MASK_FOLDERS); //页边掩码 
+		SendEditor(SCI_SETMARGINWIDTHN, 2, 11); //页边宽度
+		
+		SendEditor(SCI_MARKERDEFINE, SC_MARKNUM_FOLDER, SC_MARK_PIXMAP);
+		SendEditor(SCI_MARKERDEFINE, SC_MARKNUM_FOLDEROPEN, SC_MARK_PIXMAP);
+		SendEditor(SCI_MARKERDEFINE, SC_MARKNUM_FOLDEREND, SC_MARK_PIXMAP);
+		SendEditor(SCI_MARKERDEFINE, SC_MARKNUM_FOLDEROPENMID, SC_MARK_PIXMAP);
+		SendEditor(SCI_MARKERDEFINE, SC_MARKNUM_FOLDERMIDTAIL, SC_MARK_TCORNERCURVE);
+		SendEditor(SCI_MARKERDEFINE, SC_MARKNUM_FOLDERSUB, SC_MARK_VLINE);
+		SendEditor(SCI_MARKERDEFINE, SC_MARKNUM_FOLDERTAIL, SC_MARK_LCORNERCURVE);
+		// 
+		SendEditor(SCI_MARKERDEFINEPIXMAP, SC_MARKNUM_FOLDER, (sptr_t)plus_xpm);
+		SendEditor(SCI_MARKERDEFINEPIXMAP, SC_MARKNUM_FOLDEROPEN, (sptr_t)minus_xpm);
+		SendEditor(SCI_MARKERDEFINEPIXMAP, SC_MARKNUM_FOLDEREND, (sptr_t)plus_xpm);
+		SendEditor(SCI_MARKERDEFINEPIXMAP, SC_MARKNUM_FOLDEROPENMID, (sptr_t)minus_xpm);
+
+		// 折叠标签颜色 
+		SendEditor(SCI_MARKERSETBACK, SC_MARKNUM_FOLDERSUB, 0xa0a0a0);
+		SendEditor(SCI_MARKERSETBACK, SC_MARKNUM_FOLDERMIDTAIL, 0xa0a0a0);
+		SendEditor(SCI_MARKERSETBACK, SC_MARKNUM_FOLDERTAIL, 0xa0a0a0);
+
+		SendEditor(SCI_SETFOLDFLAGS, 16, 0); //如果折叠就在折叠行的上下各画一条横线 
+
+		SendEditor(SCI_SETMARGINSENSITIVEN, 2, TRUE); //响应鼠标消息		
 	}
 
 	void SciEditor::SetPos(RECT rect, int menu_height)
@@ -163,37 +241,7 @@ namespace Matrix
 			LoadFromFile(m_filename);
 		}
 	}
-
-	void SciEditor::SetBlackTheme(bool value)
-	{
-		m_black_theme = value;
-		if (m_black_theme)
-		{
-			SendEditor(SCI_STYLESETFORE, STYLE_DEFAULT, Color::fore_white);
-			SendEditor(SCI_STYLESETBACK, STYLE_DEFAULT, Color::back_black);
-			SendEditor(SCI_STYLECLEARALL);
-
-			SendEditor(SCI_STYLESETFORE, STYLE_LINENUMBER, Color::line_number_blue);
-			SendEditor(SCI_STYLESETBACK, STYLE_LINENUMBER, Color::line_number_black);
-
-			SendEditor(SCI_SETCARETFORE, Color::caret_white);	//光标
-			SendEditor(SCI_SETSELBACK, true, Color::selection_blue);
-			SendEditor(SCI_SETCARETLINEVISIBLE, TRUE);
-			SendEditor(SCI_SETCARETLINEBACK, Color::current_line_black);
-		}
-		else
-		{
-			SendEditor(SCI_STYLESETFORE, STYLE_DEFAULT, Color::back_black);
-			SendEditor(SCI_STYLESETBACK, STYLE_DEFAULT, Color::white);
-			SendEditor(SCI_STYLECLEARALL);
-
-			SendEditor(SCI_SETCARETFORE, Color::caret_black);	//光标
-			SendEditor(SCI_SETSELBACK, true, Color::selection_wight);
-			SendEditor(SCI_SETCARETLINEVISIBLE, TRUE);
-			SendEditor(SCI_SETCARETLINEBACK, Color::current_line_yellow);
-		}
-	}
-
+	
 	int SciEditor::Search(wchar_t * text)
 	{
 		/*FINDREPLACE fr;
@@ -377,6 +425,24 @@ namespace Matrix
 		return 0;
 	}
 
+	int SciEditor::Cut()
+	{
+		SendEditor(SCI_CUT);
+		return 1;
+	}
+
+	int SciEditor::Copy()
+	{
+		SendEditor(SCI_COPY);
+		return 1;
+	}
+
+	int SciEditor::Paste()
+	{
+		SendEditor(SCI_PASTE);
+		return 1;
+	}
+
 	int SciEditor::NextPage()
 	{
 		if (Matrix::FilePos::END == m_file_pos)
@@ -463,9 +529,9 @@ namespace Matrix
 
 	void SciEditor::HandleMsg(SCNotification * msg, WPARAM wParam)
 	{
-
 		int i = LOWORD(wParam);
 		int vpos = 0;
+		int line_number = 0;
 
 		switch (msg->nmhdr.code)
 		{
@@ -485,6 +551,11 @@ namespace Matrix
 				break;
 			}
 			break;
+
+		case SCN_MARGINCLICK:
+			line_number = SendEditor(SCI_LINEFROMPOSITION, msg->position);
+			SendEditor(SCI_TOGGLEFOLD, line_number);
+			break;			
 
 		default:
 			break;

@@ -171,7 +171,7 @@ LRESULT Matrix::MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lPara
 
 	case WM_NOTIFY:	
 		notify = (SCNotification*)lParam;
-		if (notify->nmhdr.hwndFrom == &m_editor)
+		if (notify->nmhdr.hwndFrom == m_editor.Handle())
 		{
 			m_editor.HandleMsg(notify, wParam);
 		}
