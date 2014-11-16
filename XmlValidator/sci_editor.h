@@ -54,8 +54,9 @@ namespace Matrix
 		static const COLORREF current_line_yellow = RGB(0xFF, 0xFF, 0x80);
 		static const COLORREF line_number_blue = RGB(0x2B, 0x91, 0xAF);		//ÐÐºÅ
 		static const COLORREF line_number_black = RGB(0x2B, 0x2B, 0x2B);
+		static const COLORREF margin_light_back = RGB(0xF7, 0xF7, 0xF7);//E9
 		static const COLORREF selection_blue = RGB(0x26, 0x4F, 0x78);
-		static const COLORREF selection_wight = fore_white;
+		static const COLORREF selection_white = fore_white;
 		static const COLORREF comment_green = RGB(0x57, 0xA6, 0x4A);		// ×¢ÊÍ	
 	};
 

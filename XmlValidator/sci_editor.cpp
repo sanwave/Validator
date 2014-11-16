@@ -99,6 +99,9 @@ namespace Matrix
 			
 			SendEditor(SCI_STYLESETFORE, STYLE_LINENUMBER, Color::line_number_blue);
 			SendEditor(SCI_STYLESETBACK, STYLE_LINENUMBER, Color::line_number_black);
+
+			SendEditor(SCI_SETFOLDMARGINCOLOUR, true, Color::line_number_black);
+			SendEditor(SCI_SETFOLDMARGINHICOLOUR, true, Color::line_number_blue);
 			
 			SendEditor(SCI_SETCARETFORE, Color::caret_white);	//光标
 			SendEditor(SCI_SETSELBACK, true, Color::selection_blue);
@@ -111,8 +114,11 @@ namespace Matrix
 			SendEditor(SCI_STYLESETBACK, STYLE_DEFAULT, Color::white);
 			SendEditor(SCI_STYLECLEARALL);
 
+			SendEditor(SCI_SETFOLDMARGINCOLOUR, true, Color::margin_light_back);
+			SendEditor(SCI_SETFOLDMARGINHICOLOUR, true, Color::margin_light_back);
+
 			SendEditor(SCI_SETCARETFORE, Color::caret_black);	//光标
-			SendEditor(SCI_SETSELBACK, true, Color::selection_wight);
+			SendEditor(SCI_SETSELBACK, true, Color::selection_white);
 			SendEditor(SCI_SETCARETLINEVISIBLE, TRUE);
 			SendEditor(SCI_SETCARETLINEBACK, Color::current_line_yellow);			
 		}
@@ -217,10 +223,13 @@ namespace Matrix
 		SendEditor(SCI_MARKERDEFINEPIXMAP, SC_MARKNUM_FOLDEREND, (sptr_t)plus_xpm);
 		SendEditor(SCI_MARKERDEFINEPIXMAP, SC_MARKNUM_FOLDEROPENMID, (sptr_t)minus_xpm);
 
-		// 折叠标签颜色 
-		SendEditor(SCI_MARKERSETBACK, SC_MARKNUM_FOLDERSUB, 0xa0a0a0);
-		SendEditor(SCI_MARKERSETBACK, SC_MARKNUM_FOLDERMIDTAIL, 0xa0a0a0);
-		SendEditor(SCI_MARKERSETBACK, SC_MARKNUM_FOLDERTAIL, 0xa0a0a0);
+		// 折叠标签颜色
+		if (m_black_theme)
+		{
+			SendEditor(SCI_MARKERSETBACK, SC_MARKNUM_FOLDERSUB, Color::line_number_blue);
+			SendEditor(SCI_MARKERSETBACK, SC_MARKNUM_FOLDERMIDTAIL, Color::line_number_blue);
+			SendEditor(SCI_MARKERSETBACK, SC_MARKNUM_FOLDERTAIL, Color::line_number_blue);
+		}		
 
 		SendEditor(SCI_SETFOLDFLAGS, 16, 0); //如果折叠就在折叠行的上下各画一条横线 
 
