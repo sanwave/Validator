@@ -509,7 +509,8 @@ namespace Matrix
 		else if (tError.Count() > 0)
 		{
 			MessageBoxA(m_hwnd, err, "Error", MB_ICONERROR | MB_OK);
-			SendEditor(SCI_GOTOLINE, 0);
+			//SendEditor(SCI_GOTOLINE, 0);
+			SendEditor(SCI_GOTOPOS, tError.Close.Index);
 			SetFocus();
 		}
 		else
