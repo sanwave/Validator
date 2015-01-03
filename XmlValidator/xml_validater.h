@@ -375,7 +375,7 @@ namespace Matrix
 		const char * GetNodeName(const char * node)
 		{
 			int i = strchr(node, ' ') - node;
-			if (i > 0)
+			if (i > 0 && i < strlen(node) - 1)
 			{
 				return Substr(node, 0, i);
 			}
