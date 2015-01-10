@@ -21,86 +21,87 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="resource.h">
+    <ClInclude Include="include/basewin.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="basewin.h">
+    <ClInclude Include="include/sci_editor.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="common.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="mainwindow.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="sci_editor.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="xml.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="application.h">
+    <ClInclude Include="include/application.h">
       <Filter>Ribbon</Filter>
     </ClInclude>
-    <ClInclude Include="command_handler.h">
+    <ClInclude Include="include/command_handler.h">
       <Filter>Ribbon</Filter>
     </ClInclude>
-    <ClInclude Include="ribbon_framework.h">
+    <ClInclude Include="include/ribbon_framework.h">
       <Filter>Ribbon</Filter>
     </ClInclude>
-    <ClInclude Include="xml_validater.h">
-      <Filter>Matrix</Filter>
-    </ClInclude>
-    <ClInclude Include="text_encoder.h">
-      <Filter>Matrix</Filter>
-    </ClInclude>
-    <ClInclude Include="mysql_helper.h">
-      <Filter>Matrix</Filter>
-    </ClInclude>
-    <ClInclude Include="file.h">
-      <Filter>Matrix</Filter>
-    </ClInclude>
-    <ClInclude Include="menu.h">
+    <ClInclude Include="include\common.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="dialog.h">
+    <ClInclude Include="include\dialog.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\mainwindow.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\menu.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\mysql_helper.h">
+      <Filter>Matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xml_validater.h">
+      <Filter>Matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xml.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tab_control.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="resource\resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="MainWindow.rc">
+    <ClCompile Include="src/application.cpp">
+      <Filter>Ribbon</Filter>
+    </ClCompile>
+    <ClCompile Include="src/command_handler.cpp">
+      <Filter>Ribbon</Filter>
+    </ClCompile>
+    <ClCompile Include="src/ribbon_framework.cpp">
+      <Filter>Ribbon</Filter>
+    </ClCompile>
+    <ClCompile Include="src/sci_editor.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\winmain.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resource\minus.xpm">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="resource\plus.xpm">
+      <Filter>资源文件</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resource\MainWindow.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="winmain.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="application.cpp">
-      <Filter>Ribbon</Filter>
-    </ClCompile>
-    <ClCompile Include="command_handler.cpp">
-      <Filter>Ribbon</Filter>
-    </ClCompile>
-    <ClCompile Include="ribbon_framework.cpp">
-      <Filter>Ribbon</Filter>
-    </ClCompile>
-    <ClCompile Include="sci_editor.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="twitter.ico">
-      <Filter>资源文件</Filter>
-    </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="ribbon_ui.xml">
+    <CustomBuild Include="resource\ribbon_ui.xml">
       <Filter>资源文件</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <None Include="minus.xpm" />
-    <None Include="plus.xpm" />
+    <Image Include="resource\twitter.ico">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
 </Project>
