@@ -53,13 +53,13 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;MATRIX</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)$(Configuration)\;D:\Onedrive\Program\Libraries\MySQL\include.5.6.20.x86;D:\Onedrive\Program\scintilla++\scintilla\include;E:\Program\Libraries\scintilla\include;E:\Program\Libraries\mysql-5.6.21-win32\include;.\include;.\resource;%(AdditionalIncludeDirectories);.\Matrix\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SolutionDir)$(Configuration)\;..\..\Matrix\include;.\include;.\resource;.\reference\scintilla.3.5.x86\include</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>D:\Onedrive\Program\scintilla++\scintilla\win32\Release;D:\Onedrive\Program\Libraries\MySQL\lib.5.6.20.x86;E:\Program\scintilla\win32\Release;E:\Program\Libraries\mysql-5.6.21-win32\lib;%(AdditionalLibraryDirectories);.\Matrix\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);..\..\Matrix\lib;.\reference\scintilla.3.5.x86\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -72,14 +72,14 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;MATRIX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Onedrive\Program\Libraries\slimxml\include;D:\Onedrive\Program\Libraries\MySQL\include.5.6.20.x86;D:\Onedrive\Program\Libraries\scintilla\include.3.5.x86;%(AdditionalIncludeDirectories);$(SolutionDir)$(Configuration)\;..\..\Matrix\include;.\include;.\resource</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(SolutionDir)$(Configuration)\;..\..\Matrix\include;.\include;.\resource;.\reference\scintilla.3.5.x86\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>D:\Onedrive\Program\Libraries\MySQL\libx.5.6.20.x86;D:\Onedrive\Program\Libraries\scintilla\lib.3.5.x86;D:\Onedrive\Program\Libraries\slimxml\lib;%(AdditionalLibraryDirectories);..\..\Matrix\lib;E:\Program\Github\Validator\Matrix\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);..\..\Matrix\lib;.\reference\scintilla.3.5.x86\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>Propsys.lib;Shlwapi.lib;Matrix.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
