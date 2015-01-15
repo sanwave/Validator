@@ -1,6 +1,17 @@
 
-#include "sci_editor.h"
+/*
+*
+*
+*
+*	SciEditor Class Source File		In Matrix
+*
+*	Created by Bonbon	2014.10.26
+*
+*	Updated by Bonbon	2015.01.15
+*
+*/
 
+#include "sci_editor.h"
 
 namespace Matrix
 {
@@ -70,15 +81,28 @@ namespace Matrix
 	{
 		SendEditor(SCI_SETTABWIDTH, 4);
 		SendEditor(SCI_SETCODEPAGE, SC_CP_UTF8);
-		SetLineNumber();
+		HideMargin(0xFF);
+		SetLineNumber(42);
 		SetWrap(m_line_wrap);		
 		SetBlackTheme(m_black_theme);
 	}
 
-	void SciEditor::SetLineNumber()
+	void SciEditor::HideMargin(char maskn)
+	{
+		for (int i = 0; i < 5; ++i)
+		{
+			if (maskn & 0x01)
+			{
+				SendEditor(SCI_SETMARGINWIDTHN, i, 0);
+				maskn = maskn >> 1;
+			}
+		}
+	}
+
+	void SciEditor::SetLineNumber(int width)
 	{
 		SendEditor(SCI_SETMARGINTYPEN, 0, SC_MARGIN_NUMBER);
-		SendEditor(SCI_SETMARGINWIDTHN, 0, 30);
+		SendEditor(SCI_SETMARGINWIDTHN, 0, width);
 	}
 
 	void SciEditor::SetBlackTheme(bool value)
@@ -128,19 +152,6 @@ namespace Matrix
 
 	void SciEditor::SetTextStyle(int style)
 	{
-		const char* cpp_keywords =
-			"asm auto break case catch class const "
-			"const_cast continue default delete do double "
-			"dynamic_cast else enum explicit extern false "
-			"for friend goto if inline mutable "
-			"namespace new operator private protected public "
-			"register reinterpret_cast return signed "
-			"sizeof static static_cast struct switch template "
-			"this throw true try typedef typeid typename "
-			"union unsigned using virtual volatile while";
-		const char* cpp_type_keywords =
-			"bool char float int long short void wchar_t";
-
 		if (SCLEX_XML == style || SCLEX_HTML == style)
 		{
 			SendEditor(SCI_SETLEXER, SCLEX_HTML);
@@ -239,7 +250,7 @@ namespace Matrix
 	void SciEditor::SetPos(RECT rect, int menu_height)
 	{
 		SetWindowPos(m_hwnd, HWND_TOP, 0, menu_height,
-			rect.right - rect.left - 11, rect.bottom - rect.top - menu_height, SWP_SHOWWINDOW);
+			rect.right - rect.left, rect.bottom - rect.top - menu_height, SWP_SHOWWINDOW);
 	}
 
 	void SciEditor::SetReadAll(bool value)

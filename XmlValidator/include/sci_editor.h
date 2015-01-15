@@ -3,7 +3,7 @@
 *
 *
 *
-*	Scintilla Editor Class		In Matrix
+*	SciEditor Class Header File		In Matrix
 *
 *	Created by Bonbon	2014.10.26
 *
@@ -60,6 +60,21 @@ namespace Matrix
 		static const COLORREF comment_green = RGB(0x57, 0xA6, 0x4A);		// ×¢ÊÍ	
 	};
 
+
+	const char* cpp_keywords =
+		"asm auto break case catch class const "
+		"const_cast continue default delete do double "
+		"dynamic_cast else enum explicit extern false "
+		"for friend goto if inline mutable "
+		"namespace new operator private protected public "
+		"register reinterpret_cast return signed "
+		"sizeof static static_cast struct switch template "
+		"this throw true try typedef typeid typename "
+		"union unsigned using virtual volatile while";
+	const char* cpp_type_keywords =
+		"bool char float int long short void wchar_t";
+
+
 	class SciEditor
 	{
 	public:
@@ -87,6 +102,7 @@ namespace Matrix
 
 		void Create(HWND hwndParent);
 		void Init();
+		void HideMargin(char maskn);
 		void HandleMsg(SCNotification * msg, WPARAM wParam);
 
 		inline bool LineWrap() const
@@ -108,7 +124,7 @@ namespace Matrix
 		{
 			return m_filename;
 		}
-		void SetLineNumber();
+		void SetLineNumber(int width);
 		void SetTextStyle(int style);
 		void SetFolder();
 		void SetPos(RECT rect, int menu_height = 0);
